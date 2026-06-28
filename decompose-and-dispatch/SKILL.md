@@ -46,7 +46,7 @@ If the runtime has named agents, map each capability to the closest available na
 
 Load the relevant file when you reach that step. Do not load all of them up front.
 
-- `reference/matching.md` — Runtime discovery checklist, evidence-ordered executor matching, confidence levels, runtime adapter notes, and adapter config examples (see `agents/`).
+- `reference/matching.md` — Runtime discovery checklist, evidence-ordered executor matching, confidence levels, runtime adapter notes, and host adapter config (`agents/openai.yaml` = Codex app UI metadata).
 - `reference/work-units.md` — Atomic work unit criteria, the quality gate, and the full work-unit YAML schema.
 - `reference/dispatch-format.md` — Dispatch plan tables, capability mapping table, and the handoff prompt contract.
 - `reference/parallelism-and-delegation.md` — Parallel grouping rules, conflict avoidance, and when to delegate vs keep on the main agent.
