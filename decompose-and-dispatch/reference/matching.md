@@ -59,10 +59,10 @@ Use these as examples, not as fixed mappings:
 
 If local custom agent names are opaque, read their descriptions or instructions before mapping. For example, an executor named `blueprint` may be a planner or researcher if its description says it explores architecture and writes plans. An executor named `knife` may be an implementer if its description says it makes minimal code edits.
 
-## Adapter Config Examples
+## Host Adapter Config
 
-The `agents/` directory holds example adapter configs that show how a host runtime can surface this skill and its default invocation. They are illustrative, not required, and not portable semantics.
+The `agents/` directory holds host-specific UI metadata for surfacing this skill.
 
-- `agents/example.yaml` — example interface config: `display_name`, `short_description`, and a `default_prompt` for invoking the skill in that runtime.
+- `agents/openai.yaml` — Codex app UI metadata: `display_name`, `short_description`, and a `default_prompt` that invokes the skill via Codex's `$skill` syntax.
 
-Treat these as templates. When integrating a new runtime, copy the shape and adjust names, prompts, and capability mappings to the executors that runtime actually exposes.
+This is host-runtime configuration, not portable capability semantics. Other hosts add their own files here as needed.

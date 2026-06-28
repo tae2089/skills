@@ -1,0 +1,28 @@
+unit_id: W3
+objective: "Add validation for missing project slug"
+capability: implementer
+executor_skill: execute-dispatch-unit
+allowed_scope:
+  - "src/api/projects/*"
+  - "tests/api/projects/*"
+forbidden_scope:
+  - "database migrations"
+  - "frontend UI"
+non_goals:
+  - "Do not redesign project routing"
+dependencies:
+  - "W1 discovery summary identifies the validation entrypoint"
+acceptance_criteria:
+  - "Missing slug returns a typed validation error"
+  - "Existing valid slug behavior remains unchanged"
+verification:
+  - "Run targeted project API tests if available"
+return_contract: completion_report
+handoff_prompt: |
+  Use $execute-dispatch-unit.
+
+  Task W3: Add validation for missing project slug.
+  Scope: edit only src/api/projects/* and tests under tests/api/projects/*.
+  Non-goals: do not redesign project routing, database schema, or frontend UI.
+  Ownership: other executors may be working elsewhere; do not revert unrelated changes.
+  Expected output: completion report with changed files, summary, verification, blockers, and follow-ups.
