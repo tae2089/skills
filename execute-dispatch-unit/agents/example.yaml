@@ -1,0 +1,4 @@
+interface:
+  display_name: "Execute Dispatch Unit"
+  short_description: "Execute one assigned dispatch unit."
+  default_prompt: "Use $execute-dispatch-unit to execute this dispatch packet and return a completion report."

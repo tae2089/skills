@@ -24,6 +24,7 @@ When delegation is possible, include a `handoff_prompt` for each delegated work 
 
 Each handoff prompt should include:
 
+- A request to use `$execute-dispatch-unit` when that skill is available.
 - The work-unit id and objective.
 - Relevant inputs and file, module, or artifact scope.
 - Explicit non-goals.
@@ -35,6 +36,8 @@ Each handoff prompt should include:
 Use this shape:
 
 ```text
+Use $execute-dispatch-unit.
+
 Task W2: Implement the API validation change.
 Scope: edit only src/api/validation/* and tests under tests/api_validation/*.
 Non-goals: do not change persistence or UI behavior.
