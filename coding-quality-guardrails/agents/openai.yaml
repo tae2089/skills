@@ -1,0 +1,4 @@
+interface:
+  display_name: "Coding Quality Guardrails"
+  short_description: "Guard Go/Python code quality"
+  default_prompt: "Use $coding-quality-guardrails while coding or reviewing Go/Python to keep changes small, verified, and maintainable."
