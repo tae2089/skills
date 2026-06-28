@@ -1,4 +1,0 @@
-interface:
-  display_name: "Decompose and Dispatch"
-  short_description: "Map work units to available executors."
-  default_prompt: "Use $decompose-and-dispatch to break this goal into atomic work units and map each unit to available executors."
