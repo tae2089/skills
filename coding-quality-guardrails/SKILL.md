@@ -1,19 +1,21 @@
 ---
 name: coding-quality-guardrails
-description: Coding quality guardrails for AI agents working on Go or Python only. Use when Codex is coding, reviewing, refactoring, fixing tests, debugging regressions, preparing Go/Python AI coding-agent prompts, or evaluating Go/Python changes where AI slop, test gaming, over-abstraction, weak verification claims, or quality debt must be prevented.
+description: Coding quality guardrails for AI agents working on Go, Python, Java/Kotlin, or TypeScript. Use when Codex is coding, reviewing, refactoring, fixing tests, debugging regressions, preparing AI coding-agent prompts, or evaluating changes where AI slop, test gaming, over-abstraction, weak verification claims, or quality debt must be prevented.
 ---
 
 # Coding Quality Guardrails
 
-Use this skill as a compact quality gate for Go and Python work. Apply the core rules for every coding task, then load only the smallest reference set needed.
+Use this skill as a compact quality gate for Go, Python, Java/Kotlin, and TypeScript work. Apply the core rules for every coding task, then load only the smallest reference set needed.
 
 ## Progressive Loading
 
 | Situation | Read additionally |
 |---|---|
-| Any Go/Python code generation or edit | None unless a row below applies |
+| Any supported-language code generation or edit | None unless a row below applies |
 | Go code | `references/go.md` |
 | Python code | `references/python.md` |
+| Java or Kotlin code | `references/java-kotlin.md` |
+| TypeScript code | `references/typescript.md` |
 | Test failure, refactor, large diff, complex change, or legacy hot spot | `references/quality-debt.md` plus language reference |
 | API, CLI, config, schema, persistence, security, auth, validation, or error-semantics change | `references/engineering-principles.md` plus language reference |
 | External docs, specs, issues, articles, or community references materially influence the implementation or handoff | `references/reference-attribution.md` |
