@@ -31,6 +31,8 @@ Do not read research notes during ordinary coding. They are background rationale
 - Do not invent test results, logs, benchmark numbers, issue links, docs claims, or runtime behavior.
 - Keep diffs reviewable: avoid broad rewrites, noisy formatting churn, speculative abstractions, and verbose low-value code.
 - Use KISS, YAGNI, and cautious DRY: simple and current, but not under-specified; remove duplicated knowledge, not every repeated line.
+- Before adding code, climb the reuse ladder: an existing helper or pattern in this codebase, then the standard library, then a native platform feature, then an already-installed dependency, then the fewest new lines. Never add a new dependency for what a few lines can do.
+- Prefer deletion over addition; aim for the fewest files and the shortest change that fully solves the problem — decided after understanding the flow, not instead of it.
 - Preserve contracts and invariants: validation, security, authorization, persistence, compatibility, observability, typing, and error semantics.
 - Do not change production code only to satisfy tests; first decide whether the failure is product defect, stale expectation, flake, or setup issue.
 - Treat test-gaming signals as suspicious: deleted assertions, weakened expected values, new skip/xfail, mocks replacing real local behavior, or production-only branches for tests.
