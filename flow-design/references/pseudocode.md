@@ -24,15 +24,14 @@ P7  WRITE ledger entry (order id, -amount)
 P8    IF write fails -> rollback, return 500
 P9  CALL payment gateway refund(amount)                [pay/gateway.go:88]
 P10   IF gateway fails or times out -> rollback, return 502
-P11 update order.remaining -= amount
-P12 commit transaction
-P13   IF commit fails -> return 500 (gateway refund now orphaned - flag for reconciliation)
-P14 PUBLISH refund event                               [events/refund.go:9]
-P15   IF publish fails -> log and continue (event is not part of the contract)
-P16 return 200 {remaining}
+P11 WRITE order.remaining -= amount
+P12   IF write fails -> rollback, return 500
+P13 commit transaction
+P14   IF commit fails -> return 500 (gateway refund now orphaned - flag for reconciliation)
+P15 PUBLISH refund event                               [events/refund.go:9]
+P16   IF publish fails -> log and continue (event is not part of the contract)
+P17 return 200 {remaining}
 ```
-
-Use `scenario-extraction.md` when scenario format and coverage rules are needed.
 
 ## Completeness Check
 
@@ -41,6 +40,6 @@ Scan the block and confirm each item exists or is intentionally absent:
 - All inputs are validated at the boundary (`P3`-`P5` pattern); cover empty, missing, and out-of-range values.
 - Authorization/permission is checked if the operation requires it.
 - Every `WRITE` / fallible external/IO `CALL` / `PUBLISH` has a failure arm with an observable result.
-- Ordering risk is explicit: what happens when an earlier side effect succeeds and a later step fails (`P13` pattern).
+- Ordering risk is explicit: what happens when an earlier side effect succeeds and a later step fails (`P14` pattern).
 - Concurrency: if two calls can race on the same data, say who wins.
 - Every acceptance criterion for the work unit maps to at least one line; list unmapped criteria as gaps.

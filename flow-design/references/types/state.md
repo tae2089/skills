@@ -1,8 +1,6 @@
 # State Diagram (`stateDiagram-v2`)
 
-Collection rules below apply to traced diagrams only. For proposed diagrams, use the syntax and notation examples only.
-
-States come from actual enum/constants in code.
+## Notation
 
 ```mermaid
 stateDiagram-v2
@@ -13,8 +11,12 @@ stateDiagram-v2
     Cancelled --> [*]
 ```
 
-Evidence when asked: list states and transitions with `file:line` citations.
+Evidence block contents: states and transitions with `file:line` citations.
 
+- For labels with `?`, `(proposed)`, parentheses, brackets, or colons, use Mermaid aliases: `state "Pending (proposed)" as pending`, then use `pending` in transitions. Do not write `"Pending (proposed)" --> Paid`.
+
+## Trace Completion
+
+- States come from actual enum/constants in code.
 - For each transition, record from-state, to-state, trigger/condition, and write site `file:line`. Collection is complete when inbound/outbound transitions for every state constant have been checked.
-- Quote state labels that contain parentheses, brackets, or colons.
 - Do not invent transitions with no code path. Show states with neither inbound nor outbound transitions; they are often dead code or missed paths.

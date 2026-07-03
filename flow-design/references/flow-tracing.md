@@ -8,7 +8,7 @@ If the user gives a feature name rather than an entry point, search route, comma
 
 ## Tool Use
 
-Use available code graph, LSP, or search tools, but confirm each hop in source before adding it to the trace. Tool output is a clue, not proof. Record `file:line` for places that may later carry weight: `unverified` targets, findings, and integration points.
+Use available code graph, LSP, or search tools, but confirm each hop in source before adding it to the trace. Tool output is a clue, not proof. The trace record keeps `file:line` for every hop.
 
 ## Hop Record
 

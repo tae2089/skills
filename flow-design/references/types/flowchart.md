@@ -1,6 +1,6 @@
 # Flowchart (`flowchart`)
 
-Collection rules below apply to traced diagrams only. For proposed diagrams, use the syntax and notation examples only.
+## Notation
 
 ```mermaid
 flowchart TD
@@ -12,9 +12,11 @@ flowchart TD
     D --> G["201 response"]
 ```
 
-Evidence when asked: list nodes, edges, and branch arms with `file:line` citations.
+Evidence block contents: nodes, edges, and branch arms with `file:line` citations.
+
+- Quote node labels that contain parentheses, brackets, or colons.
+
+## Trace Completion
 
 - Decision nodes `{}` correspond 1:1 with conditions in the trace record.
-- Default direction is `TD`; use `LR` when the flow is long and shallow.
-- Quote node labels that contain parentheses, brackets, or colons.
 - Every leaf must be a terminal from the trace (response, commit, publish, exit). Do not leave dangling actions.

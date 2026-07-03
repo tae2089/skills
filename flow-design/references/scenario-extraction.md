@@ -12,4 +12,4 @@ Format:
 
 The `then` clause must state an observable terminal from the trace or pseudocode: response code, persisted row, published event, or error type. Do not assert internals. Arms with no handling stay as findings; do not write tests that freeze a defect as intended behavior.
 
-If pseudocode exists, use `references/pseudocode.md`'s completeness check as canonical. If the project tracks TDD work in `task.md`, add scenarios there as Todo items; otherwise deliver them next to the diagram.
+If the project tracks TDD work in `task.md`, add scenarios there as Todo items; otherwise deliver them next to the diagram.
