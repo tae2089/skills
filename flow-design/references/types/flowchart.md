@@ -16,4 +16,5 @@ Evidence when asked: list nodes, edges, and branch arms with `file:line` citatio
 
 - Decision nodes `{}` correspond 1:1 with conditions in the trace record.
 - Default direction is `TD`; use `LR` when the flow is long and shallow.
+- Quote node labels that contain parentheses, brackets, or colons.
 - Every leaf must be a terminal from the trace (response, commit, publish, exit). Do not leave dangling actions.

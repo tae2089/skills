@@ -1,16 +1,14 @@
 ---
 name: flow-design
-description: Structure designs as pseudocode and Mermaid diagrams to expose implementation failure points before code exists. Use when the user asks for pseudocode or a logic/flow plan, a design diagram, an existing-code diagram (sequence, flowchart, state, component, ER), or immediately before implementing non-trivial new logic.
+description: Structure designs as pseudocode and Mermaid diagrams to expose implementation failure points before code exists. Use when the user asks for pseudocode or a logic/flow plan, a design diagram, an existing-code diagram (sequence, flowchart, state, component, ER), or immediately before implementing new logic with branches or side effects.
 ---
 
 # Flow Design
 
-Use pseudocode and diagrams to reduce implementation failure before code is written.
-
 1. Claims about existing code must come only from what was read. Do not infer from names or plausibility.
 2. One artifact answers one question. Detail unrelated to the question is scope to cut, not value to add.
 3. Closure: every path reaches a terminal and every branch shows every arm. An arm with no handling is a finding, not a scenario.
-4. Declare what was not verified. Use `unverified` labels (diagram labels use `?` suffix) and omission notes; do not silently draw or silently omit.
+4. Declare what was not verified. Use `unverified` labels and omission notes; do not silently draw or silently omit.
 
 ## Design Path (Default)
 
@@ -21,7 +19,7 @@ Use pseudocode and diagrams to reduce implementation failure before code is writ
 5. Report discovered failure points as an **implementation risks** list.
 6. Follow `references/scenario-extraction.md` only when the user asks for tests/scenarios or when handing off to an existing test list such as `task.md`.
 
-Skip this path entirely for trivial changes (one-line edits, renames, config changes).
+Treat new logic as non-trivial when it adds branch logic or a side effect (`WRITE`, external/IO `CALL`, or `PUBLISH`). Skip this path for one-line edits, renames, config-only changes, and other changes with no new branches or side effects.
 
 ## Current-State Diagrams (Existing Code)
 
@@ -49,7 +47,6 @@ Common rules for all diagram types:
 - Add a `(proposed)` suffix to labels for not-yet-existing elements.
 - Label every decision edge with its condition.
 - For proposed diagrams, Evidence uses pseudocode line numbers such as `P12` instead of `file:line`; without pseudocode, cite the work unit/spec source or state `greenfield proposal; no evidence yet`.
-- Quote flowchart/state node labels that contain parentheses, brackets, or colons.
 
 ## Scale
 
@@ -58,7 +55,7 @@ If a diagram has roughly more than 15 elements or more than 3 levels of nesting,
 ## Completion Criteria
 
 - The artifact answers the fixed question or work unit by itself; if split, the overview answers it.
-- Closure is satisfied: every path reaches a terminal and every branch shows every arm; omissions, declared scope, and `unverified` elements are explicit.
+- Closure is satisfied; omissions, declared scope, and `unverified` elements are explicit.
 - For the design path: implementation risks were reported, integration points were verified and cited in actual code, the `references/pseudocode.md` completeness check was reported if pseudocode was used, and all new elements carry the `(proposed)` suffix.
 - For current-state diagrams: out-of-scope defect hunting was avoided, and traced/proposed status is visible in the title.
 - If Mermaid was produced, render it when `mmdc` or a repo script exists; otherwise state that Mermaid syntax was not verified.
