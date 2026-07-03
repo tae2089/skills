@@ -23,9 +23,14 @@ Sources checked on 2026-06-28:
 - Comments on Comments: Where Code Review and Documentation Meet: https://arxiv.org/abs/2204.00107
   - Used for the role of comments in shared understanding during review.
 
+Language-reference rules (added 2026-07-01) are grounded in primary language sources:
+
+- Java/Kotlin: Effective Java (equals/hashCode contract, try-with-resources, defensive copies), Kotlin official docs (data classes, sealed `when` exhaustiveness, visibility modifiers, coding conventions), Hibernate/JPA guidance (entity equality), and the jackson-module-kotlin README (non-null deserialization).
+- TypeScript: TypeScript Handbook and tsconfig docs (`useUnknownInCatchVariables`, `noUncheckedIndexedAccess`, `never` exhaustiveness, enums vs `as const`, `readonly`, `@ts-expect-error`), typescript-eslint (`prefer-nullish-coalescing`, `switch-exhaustiveness-check`), and MDN (equality coercion, `Promise.all`/`allSettled`).
+
 Practical translation:
 
-- Keep `SKILL.md` short enough to load for every Go/Python coding task.
+- Keep `SKILL.md` short enough to load for every supported-language coding task.
 - Move language-specific details into separate references.
 - Treat anti-slop and engineering-principle cores as generation-time guardrails, not review-only guidance.
 - Use progressive loading so context cost scales with task risk.
