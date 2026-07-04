@@ -8,6 +8,7 @@ This repository contains portable Codex skills. Follow the global `~/.codex/AGEN
 - When modifying skill instructions, references, examples, or scripts, use `coding-quality-guardrails` as the quality gate for small, reviewable diffs and honest verification.
 - When a skill change introduces branching workflow, side effects, ordering constraints, or a new multi-step procedure, use `flow-design` before editing and keep the pseudocode or design note in the task workspace.
 - When a change reshapes skill boundaries, splits or merges references, changes reusable interfaces, or affects how multiple skills compose, use `codebase-design` before editing.
+- When one change triggers both `flow-design` and `codebase-design`, run both: draft the flow with `flow-design` first, then use `codebase-design` to shape the interfaces the flow's operations require.
 - When debugging a broken skill workflow, failing validation, confusing invocation, or reported regression, use `diagnosing-bugs` before changing behavior.
 - When preparing a skill package for human or AI review, use `ready-code-review` to produce context, non-goals, severity policy, and false-positive suppressions before asking for findings.
 - For large cross-skill changes, use `decompose-and-dispatch` to split the work into bounded units. Use `execute-dispatch-unit` only for a clearly assigned unit with scope, dependencies, and verification.
