@@ -31,15 +31,21 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 
 ## 설치
 
-이 저장소 또는 개별 스킬 디렉터리를 에이전트 런타임이 인식하는 스킬 경로에 둡니다. 예를 들어 Codex 개인 스킬은 보통 `~/.codex/skills/`, Claude 스킬은 `~/.claude/skills/` 같은 위치에서 로드됩니다.
+이 저장소 또는 개별 스킬 디렉터리를 Codex, Claude, Gemini 등 각 에이전트 런타임이 인식하는 스킬 경로에 둡니다. 설치 경로와 로드 방식은 런타임마다 다르지만, 이 README의 운영 모델은 동일합니다.
 
-설치는 스킬 파일을 사용할 수 있게 만드는 단계입니다. 실제 운영에서는 아래처럼 글로벌 프롬프트와 프로젝트별 프롬프트를 나눠 라우팅 규칙을 둡니다.
+설치는 스킬 파일을 사용할 수 있게 만드는 단계입니다. 실제 운영에서는 아래처럼 전역 프롬프트와 프로젝트별 프롬프트를 나눠 라우팅 규칙을 둡니다.
 
 ## 프롬프트 배치
 
-### 글로벌 프롬프트
+### 전역 프롬프트
 
-전역 `~/.codex/AGENTS.md`에는 모든 프로젝트에서 공통으로 쓸 스킬 트리거만 짧게 둡니다. 긴 절차나 프로젝트별 조합 순서는 전역 프롬프트에 넣지 않습니다.
+전역 프롬프트에는 모든 프로젝트에서 공통으로 쓸 스킬 트리거만 짧게 둡니다. 긴 절차나 프로젝트별 조합 순서는 전역 프롬프트에 넣지 않습니다.
+
+| 런타임 | 전역 프롬프트 예시 |
+| --- | --- |
+| Codex | `~/.codex/AGENTS.md` |
+| Claude | `~/.claude/CLAUDE.md` |
+| Gemini | `~/.gemini/GEMINI.md` |
 
 ```markdown
 ## Coding Skills
@@ -60,12 +66,18 @@ Apply these when their trigger conditions are met:
 
 ### 프로젝트별 프롬프트
 
-각 프로젝트의 `AGENTS.md`에는 그 repo에서 어떤 스킬을 어떤 순서로 조합할지만 둡니다. 새 프로젝트에는 이 저장소의 [AGENTS.md](AGENTS.md)를 예시로 가져가고, 프로젝트 성격에 맞게 라우팅 문장만 줄이거나 바꿉니다.
+프로젝트별 프롬프트에는 그 repo에서 어떤 스킬을 어떤 순서로 조합할지만 둡니다. 새 프로젝트에는 이 저장소의 [AGENTS.md](AGENTS.md)를 예시로 가져가고, 사용하는 런타임의 프로젝트 프롬프트 파일명에 맞게 옮겨 씁니다.
+
+| 런타임 | 프로젝트 프롬프트 예시 |
+| --- | --- |
+| Codex | `<repo>/AGENTS.md` |
+| Claude | `<repo>/CLAUDE.md` |
+| Gemini | `<repo>/GEMINI.md` |
 
 ```markdown
 # Project Guidance
 
-Follow the global `~/.codex/AGENTS.md` rules first. This file only adds repository-specific routing.
+Follow the global prompt rules first. This file only adds repository-specific routing.
 
 ## Skill Routing
 

@@ -1,6 +1,6 @@
 # Project Guidance
 
-This repository contains portable Codex skills. Follow the global `~/.codex/AGENTS.md` rules first; this file only adds repository-specific routing for skill authoring, review, and maintenance.
+Follow the global prompt rules first. This file only adds repository-specific routing.
 
 ## Skill Routing
 
