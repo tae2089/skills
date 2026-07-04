@@ -29,26 +29,56 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 | [`ready-code-review`](ready-code-review/SKILL.md) | 사람 또는 AI 리뷰어에게 줄 리뷰 컨텍스트, severity 정책, false-positive 억제 규칙, 리뷰 프롬프트를 준비할 때 |
 | [`writing-great-skills`](writing-great-skills/SKILL.md) | `SKILL.md` 작성, 스킬 리뷰, 런타임 포팅, 트리거 문구, 점진적 공개 구조를 다듬을 때 |
 
-## 사용
+## 설치
 
 이 저장소 또는 개별 스킬 디렉터리를 에이전트 런타임이 인식하는 스킬 경로에 둡니다. 예를 들어 Codex 개인 스킬은 보통 `~/.codex/skills/`, Claude 스킬은 `~/.claude/skills/` 같은 위치에서 로드됩니다.
 
-런타임은 보통 `SKILL.md` 프론트매터의 `name`과 `description`을 검색 표면으로 사용합니다. 스킬 본문은 호출된 뒤에 읽히므로, 호출 조건은 프론트매터에 명확히 두고 긴 세부 지침은 직접 연결된 reference 파일로 분리합니다.
+설치는 스킬 파일을 사용할 수 있게 만드는 단계입니다. 실제 운영에서는 아래처럼 글로벌 프롬프트와 프로젝트별 프롬프트를 나눠 라우팅 규칙을 둡니다.
 
-## 유지보수 규칙
+## 프롬프트 배치
 
-이 repo에서 스킬을 만들거나 수정할 때는 [AGENTS.md](AGENTS.md)를 먼저 확인합니다. 현재 핵심 라우팅은 다음과 같습니다.
+### 글로벌 프롬프트
 
-| 작업 | 우선 사용할 스킬 |
+전역 `~/.codex/AGENTS.md`에는 모든 프로젝트에서 공통으로 쓸 스킬 트리거만 짧게 둡니다. 긴 절차나 프로젝트별 조합 순서는 전역 프롬프트에 넣지 않습니다.
+
+```markdown
+## Coding Skills
+
+Apply these when their trigger conditions are met:
+
+| Skill | Apply when |
 | --- | --- |
-| 새 `SKILL.md` 작성 또는 기존 스킬 개선 | `writing-great-skills` |
-| 스킬 지침, reference, example, script 수정 | `coding-quality-guardrails` |
-| 분기, 부수효과, 순서 제약이 있는 새 workflow 추가 | `flow-design` |
-| 스킬 경계, reference 분리, 여러 스킬 조합 변경 | `codebase-design` |
-| 깨진 invocation, validation 실패, 회귀 디버깅 | `diagnosing-bugs` |
-| 큰 cross-skill 변경 분해 | `decompose-and-dispatch` |
-| 명확히 할당된 작업 단위 실행 | `execute-dispatch-unit` |
-| 리뷰 요청 전 컨텍스트 패키지 준비 | `ready-code-review` |
+| `coding-quality-guardrails` | Writing, modifying, or reviewing code. |
+| `diagnosing-bugs` | Debugging bugs, regressions, flaky behavior, or failing tests. |
+| `flow-design` | Pseudocode, logic/flow plans, diagrams, or new logic with branches, side effects, resource lifecycles, or ordering constraints. |
+| `codebase-design` | Designing module boundaries, refactoring, or shaping interfaces. |
+| `decompose-and-dispatch` | Planning multi-step or multi-agent work. |
+| `execute-dispatch-unit` | Executing one assigned bounded dispatch unit with explicit scope, dependencies, and verification. |
+| `domain-modeling` | Aligning terminology or doing domain modeling. |
+| `ready-code-review` | Preparing review context, reviewer instructions, prompts, severity calibration, or false-positive suppression before a human or AI review. |
+```
+
+### 프로젝트별 프롬프트
+
+각 프로젝트의 `AGENTS.md`에는 그 repo에서 어떤 스킬을 어떤 순서로 조합할지만 둡니다. 새 프로젝트에는 이 저장소의 [AGENTS.md](AGENTS.md)를 예시로 가져가고, 프로젝트 성격에 맞게 라우팅 문장만 줄이거나 바꿉니다.
+
+```markdown
+# Project Guidance
+
+Follow the global `~/.codex/AGENTS.md` rules first. This file only adds repository-specific routing.
+
+## Skill Routing
+
+- When creating or revising a `SKILL.md`, use `writing-great-skills` first.
+- When modifying skill instructions, references, examples, or scripts, use `coding-quality-guardrails`.
+- When a skill change introduces branching workflow, side effects, ordering constraints, or a new multi-step procedure, use `flow-design` before editing.
+- When a change reshapes skill boundaries, splits or merges references, changes reusable interfaces, or affects how multiple skills compose, use `codebase-design` before editing.
+- When debugging a broken skill workflow, failing validation, confusing invocation, or reported regression, use `diagnosing-bugs` before changing behavior.
+- When preparing a skill package for human or AI review, use `ready-code-review`.
+- For large cross-skill changes, use `decompose-and-dispatch`; execute clearly assigned units with `execute-dispatch-unit`.
+```
+
+## 유지보수 원칙
 
 변경 원칙:
 
