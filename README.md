@@ -28,7 +28,7 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 | [`flow-design`](flow-design/SKILL.md) | 새 로직의 분기, 부수효과, 순서 제약을 pseudocode나 Mermaid 다이어그램으로 고정하거나 기존 흐름을 문서화할 때 |
 | [`oss-study`](oss-study/SKILL.md) | 오픈소스 코드베이스를 Diátaxis 기반 4가지 질문 모드로 구조화해 학습할 때 |
 | [`ready-code-review`](ready-code-review/SKILL.md) | 사람 또는 AI 리뷰어에게 줄 리뷰 컨텍스트, severity 정책, false-positive 억제 규칙, 리뷰 프롬프트를 준비할 때 |
-| [`session-recipe`](session-recipe/SKILL.md) | 세션을 ground-truth 액션 로그로 기록하고, 완료된 작업을 재생 가능한 recipe(dispatch packet 시퀀스)로 증류하거나 recipe.yaml을 재생할 때 |
+| [`session-recipe`](session-recipe/SKILL.md) | 완료된 작업을 재생 가능한 recipe(dispatch packet 시퀀스)로 증류하거나 recipe.yaml을 재생할 때. 세션 기록은 저장소 밖의 `session-recorder` hook 도구가 담당(설치는 그 README 참고) |
 | [`writing-great-skills`](writing-great-skills/SKILL.md) | `SKILL.md` 작성, 스킬 리뷰, 런타임 포팅, 트리거 문구, 점진적 공개 구조를 다듬을 때 |
 
 ## 설치
@@ -36,12 +36,6 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 이 저장소 또는 개별 스킬 디렉터리를 Codex, Claude, Gemini 등 각 에이전트 런타임이 인식하는 스킬 경로에 둡니다. 설치 경로와 로드 방식은 런타임마다 다르지만, 이 README의 운영 모델은 동일합니다.
 
 설치는 스킬 파일을 사용할 수 있게 만드는 단계입니다. 실제 운영에서는 아래처럼 전역 프롬프트와 프로젝트별 프롬프트를 나눠 라우팅 규칙을 둡니다.
-
-### Codex hook 기반 스킬
-
-일부 스킬은 Codex lifecycle hook 설정을 함께 사용할 수 있습니다. 예를 들어 `session-recipe`는 `UserPromptSubmit`과 `PostToolUse` hook으로 세션 액션 로그를 기록합니다.
-
-이 저장소에서는 `.codex/`를 로컬 런타임 설정으로 보고 git에서 제외합니다. Codex hook 설정이 필요한 스킬은 해당 스킬의 `agents/codex.md`를 읽고 로컬 `.codex/hooks.json`에 등록한 뒤, Codex에서 `/hooks`를 열어 hook 정의를 신뢰해야 합니다.
 
 ## 프롬프트 배치
 

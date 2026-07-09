@@ -15,8 +15,8 @@ Pick exactly one mode per invocation.
 
 Recording is passive; this mode only sets up or checks it.
 
-1. Check whether the recorder hook is registered in the host runtime. Setup is host-specific: for Codex follow `agents/codex.md`; for Claude Code follow `agents/claude.md`. If the host has no adapter (no lifecycle-hook mechanism), recording is unavailable — say so and rely on step 3's fallback.
-2. Verify recording works: the current session's log is the newest `.jsonl` under `<log-root>/<cwd-slug>/`, where `<log-root>` is defined by the host adapter (Codex: `~/.codex/session-recipe/logs/`; Claude Code: `~/.claude/session-recipe/logs/`) and `<cwd-slug>` = the working directory with each run of non-word characters replaced by `-` and leading/trailing `-` stripped; Unicode letters are kept — when in doubt, glob `<log-root>/*/` and match the `cwd` field inside the records — confirm its latest `prompt` record matches this conversation and that recent writes appear as `action` records. On a fresh install, a just-registered hook may not have fired yet: submit a fresh prompt or restart the session (see the pickup notes in `agents/codex.md` or `agents/claude.md`) before concluding recording is broken.
+1. Recording is provided by the standalone `session-recorder` hook tool, managed outside this repository — locate the installed copy from the host's registered hook command (e.g. the `hooks` entries in Claude Code's `settings.json` or Codex's `.codex/hooks.json`); its `README.md`, kept alongside the script, covers installation for Claude Code and Codex. If it is not installed anywhere, or the host has no lifecycle-hook mechanism, recording is unavailable — say so and rely on step 3's fallback.
+2. Verify recording works: the current session's log is the newest `.jsonl` under `<log-root>/<cwd-slug>/`, where `<log-root>` and `<cwd-slug>` are defined by the recorder's record-format contract in its README (Claude Code default `~/.claude/session-recipe/logs/`; Codex installs `~/.codex/session-recipe/logs/`) — when in doubt, glob `<log-root>/*/` and match the `cwd` field inside the records — confirm its latest `prompt` record matches this conversation and that recent writes appear as `action` records. On a fresh install, a just-registered hook may not have fired yet: submit a fresh prompt or restart the session (see the recorder README's verification notes) before concluding recording is broken.
 3. Report the log path. If the hook cannot be installed, say so; distillation then falls back to lower-evidence sources and must label provenance `unverified`.
 
 ## Mode: Distill
@@ -49,7 +49,5 @@ Recording is passive; this mode only sets up or checks it.
 
 - `references/recipe-format.md` — recipe YAML schema and field semantics.
 - `references/distillation.md` — event grouping, packet-field derivation, checkpoint mapping, honesty rules.
-- `agents/codex.md` — Codex hook registration and troubleshooting. Host-specific packaging, not portable semantics.
-- `agents/claude.md` — Claude Code hook registration and troubleshooting. Host-specific packaging, not portable semantics.
 - `examples/recipe.example.yaml` — a small two-step recipe.
-- `scripts/record_action.py` — the hook recorder; deterministic, do not rewrite per session.
+- `session-recorder` README (managed outside this repository, alongside the hook script the host's hook config invokes) — the standalone recorder this skill consumes: record-format contract, prerequisites, per-host installation, troubleshooting.
