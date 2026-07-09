@@ -1,0 +1,75 @@
+# Example recipe distilled from a two-prompt session that added slug
+# validation to a project API. Format: references/recipe-format.md.
+recipe:
+  name: add-slug-validation
+  created: "2026-07-09T04:12:00Z"
+  source:
+    session_ids:
+      - "9f4c2a1e-1234-4abc-9def-56789abcdef0"
+    log_files:
+      - "~/.claude/session-recipe/logs/Users-me-work-api/9f4c2a1e-1234-4abc-9def-56789abcdef0.jsonl"
+    repo: "git@github.com:example/api.git"
+    base_commit: "0a1b2c3"
+  environment:
+    - "Go 1.22 toolchain"
+    - "env var DATABASE_URL set (value not recorded)"
+
+steps:
+  - unit_id: R1
+    objective: "Add validation rejecting a missing project slug with a typed error"
+    capability: implementer
+    allowed_scope:
+      - "src/api/projects/*"
+      - "tests/api/projects/*"
+    forbidden_scope:
+      - "database migrations"
+    non_goals:
+      - "Do not redesign project routing"
+    dependencies: []
+    acceptance_criteria:
+      - "Missing slug returns a typed validation error"
+      - "Existing valid-slug behavior remains unchanged"
+    verification:
+      - "go test ./src/api/projects/..."
+    return_contract: completion_report
+    provenance:
+      prompt_excerpt: "slug 없이 프로젝트 생성하면 500이 나요. 검증 추가해 주세요."
+      changed_files:
+        - "src/api/projects/create.go"
+        - "tests/api/projects/create_test.go"
+      commands:
+        - "go test ./src/api/projects/..."
+      commits:
+        - "4d5e6f7"
+      verification_evidence: "go test pass: 12 ok, includes new TestCreateMissingSlug"
+      confidence: verified
+
+  - unit_id: R2
+    objective: "Document the new validation error in the API changelog"
+    capability: documenter
+    allowed_scope:
+      - "CHANGELOG.md"
+    forbidden_scope: []
+    non_goals: []
+    dependencies:
+      - "R1"
+    acceptance_criteria:
+      - "Changelog entry names the new error type and the affected endpoint"
+    verification:
+      - "Structural check: entry present under Unreleased"
+    return_contract: completion_report
+    provenance:
+      prompt_excerpt: "체인지로그에도 남겨 주세요"
+      changed_files:
+        - "CHANGELOG.md"
+      commands: []
+      commits:
+        - "8a9b0c1"
+      verification_evidence: "not verified in original session"
+      confidence: verified
+
+replay:
+  mode: intent
+  order:
+    - R1
+    - R2
