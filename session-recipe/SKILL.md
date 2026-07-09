@@ -1,6 +1,6 @@
 ---
 name: session-recipe
-description: Record working sessions as ground-truth action logs, distill a finished session into a replayable recipe of dispatch packets, and replay a saved recipe step by step. Use when the user asks to record a session, turn completed work into a recipe, replay a recipe.yaml, or set up session-recording hooks.
+description: Set up and verify ground-truth session recording, distill a finished session into a replayable recipe of dispatch packets, and replay a saved recipe step by step. Use when the user asks to record a session, turn completed work into a recipe, replay a recipe.yaml, or set up session-recording hooks.
 ---
 
 # Session Recipe
@@ -15,25 +15,23 @@ Pick exactly one mode per invocation.
 
 Recording is passive; this mode only sets up or checks it.
 
-1. Recording is provided by the standalone `session-recorder` hook tool, managed outside this repository — locate the installed copy from the host's registered hook command (e.g. the `hooks` entries in Claude Code's `settings.json` or Codex's `.codex/hooks.json`); its `README.md`, kept alongside the script, covers installation for Claude Code, Codex, and Antigravity (agy). If it is not installed anywhere, or the host has no lifecycle-hook mechanism, recording is unavailable — say so and rely on step 3's fallback.
-2. Verify recording works: the current session's log is the newest `.jsonl` under `<log-root>/<cwd-slug>/`, where `<log-root>` and `<cwd-slug>` are defined by the recorder's record-format contract in its README (Claude Code default `~/.claude/session-recipe/logs/`; Codex installs `~/.codex/session-recipe/logs/`; Antigravity installs `~/.gemini/session-recipe/logs/`) — when in doubt, glob `<log-root>/*/` and match the `cwd` field inside the records — confirm its latest `prompt` record matches this conversation and that recent writes appear as `action` records. On a fresh install, a just-registered hook may not have fired yet: submit a fresh prompt or restart the session (see the recorder README's verification notes) before concluding recording is broken.
+1. Recording is provided by the standalone `session-recorder` hook tool, managed outside this repository — locate the installed copy from the host's registered hook command (e.g. the `hooks` entries in Claude Code's `settings.json`, Codex's `.codex/hooks.json`, or Antigravity's `~/.gemini/antigravity-cli/hooks.json`); its `README.md`, kept alongside the script, covers installation for Claude Code, Codex, and Antigravity (agy). If it is not installed anywhere, or the host has no lifecycle-hook mechanism, recording is unavailable — say so and rely on step 3's fallback.
+2. Verify recording works: the current session's log is the newest `.jsonl` under `<log-root>/<cwd-slug>/`, where `<log-root>` and `<cwd-slug>` are defined by the recorder's record-format contract in its README (Claude Code default `~/.claude/session-recipe/logs`; Codex installs `~/.codex/session-recipe/logs`; Antigravity installs `~/.gemini/session-recipe/logs`) — when in doubt, glob `<log-root>/*/` and match the `cwd` field inside the records — confirm its latest `prompt` record matches this conversation and that recent writes appear as `action` records. On a fresh install, a just-registered hook may not have fired yet: submit a fresh prompt or restart the session (see the recorder README's verification notes) before concluding recording is broken.
 3. Report the log path. If the hook cannot be installed, say so; distillation then falls back to lower-evidence sources and must label provenance `unverified`.
 
 ## Mode: Distill
 
 1. Fix the recipe scope: which session(s) and which task. Ask only if the current session does not identify it.
-2. Collect evidence in this order (higher wins on conflict):
-   1. Action log(s): glob `<log-root>/*/<session-id>.jsonl` when the session id is known (a session that changed cwd writes to multiple slug directories); otherwise take the newest file(s) under the cwd slug and confirm their `prompt` records match the work being distilled. `<log-root>` is the host adapter's, as in Record step 2.
-   2. Git history between the first recorded `git_head` and the current head.
-   3. `_workspace/<task>/` notes (`task.md`, `walkthrough.md`, `implementation.md`) when present.
-   4. Session memory, labeled `unverified`.
+2. Collect evidence in the priority order defined in `references/distillation.md` (higher wins on conflict). To locate action logs: glob `<log-root>/*/<session-id>.jsonl` when the session id is known (a session that changed cwd writes to multiple slug directories); otherwise take the newest file(s) under the cwd slug and confirm their `prompt` records match the work being distilled. `<log-root>` as in Record step 2.
 3. Group log events into work units and derive packet fields per `references/distillation.md`.
 4. Write the recipe per `references/recipe-format.md` to `_workspace/<task-name>/recipe.yaml`, or to a tracked path the user names.
 5. Validate before finishing: every step has every packet field listed in `references/recipe-format.md` (`unit_id` through `return_contract`) plus `provenance`; `dependencies` reference earlier steps only; `replay.order` covers every step id; no provenance field contains a secret value.
 
 ## Mode: Replay
 
-1. Parse the recipe and check preconditions: every `environment` entry is satisfied, and drift is measured — `git diff --stat <base_commit>..HEAD` restricted to each step's `allowed_scope`. Report drift and proceed in intent mode; an unsatisfied `environment` entry blocks replay — report it and stop unless the user explicitly accepts proceeding without it.
+1. Parse the recipe and check preconditions:
+   - `environment`: confirm each entry with the cheapest mechanical probe (version command, `printenv <NAME>`, context check); an entry that cannot be mechanically checked is reported as unverified, not assumed satisfied. An unsatisfied entry blocks replay — report it and stop unless the user explicitly accepts proceeding without it.
+   - Drift: run `git diff --stat <base_commit>..HEAD` passing each step's `allowed_scope` patterns as git pathspecs (`-- <pattern>`). Report drift; drift alone never blocks replay and never changes `replay.mode` — heavy drift inside a step's scope just predicts that an `exact` cherry-pick will fall back per step 3.
 2. Execute steps in `replay.order`. Treat each step as a dispatch packet: use the `execute-dispatch-unit` skill if available, otherwise apply its boundary rules directly (edit only `allowed_scope`, run the packet's `verification`, report per-step status).
 3. `replay.mode: exact` additionally cherry-picks the step's `provenance.commits` instead of re-implementing; fall back to intent replay per step when a cherry-pick does not apply cleanly, and say so.
 4. Stop at the first `BLOCKED` or `FAILED` step and report; do not improvise past a broken step.
@@ -41,7 +39,7 @@ Recording is passive; this mode only sets up or checks it.
 
 ## Completion Criteria
 
-- Record: the log path was reported and a real record was observed, or the missing-hook fallback was stated.
+- Record: the log path was reported and a real record was observed; or recording is installed but unconfirmed pending a fresh prompt/restart and that was reported; or the missing-hook fallback was stated.
 - Distill: the recipe file exists, passed the step-5 validation, and every step reconstructed from memory carries `confidence: unverified`.
 - Replay: every executed step has a completion status backed by its packet verification, and unexecuted steps are listed with the blocking reason.
 
