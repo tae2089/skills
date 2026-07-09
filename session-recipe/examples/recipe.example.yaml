@@ -7,7 +7,7 @@ recipe:
     session_ids:
       - "9f4c2a1e-1234-4abc-9def-56789abcdef0"
     log_files:
-      - "~/.claude/session-recipe/logs/Users-me-work-api/9f4c2a1e-1234-4abc-9def-56789abcdef0.jsonl"
+      - "_workspace/session-logs/9f4c2a1e-1234-4abc-9def-56789abcdef0.jsonl"
     repo: "git@github.com:example/api.git"
     base_commit: "0a1b2c3"
   environment:
