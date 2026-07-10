@@ -30,6 +30,7 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 | [`execute-dispatch-unit`](execute-dispatch-unit/SKILL.md) | 명확히 할당된 단일 작업 단위를 범위 안에서 실행하고 결과를 보고할 때 |
 | [`flow-design`](flow-design/SKILL.md) | 새 로직의 분기, 부수효과, 순서 제약을 pseudocode나 Mermaid 다이어그램으로 고정하거나 기존 흐름을 문서화할 때 |
 | [`oss-study`](oss-study/SKILL.md) | 오픈소스 코드베이스를 Diátaxis 기반 4가지 질문 모드로 구조화해 학습할 때 |
+| [`planning-grill`](planning-grill/SKILL.md) | 모호한 계획을 분해·실행 전에 코드 근거로 검증해 범위·수용기준·실패 모드를 벼릴 때. `decompose-and-dispatch` 상류에서 실행 |
 | [`ready-code-review`](ready-code-review/SKILL.md) | 사람 또는 AI 리뷰어에게 줄 리뷰 컨텍스트, severity 정책, false-positive 억제 규칙, 리뷰 프롬프트를 준비할 때 |
 | [`session-recipe`](session-recipe/SKILL.md) | 세션 기록 설정을 확인하고, 완료된 작업을 재생 가능한 recipe(dispatch packet 시퀀스)로 증류하거나, recipe.yaml을 검증·재생할 때. 세션 기록 자체는 저장소 밖의 `session-recorder` hook 도구가 담당(설치는 그 README 참고) |
 | [`writing-great-skills`](writing-great-skills/SKILL.md) | `SKILL.md` 작성, 스킬 리뷰, 런타임 포팅, 트리거 문구, 점진적 공개 구조를 다듬을 때 |
@@ -63,6 +64,7 @@ Apply these when their trigger conditions are met:
 | `diagnosing-bugs` | Debugging bugs, regressions, flaky behavior, or failing tests. |
 | `flow-design` | Pseudocode, logic/flow plans, diagrams, or new logic with branches, side effects, resource lifecycles, or ordering constraints. |
 | `codebase-design` | Designing module boundaries, refactoring, or shaping interfaces. |
+| `planning-grill` | Sharpening a fuzzy plan (scope, acceptance criteria, failure modes) before decomposition or execution. |
 | `decompose-and-dispatch` | Planning multi-step or multi-agent work. |
 | `execute-dispatch-unit` | Executing one assigned bounded dispatch unit with explicit scope, dependencies, and verification. |
 | `domain-modeling` | Aligning terminology or doing domain modeling. |
