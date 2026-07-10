@@ -106,6 +106,17 @@ Stop and return `BLOCKED` when:
 
 When blocked, do not guess. Return the smallest question or missing input that would unblock the unit.
 
+## Ledger Checkpoints (only when the packet carries ledger coordinates)
+
+When the handoff includes `RUN_ID`, `TASK_ID`, and `AGENT` for the `agent-team` CLI, mirror the unit lifecycle in that ledger; when it does not, skip this section entirely.
+
+- Before starting: run `agent-team sync check --agent AGENT --run RUN_ID --task TASK_ID` and resolve blocking issues (unread messages, incomplete dependencies) per its output, then `agent-team task start`.
+- Map the final status: `DONE` → `task complete --evidence ... --artifact ...`; `BLOCKED` → `task block` with the blocker; `FAILED` → `task fail` with the reason. For `PARTIAL`, leave the task non-terminal and state why in the completion report.
+- The evidence text must contain the exact verification command you ran and its observed result — not a paraphrase. The artifact is your completion report file under `_workspace/RUN_ID/`.
+- A rejected transition (`invalid_task_state`, missing evidence) is a signal to fix the gap, not to `--force`; `--force` requires an explicit orchestrator approval message in your inbox.
+
+Command details live with the CLI's own bundled skills and `--help`; they take precedence over the summaries here.
+
 ## Completion Report
 
 Return exactly one completion report at the end.

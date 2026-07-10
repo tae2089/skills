@@ -42,6 +42,19 @@ Use these portable capability classes:
 
 If the runtime has named agents, map each capability to the closest available named executor. If no delegation mechanism exists, assign the capability to the main agent and mark delegation as unavailable.
 
+While building the inventory, also check whether the `agent-team` CLI is runnable — it enables the durable ledger below.
+
+## Durable Ledger (optional, requires the `agent-team` CLI)
+
+When the `agent-team` CLI is available and delegation is allowed, register the dispatch plan in its out-of-process ledger so completion claims are gated and executor death leaves evidence:
+
+- Create one run for the plan (`agent-team run create`) and one task per work unit (`agent-team task create`, with the unit's packet as the task contract). Record the run id and each task id in the dispatch plan.
+- Every handoff prompt must carry the unit's ledger coordinates: `RUN_ID`, `TASK_ID`, `AGENT`, the artifact root `_workspace/RUN_ID/`, and the orchestrator's recipient name for messages. Executors mirror their lifecycle per the `execute-dispatch-unit` skill's ledger rules.
+- The orchestrator monitors with `run status`/`task list`, and detects abandoned units with `task stale --older-than <duration>`. Before reassigning or retrying a stale unit, record vanish evidence: the unit id, its last ledger event, and the current git state of its `allowed_scope` classified as clean, dirty, or unknown.
+- Close the run (`run close`) only after every task is terminal; the ledger rejects completion without evidence and an artifact path — treat a rejection as a real gap, not an obstacle to force past.
+
+Command details live with the CLI's own bundled skills and `--help`; they take precedence over the summaries here. When the CLI is absent, proceed exactly as before and note in the dispatch plan that no ledger is available (no completion gating, no stale detection).
+
 ## Reference Files
 
 Load the relevant file when you reach that step. Do not load all of them up front.
