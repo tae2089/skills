@@ -1,15 +1,15 @@
 ---
 name: session-recipe
-description: Set up and verify ground-truth session recording, distill a finished session into a replayable recipe of dispatch packets, and replay a saved recipe step by step. Use when the user asks to record a session, turn completed work into a recipe, replay a recipe.yaml, or set up session-recording hooks.
+description: Set up and verify ground-truth session recording, distill a finished session into a replayable recipe of dispatch packets, and replay a saved recipe step by step. Use when the user asks to record a session, turn completed work into a recipe, replay a recipe.yaml, validate a recipe file, or set up session-recording hooks.
 ---
 
 # Session Recipe
 
-Turn a real working session into a replayable recipe. A recipe is an ordered list of dispatch packets — the packet format `execute-dispatch-unit` consumes, i.e. the executable form of a `decompose-and-dispatch` work unit — where each packet carries a `provenance` block of evidence from the session that originally produced it.
+Turn a real working session into a replayable recipe. A recipe is an ordered list of dispatch packets — the packet format `execute-dispatch-unit` consumes, i.e. the executable form of a `decompose-and-dispatch` work unit — where each packet carries a `provenance` block: a receipt of evidence from the session that originally produced it.
 
-The pipeline is: prompt → recorded actions → touched files → checkpoints → verification → recipe. Recording captures ground truth, distillation compresses it into intent, replay re-executes the intent.
+The pipeline is: prompt → recorded actions → touched files → checkpoints → validation → recipe. Recording captures ground truth, distillation compresses it into intent plus receipts, replay re-executes the intent. The receipt discipline throughout: a claim without a pointer to re-checkable evidence is `unverified`, and evidence is valid only for the state it was captured against.
 
-Pick exactly one mode per invocation.
+Pick exactly one mode per invocation. A validation-only request (check an existing recipe file without replaying it) is not a mode: run `scripts/validate-recipe.py <recipe.yaml>` and report its findings.
 
 ## Mode: Record
 
@@ -23,29 +23,37 @@ Recording is passive; this mode only sets up or checks it.
 
 1. Fix the recipe scope: which session(s) and which task. Ask only if the current session does not identify it.
 2. Collect evidence in the priority order defined in `references/distillation.md` (higher wins on conflict). To locate action logs: `_workspace/session-logs/<session-id>.jsonl` at the repo root (all of a session's in-repo work lands in one file). Sessions in non-repo directories, and sessions recorded before the project-local layout, live under the recorder README's fallback and legacy roots — glob `<root>/*/<session-id>.jsonl` there and merge by session id, confirming `prompt` records match the work being distilled.
-3. Group log events into work units and derive packet fields per `references/distillation.md`.
-4. Write the recipe per `references/recipe-format.md` to `_workspace/<task-name>/recipe.yaml`, or to a tracked path the user names.
-5. Validate before finishing: every step has every packet field listed in `references/recipe-format.md` (`unit_id` through `return_contract`) plus `provenance`; `dependencies` reference earlier steps only; `replay.order` covers every step id; no provenance field contains a secret value.
+3. Pin the ground truth: hash every log file that will be cited and record `{path, sha256}` in `source.log_files`, per `references/distillation.md`.
+4. Group log events into work units — keeping each group's log line ranges for `log_refs` — and derive packet fields and the provenance receipt per `references/distillation.md`.
+5. Write the recipe per `references/recipe-format.md` to `_workspace/<task-name>/recipe.yaml`, or to a tracked path the user names.
+6. Validate before finishing: run `scripts/validate-recipe.py <recipe.yaml> --check-integrity --root <repo-root>` (via `uv run` or any Python with PyYAML) — the logs just hashed are still on disk, so this also catches line ranges pointing past a file's end. Fix every reported error; treat its secret warnings as failures until re-scanned. Where the script cannot run, check the same contract by hand:
+   - Every step has every packet field listed in `references/recipe-format.md` (`unit_id` through `return_contract`) plus `provenance` with a complete `validation` block (`command`, `commit`, `result`).
+   - Every `confidence: verified` step has `log_refs` pointing into a hashed `source.log_files` entry; every step reconstructed from memory is `unverified`.
+   - `dependencies` reference earlier steps only; `replay.order` covers every step id.
+   - No provenance field contains a secret value.
 
 ## Mode: Replay
 
 1. Parse the recipe and check preconditions:
+   - Schema and integrity: run `scripts/validate-recipe.py <recipe.yaml> --check-integrity --root <repo-root>`. Exit 1 (schema errors) blocks replay. Exit 2 means the ground truth changed since distillation — never a block (exact-mode evidence lives in git commits, not logs), but report it and treat every `log_refs` entry into the mismatched file — and the `verified` confidence resting on those refs — as downgraded to `unverified` for this replay. Where the script cannot run, do the same by hand: re-hash each `source.log_files` entry still on disk and compare to its recorded `sha256`.
    - `environment`: confirm each entry with the cheapest mechanical probe (version command, `printenv <NAME>`, context check); an entry that cannot be mechanically checked is reported as unverified, not assumed satisfied. An unsatisfied entry blocks replay — report it and stop unless the user explicitly accepts proceeding without it.
    - Drift: run `git diff --stat <base_commit>..HEAD` passing each step's `allowed_scope` patterns as git pathspecs (`-- <pattern>`). Report drift; drift alone never blocks replay and never changes `replay.mode` — heavy drift inside a step's scope just predicts that an `exact` cherry-pick will fall back per step 3.
 2. Execute steps in `replay.order`. Treat each step as a dispatch packet: use the `execute-dispatch-unit` skill if available, otherwise apply its boundary rules directly (edit only `allowed_scope`, run the packet's `verification`, report per-step status).
 3. `replay.mode: exact` additionally cherry-picks the step's `provenance.commits` instead of re-implementing; fall back to intent replay per step when a cherry-pick does not apply cleanly, and say so.
-4. Stop at the first `BLOCKED` or `FAILED` step and report; do not improvise past a broken step.
-5. Finish with a per-step status table (step id, status, verification result) plus any deviations from the original provenance.
+4. Freshness: a step is complete only when its packet `verification` passes against the current state, in every mode — a clean cherry-pick is not completion, and the original `provenance.validation.result` is evidence about `validation.commit` only, never about this replay.
+5. Stop at the first `BLOCKED` or `FAILED` step and report; do not improvise past a broken step.
+6. Finish with a per-step status table (step id, status, verification result) plus any deviations from the original provenance, including any integrity downgrades from step 1.
 
 ## Completion Criteria
 
 - Record: the log path was reported and a real record was observed; or recording is installed but unconfirmed pending a fresh prompt/restart and that was reported; or the missing-hook fallback was stated.
-- Distill: the recipe file exists, passed the step-5 validation, and every step reconstructed from memory carries `confidence: unverified`.
-- Replay: every executed step has a completion status backed by its packet verification, and unexecuted steps are listed with the blocking reason.
+- Distill: the recipe file exists, passed the step-6 validation, and every step reconstructed from memory carries `confidence: unverified`.
+- Replay: every executed step has a completion status backed by its packet verification run in this replay, and unexecuted steps are listed with the blocking reason.
 
 ## Reference Files
 
-- `references/recipe-format.md` — recipe YAML schema and field semantics.
-- `references/distillation.md` — event grouping, packet-field derivation, checkpoint mapping, honesty rules.
+- `references/recipe-format.md` — recipe YAML schema, receipt semantics, freshness rules.
+- `references/distillation.md` — event grouping, packet-field and receipt derivation, checkpoint mapping, honesty rules.
 - `examples/recipe.example.yaml` — a small two-step recipe.
+- `scripts/validate-recipe.py` — deterministic recipe validation: schema, evidence gates, order/dependency consistency, and (with `--check-integrity`) log-hash and line-range checks.
 - `session-recorder` README (managed outside this repository, alongside the hook script the host's hook config invokes) — the standalone recorder this skill consumes: record-format contract, prerequisites, per-host installation, troubleshooting.

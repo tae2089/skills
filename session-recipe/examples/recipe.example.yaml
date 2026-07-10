@@ -7,7 +7,8 @@ recipe:
     session_ids:
       - "9f4c2a1e-1234-4abc-9def-56789abcdef0"
     log_files:
-      - "_workspace/session-logs/9f4c2a1e-1234-4abc-9def-56789abcdef0.jsonl"
+      - path: "_workspace/session-logs/9f4c2a1e-1234-4abc-9def-56789abcdef0.jsonl"
+        sha256: "b5bbf58ee2d1a1c53d8a2f2b0f8f3d3e9a7c6b5a4d3c2b1a0f9e8d7c6b5a4d3c"
     repo: "git@github.com:example/api.git"
     base_commit: "0a1b2c3"
   environment:
@@ -41,7 +42,12 @@ steps:
         - "go test ./src/api/projects/..."
       commits:
         - "4d5e6f7"
-      verification_evidence: "go test pass: 12 ok, includes new TestCreateMissingSlug"
+      log_refs:
+        - "9f4c2a1e-1234-4abc-9def-56789abcdef0.jsonl#L1-L37"
+      validation:
+        command: "go test ./src/api/projects/..."
+        commit: "4d5e6f7"
+        result: "pass: 12 ok, includes new TestCreateMissingSlug"
       confidence: verified
 
   - unit_id: R2
@@ -65,7 +71,12 @@ steps:
       commands: []
       commits:
         - "8a9b0c1"
-      verification_evidence: "not verified in original session"
+      log_refs:
+        - "9f4c2a1e-1234-4abc-9def-56789abcdef0.jsonl#L38-L52"
+      validation:
+        command: null
+        commit: null
+        result: "not verified in original session"
       confidence: verified
 
 replay:
