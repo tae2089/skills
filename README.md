@@ -88,6 +88,25 @@ Apply these when their trigger conditions are met:
 
 이 저장소 자체의 [AGENTS.md](AGENTS.md)도 살아 있는 예시지만, 스킬 저장소 특화 라우팅이므로 일반 프로젝트에는 위 템플릿이 맞습니다.
 
+## planning-grill 사용 예시
+
+`planning-grill`은 [`decompose-and-dispatch`](decompose-and-dispatch/SKILL.md)로 분해하기 전에 모호한 계획을 코드 근거로 벼리는 상류 단계입니다. 파이프라인 위치는 다음과 같습니다.
+
+```text
+[모호한 의도] → planning-grill → [선명한 계획 + 수용기준] → decompose-and-dispatch → execute-dispatch-unit
+```
+
+먼저 코드·문서를 조사해 저장소가 답할 수 있는 것은 묻지 않고, 남은 결정 중 범위·소유자·작업 순서·수용기준·안전 경계를 바꾸는 것만 blocking 질문으로 던집니다. 질문은 한 턴에 하나, 4줄 Probe Format으로 보냅니다. 예를 들어 "공개 API에 rate limiting 추가"라는 모호한 요청은 이렇게 좁힙니다.
+
+```md
+Current understanding: add rate limiting to the public API without breaking existing clients.
+Blocked decision: limit key — per-IP vs per-API-key changes middleware shape and the test matrix.
+Recommended answer: per-API-key with a per-IP fallback for unauthenticated routes (if wrong: authed clients sharing an IP throttle each other).
+Question: should the limit be keyed on the API key rather than the source IP?
+```
+
+`추천 답안`은 필수이고 틀렸을 때의 대가를 함께 적어, 사용자가 후속 질문 없이 비용을 보고 판단할 수 있게 합니다. 답이 나오면 결정을 `_workspace/<task-name>/`에 기록하고, 저장소·window·초과 응답 형식 같은 나머지 차원을 같은 방식으로 좁힙니다. 수용기준과 작업 경계가 워커가 증거로 완료할 만큼 구체화되면 `SHARPENED` 상태로 `decompose-and-dispatch`에 넘깁니다. blocking 결정이 남아 있으면 `BLOCKED_ON_USER`, 지배적 blocker가 다른 스킬(용어→`domain-modeling`, 구조→`codebase-design`, 흐름→`flow-design`)의 몫이면 `ROUTED`로 종료합니다.
+
 ## 유지보수 원칙
 
 변경 원칙:
