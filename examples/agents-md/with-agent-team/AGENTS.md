@@ -17,7 +17,7 @@ Follow the global prompt rules first. This file adds project-specific skill rout
 
 agent-team bundles its own skills; restrict them as follows so methodology stays single-sourced:
 
-- Use only agent-team's CLI operation skills (the `agent-team-*` prefix: run/task/message/inbox/sync/event commands). Never use its `recipe-*` and `persona-*` skills — the skills routed above own all methodology, even where an excluded skill looks like a closer match (worker checkpoints → `execute-dispatch-unit`'s Ledger Checkpoints; planning → `decompose-and-dispatch`; architecture → `codebase-design`; terminology → `domain-modeling`).
+- Use only agent-team's CLI operation skills (the `agent-team-*` prefix: run/task/message/inbox/sync/event commands), and load `agent-team-shared` before any command-specific one — it defines the state directory, global flags, and error handling they all assume. Never use its `recipe-*` and `persona-*` skills — the skills routed above own all methodology, even where an excluded skill looks like a closer match (worker checkpoints → `execute-dispatch-unit`'s Ledger Checkpoints; planning → `decompose-and-dispatch`; architecture → `codebase-design`; terminology → `domain-modeling`).
 - When executing an assigned unit, follow `execute-dispatch-unit` for scope, verification, and reporting; its Ledger Checkpoints section defines which `agent-team-*` calls to make.
 - When planning, `decompose-and-dispatch` owns decomposition and executor mapping, and its Durable Ledger section defines the run/task registration calls.
 - Do not route by the word "recipe": here it means a replayable session recipe (`session-recipe`, `recipe.yaml`); agent-team's `recipe-*` skills are excluded above.

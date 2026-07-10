@@ -115,7 +115,7 @@ When the handoff includes `RUN_ID`, `TASK_ID`, and `AGENT` for the `agent-team` 
 - The evidence text must contain the exact verification command you ran and its observed result — not a paraphrase. The artifact is your completion report file under `_workspace/RUN_ID/`.
 - A rejected transition (`invalid_task_state`, missing evidence) is a signal to fix the gap, not to `--force`; `--force` requires an explicit orchestrator approval message in your inbox.
 
-Command details live with the CLI's own bundled skills and `--help`; they take precedence over the summaries here.
+Before any ledger call, load the CLI's `agent-team-shared` skill if available — it defines the state directory, global flags, and error handling the command-specific `agent-team-*` skills assume. Command details live with those bundled skills and `--help`; they take precedence over the summaries here.
 
 ## Completion Report
 

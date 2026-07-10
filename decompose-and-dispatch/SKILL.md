@@ -53,7 +53,7 @@ When the `agent-team` CLI is available and delegation is allowed, register the d
 - The orchestrator monitors with `run status`/`task list`, and detects abandoned units with `task stale --older-than <duration>`. Before reassigning or retrying a stale unit, record vanish evidence: the unit id, its last ledger event, and the current git state of its `allowed_scope` classified as clean, dirty, or unknown.
 - Close the run (`run close`) only after every task is terminal; the ledger rejects completion without evidence and an artifact path — treat a rejection as a real gap, not an obstacle to force past.
 
-Command details live with the CLI's own bundled skills and `--help`; they take precedence over the summaries here. When the CLI is absent, proceed exactly as before and note in the dispatch plan that no ledger is available (no completion gating, no stale detection).
+Before any ledger call, load the CLI's `agent-team-shared` skill if available — it defines the state directory, global flags, and error handling the command-specific `agent-team-*` skills assume. Command details live with those bundled skills and `--help`; they take precedence over the summaries here. When the CLI is absent, proceed exactly as before and note in the dispatch plan that no ledger is available (no completion gating, no stale detection).
 
 ## Reference Files
 
