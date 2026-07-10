@@ -10,10 +10,13 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
   references/       # 상황별 세부 지침
   reference/        # 일부 스킬의 세부 지침
   examples/         # 재사용 가능한 예시
+  scripts/          # 결정적 검증·조작 스크립트
   agents/           # 런타임별 어댑터나 포팅 지침
 ```
 
 모든 스킬이 모든 하위 디렉터리를 갖지는 않습니다. `SKILL.md`가 직접 가리키는 파일만 온디맨드로 읽는 것을 원칙으로 합니다.
+
+스킬 디렉터리 밖의 최상위 [`examples/agents-md/`](examples/agents-md/)에는 이 스킬들을 설치한 다운스트림 프로젝트용 `AGENTS.md` 템플릿이 있습니다.
 
 ## 스킬 목록
 
@@ -28,7 +31,7 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 | [`flow-design`](flow-design/SKILL.md) | 새 로직의 분기, 부수효과, 순서 제약을 pseudocode나 Mermaid 다이어그램으로 고정하거나 기존 흐름을 문서화할 때 |
 | [`oss-study`](oss-study/SKILL.md) | 오픈소스 코드베이스를 Diátaxis 기반 4가지 질문 모드로 구조화해 학습할 때 |
 | [`ready-code-review`](ready-code-review/SKILL.md) | 사람 또는 AI 리뷰어에게 줄 리뷰 컨텍스트, severity 정책, false-positive 억제 규칙, 리뷰 프롬프트를 준비할 때 |
-| [`session-recipe`](session-recipe/SKILL.md) | 세션 기록 설정을 확인하고, 완료된 작업을 재생 가능한 recipe(dispatch packet 시퀀스)로 증류하거나 recipe.yaml을 재생할 때. 세션 기록 자체는 저장소 밖의 `session-recorder` hook 도구가 담당(설치는 그 README 참고) |
+| [`session-recipe`](session-recipe/SKILL.md) | 세션 기록 설정을 확인하고, 완료된 작업을 재생 가능한 recipe(dispatch packet 시퀀스)로 증류하거나, recipe.yaml을 검증·재생할 때. 세션 기록 자체는 저장소 밖의 `session-recorder` hook 도구가 담당(설치는 그 README 참고) |
 | [`writing-great-skills`](writing-great-skills/SKILL.md) | `SKILL.md` 작성, 스킬 리뷰, 런타임 포팅, 트리거 문구, 점진적 공개 구조를 다듬을 때 |
 
 ## 설치
@@ -68,7 +71,7 @@ Apply these when their trigger conditions are met:
 
 ### 프로젝트별 프롬프트
 
-프로젝트별 프롬프트에는 그 repo에서 어떤 스킬을 어떤 순서로 조합할지만 둡니다. 새 프로젝트에는 이 저장소의 [AGENTS.md](AGENTS.md)를 예시로 가져가고, 사용하는 런타임의 프로젝트 프롬프트 파일명에 맞게 옮겨 씁니다.
+프로젝트별 프롬프트에는 그 repo에서 어떤 스킬을 어떤 순서로 조합할지만 둡니다. 새 프로젝트에는 [`examples/agents-md/`](examples/agents-md/)의 템플릿을 복사해 시작하고, 사용하는 런타임의 프로젝트 프롬프트 파일명에 맞게 옮겨 씁니다.
 
 | 런타임 | 프로젝트 프롬프트 예시 |
 | --- | --- |
@@ -76,21 +79,12 @@ Apply these when their trigger conditions are met:
 | Claude | `<repo>/CLAUDE.md` |
 | Gemini | `<repo>/GEMINI.md` |
 
-```markdown
-# Project Guidance
+| 템플릿 | 시나리오 |
+| --- | --- |
+| [`standalone/`](examples/agents-md/standalone/AGENTS.md) | 이 저장소 스킬만 사용하는 프로젝트 |
+| [`with-agent-team/`](examples/agents-md/with-agent-team/AGENTS.md) | [`agent-team`](https://github.com/tae2089/agent-team) CLI를 작업 원장으로 함께 쓰는 프로젝트. agent-team 동봉 스킬 중 `agent-team-*` CLI 조작 스킬만 쓰고 `recipe-*`/`persona-*`는 배제하는 라우팅 포함 |
 
-Follow the global prompt rules first. This file only adds repository-specific routing.
-
-## Skill Routing
-
-- When creating or revising a `SKILL.md`, use `writing-great-skills` first.
-- When modifying skill instructions, references, examples, or scripts, use `coding-quality-guardrails`.
-- When a skill change introduces branching workflow, side effects, ordering constraints, or a new multi-step procedure, use `flow-design` before editing.
-- When a change reshapes skill boundaries, splits or merges references, changes reusable interfaces, or affects how multiple skills compose, use `codebase-design` before editing.
-- When debugging a broken skill workflow, failing validation, confusing invocation, or reported regression, use `diagnosing-bugs` before changing behavior.
-- When preparing a skill package for human or AI review, use `ready-code-review`.
-- For large cross-skill changes, use `decompose-and-dispatch`; execute clearly assigned units with `execute-dispatch-unit`.
-```
+이 저장소 자체의 [AGENTS.md](AGENTS.md)도 살아 있는 예시지만, 스킬 저장소 특화 라우팅이므로 일반 프로젝트에는 위 템플릿이 맞습니다.
 
 ## 유지보수 원칙
 

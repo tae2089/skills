@@ -19,3 +19,4 @@ Follow the global prompt rules first. This file only adds repository-specific ro
 - Keep examples, templates, scripts, and assets close to the skill that uses them.
 - Prefer evidence from existing skill files, references, README entries, and `_workspace/` task notes over assumptions.
 - For markdown-only changes, verify with structural inspection and targeted `rg` searches instead of inventing a test result.
+- `examples/agents-md/` holds copy-paste `AGENTS.md` templates for downstream projects that install these skills; this file governs only work inside this repository.
