@@ -64,10 +64,10 @@ Use this structure when calibrating only P0/P1/P2/P3, blocking/non-blocking, con
 - N/A: <reason>
 
 ### Severity Summary
-- P0: immediate production-breaking issue, data loss/corruption, critical security exposure, deploy-blocking outage.
-- P1: supported-path contract violation or high-confidence production/user-visible regression that must be fixed before merge.
-- P2: supported edge-path bug, bounded semantics issue, changed-behavior test gap, realistic operator-error risk, touched-code maintainability risk.
-- P3: polish, naming, local readability, small docs clarification, low-risk test cleanup.
+- P0: immediate production-breaking issue, data loss/corruption, critical security exposure, deploy-blocking outage, or irreversible destructive action without required confirmation.
+- P1: supported-path contract violation or high-confidence production/user-visible regression (availability, auth, data integrity, compatibility, or normal-path behavior) that must be fixed before merge.
+- P2: supported edge-path bug, bounded error-semantics issue, missing test for changed behavior, docs/runbook gap that can cause realistic operator error, or touched-code maintainability risk.
+- P3: polish, naming, local readability, small docs clarification, low-risk test cleanup, or non-blocking consistency issue.
 
 ### Confidence Policy
 - High: direct code, test, docs, log, or reproduced-output evidence.

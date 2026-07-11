@@ -20,11 +20,11 @@ Attach the evidence, intent, contracts, tests, and operational context a reviewe
 7. When creating a review context brief, follow the section structure in `references/context-brief.md`.
 8. When creating a PR/diff-specific context package, follow the section structure in `references/context-package.md`. Use that reference for the Non-Goal section structure and empty-value conventions.
 9. When creating a severity/suppression calibration note, use `references/severity-calibration.md`, `references/severity-rubric.md`, `references/finding-contract.md`, and `references/false-positive-patterns.md`. Do not force diff-specific sections to be filled with `N/A`.
-10. When creating reusable reviewer instructions, use `references/reusable-instruction.md` and `references/severity-rubric.md`. Do not force diff-specific sections to be filled with `N/A`.
+10. When creating reusable reviewer instructions, use `references/reusable-instruction.md` and `references/severity-rubric.md`, and include the reviewer investigation protocol from `references/investigation-protocol.md`. Do not force diff-specific sections to be filled with `N/A`.
 11. When judging P0/P1/P2/P3, blocking/non-blocking, confidence, or reviewer instructions, calibrate with `references/severity-rubric.md`.
 12. Define the required finding shape and rejection rules for future human or AI reviewers with `references/finding-contract.md`.
 13. Use `references/false-positive-patterns.md` to fill False-positive Suppression or Suppression Policy sections. If nothing applies, write `none known`. If repository access is available, check `.github/review-suppressions.md`, `docs/review-suppressions.md`, and relevant `AGENTS.md` sections, then merge repo-local suppressions with the global patterns.
-14. If the output will be pasted into another AI reviewer, use `references/reviewer-prompt-template.md` to create a reviewer-ready prompt. Do not rely on filenames or repository access; embed the context package or brief, severity summary, finding contract, rejection rules, relevant suppressions, and concrete change evidence directly in the prompt.
+14. If the output will be pasted into another AI reviewer, use `references/reviewer-prompt-template.md` to create a reviewer-ready prompt. Do not rely on filenames or repository access; embed the context package or brief, severity summary, finding contract, rejection rules, relevant suppressions, the reviewer investigation protocol from `references/investigation-protocol.md`, and concrete change evidence directly in the prompt.
 
 ## Completion Criteria
 
@@ -36,7 +36,7 @@ Attach the evidence, intent, contracts, tests, and operational context a reviewe
 - Context package mode: every required section in `references/context-package.md` is filled, or each missing section is marked `N/A` with a reason.
 - Severity/suppression calibration mode: every required section in `references/severity-calibration.md` is filled, or each missing section is marked `N/A` with a reason.
 - Reusable instruction mode: every required section in `references/reusable-instruction.md` is filled, or each missing section is marked `N/A` with a reason.
-- Reviewer prompt mode: the prompt is paste-ready and directly includes the context package or brief, severity summary, finding contract, rejection rules, false-positive suppression, and concrete change evidence. The Evidence placeholder may contain only a diff, patch, PR files, old/new snippet, or changed file excerpt; do not use repository-access placeholders.
+- Reviewer prompt mode: the prompt is paste-ready and directly includes the context package or brief, severity summary, finding contract, rejection rules, false-positive suppression, the reviewer investigation protocol (diff-anchored, narrow-before-read, batched navigation), and concrete change evidence. The Evidence placeholder may contain only a diff, patch, PR files, old/new snippet, or changed file excerpt; do not use repository-access placeholders.
 - For PR/diff-specific work, changed behavior, affected contracts, tests, and operational assumptions are identified from change evidence plus nearby context, or turned into targeted questions.
 - For reusable reviewer-instruction work, durable review invariants, repo conventions, operational contracts, severity policies, and suppressions are identified without a diff, or turned into targeted questions.
 - Every assumption that determines whether a finding exists is labeled and either verified or turned into a question.

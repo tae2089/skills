@@ -1,5 +1,10 @@
 # Severity Rubric
 
+This file is the canonical source for severity definitions. Short-form P0–P3 one-liners are mirrored
+verbatim in paste-ready outputs — `reviewer-prompt-template.md`, `severity-calibration.md`, and
+`reusable-instruction.md` — so those outputs stand alone without repository access. When you change a
+severity definition here, update every mirrored copy in the same edit.
+
 Use severity labels only when a finding has concrete evidence.
 
 ## P0
