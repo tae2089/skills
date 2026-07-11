@@ -43,6 +43,14 @@ Use this structure when creating AI reviewer instructions that apply repeatedly 
 - List reusable suppressions from `false-positive-patterns.md` and repo-local suppression files.
 - If none apply, write `none known`.
 
+### Investigation Protocol
+
+- State that the reviewer navigates as a reviewer, not a coding assistant: start from the diff,
+  narrow with grep/glob before reading, read only known line ranges, batch discovery, and stay
+  anchored to changed lines and their nearest evidence.
+- If the output will be pasted into an external reviewer, include these navigation directives
+  directly. Full protocol: `investigation-protocol.md`.
+
 ### Review Focus
 
 - List areas that repeatedly deserve deeper review.
@@ -81,14 +89,18 @@ Use this structure when creating AI reviewer instructions that apply repeatedly 
 - Treat items whose existence depends on unstated assumptions, low-confidence concerns, unsupported configurations, clear operator error, non-goals, false-positive suppressions, or style-only preferences as questions or non-blocking notes instead of findings.
 
 ### Severity Policy
-- P0: immediate production-breaking issue, data loss/corruption, critical security exposure, deploy-blocking outage.
-- P1: supported-path contract violation or high-confidence production/user-visible regression that must be fixed before merge.
-- P2: supported edge-path bug, bounded semantics issue, changed-behavior test gap, realistic operator-error risk, touched-code maintainability risk.
-- P3: polish, naming, local readability, small docs clarification, low-risk test cleanup.
+- P0: immediate production-breaking issue, data loss/corruption, critical security exposure, deploy-blocking outage, or irreversible destructive action without required confirmation.
+- P1: supported-path contract violation or high-confidence production/user-visible regression (availability, auth, data integrity, compatibility, or normal-path behavior) that must be fixed before merge.
+- P2: supported edge-path bug, bounded error-semantics issue, missing test for changed behavior, docs/runbook gap that can cause realistic operator error, or touched-code maintainability risk.
+- P3: polish, naming, local readability, small docs clarification, low-risk test cleanup, or non-blocking consistency issue.
 - Separate confidence from severity: high means direct evidence; medium means the finding exists based on evidence but one non-decisive detail remains; low means supported behavior or failure mode depends on an unstated assumption and should be a question.
 
 ### Suppression Policy
 - none known
+
+### Investigation Protocol
+- Review as a reviewer, not a coding assistant: start from the diff, narrow with grep/glob before
+  reading, read only known line ranges, batch discovery, and stay anchored to changed lines.
 
 ### Review Focus
 - N/A: <reason>

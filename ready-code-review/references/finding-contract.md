@@ -16,6 +16,11 @@ Each finding must include:
 
 ## Rejection Rules
 
+This is the canonical source for rejection rules. Paste-ready outputs restate them: in full in
+`reviewer-prompt-template.md`, and as a compressed summary in `severity-calibration.md` (Finding
+Rejection Rules) and `reusable-instruction.md` (Review Rejection Rules). When you add or change a rule
+here, update those restatements in the same edit so no rule is dropped from the summaries.
+
 Do not raise a finding when:
 
 - the issue's existence depends on an unstated assumption that can be answered with a question
