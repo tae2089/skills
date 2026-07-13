@@ -96,7 +96,7 @@ Apply these when their trigger conditions are met:
 [모호한 의도] → planning-grill → [선명한 계획 + 수용기준] → decompose-and-dispatch → execute-dispatch-unit
 ```
 
-먼저 코드·문서를 조사해 저장소가 답할 수 있는 것은 묻지 않고, 남은 결정 중 범위·소유자·작업 순서·수용기준·안전 경계를 바꾸는 것만 blocking 질문으로 던집니다. 질문은 한 턴에 하나, 4줄 Probe Format으로 보냅니다. 예를 들어 "공개 API에 rate limiting 추가"라는 모호한 요청은 이렇게 좁힙니다.
+먼저 코드·문서를 조사해 저장소가 답할 수 있는 것은 묻지 않고, 남은 결정 중 범위·소유자·작업 순서·수용기준·안전 경계를 바꾸는 것만 blocking 질문으로 던집니다. 질문은 한 턴에 하나, 4줄 Probe Format(필요할 때만 2-3개 선택지 목록을 덧붙임)으로 보냅니다. 예를 들어 "공개 API에 rate limiting 추가"라는 모호한 요청은 이렇게 좁힙니다.
 
 ```md
 Current understanding: add rate limiting to the public API without breaking existing clients.
@@ -119,3 +119,5 @@ Question: should the limit be keyed on the API key rather than the source IP?
 ## 출처
 
 `codebase-design`, `diagnosing-bugs`, `domain-modeling`, `writing-great-skills`는 Matt Pocock의 [`mattpocock/skills`](https://github.com/mattpocock/skills) commit `5d78bd0`를 기반으로 적용했습니다.
+
+`planning-grill`의 선택지 목록 규칙은 [`devbrother2024/skills`](https://github.com/devbrother2024/skills)의 `deep-interview` 스킬 commit `de4998a`에서 가져왔습니다.

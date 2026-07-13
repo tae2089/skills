@@ -22,7 +22,7 @@ Check the plan across these dimensions:
 - **Failure Modes**: likely ways the plan can fail, drift, or be misinterpreted.
 - **Handoff**: which skill or worker consumes the plan next.
 
-## Example Probe
+## Example Probes
 
 The Probe Format template and its rules live in SKILL.md (Question Discipline).
 A worked example:
@@ -34,9 +34,24 @@ Recommended answer: per-API-key with a per-IP fallback for unauthenticated route
 Question: should the limit be keyed on the API key rather than the source IP?
 ```
 
+A worked example with `Options` (recommended option listed first):
+
+```md
+Current understanding: migrate session storage off the legacy Redis cluster this quarter.
+Blocked decision: cutover strategy — big-bang vs dual-write changes rollback cost and ops load during migration.
+Recommended answer: dual-write with a staged read switch (if wrong: double-write overhead and a longer migration window for nothing).
+Question: which cutover strategy should the migration plan assume?
+Options:
+- dual-write with a staged read switch
+- big-bang cutover in a maintenance window
+- (free-form answer)
+```
+
 ## Decision Log Pattern
 
-Format for the decision recorded in Workflow step 5:
+Format for the decision recorded in Workflow step 5. In lightweight mode (no
+task state files), log resolved decisions inline in the response using the
+same format:
 
 ```markdown
 - Decision: limit keyed on API key, per-IP fallback for unauthenticated routes.
