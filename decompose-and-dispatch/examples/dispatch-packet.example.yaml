@@ -1,7 +1,26 @@
 unit_id: W3
 objective: "Add validation for missing project slug"
-capability: implementer
-executor_skill: execute-dispatch-unit
+required_executor_spec:
+  role: "You are an implementer bounded to the project API module. You make minimal code edits within scope; you do not redesign."
+  capability: implementer
+  tools:
+    - "file edit"
+    - "run targeted tests"
+  permissions:
+    file_access: write-scoped
+    network: none
+    execution: commands
+  context:
+    - "W1 discovery summary identifying the validation entrypoint"
+  verification: "targeted project API tests pass; completion report returned"
+resolution:
+  method: instantiated        # existing | instantiated | main-agent
+  executor: "ad-hoc subagent"
+  confidence: high
+  evidence:
+    - "no named implementer satisfies the spec; runtime spawns arbitrary-prompt subagents"
+  unsatisfied: []
+  needs_user_mapping: false
 allowed_scope:
   - "src/api/projects/*"
   - "tests/api/projects/*"
@@ -11,7 +30,7 @@ forbidden_scope:
 non_goals:
   - "Do not redesign project routing"
 dependencies:
-  - "W1 discovery summary identifies the validation entrypoint"
+  - "W1: discovery summary identifies the validation entrypoint"
 acceptance_criteria:
   - "Missing slug returns a typed validation error"
   - "Existing valid slug behavior remains unchanged"
@@ -19,10 +38,16 @@ verification:
   - "Run targeted project API tests if available"
 return_contract: completion_report
 handoff_prompt: |
-  Use $execute-dispatch-unit.
+  Role: You are an implementer bounded to the project API module. You make minimal code edits within scope; you do not redesign.
+  Permissions: file access write-scoped to src/api/projects/* and tests/api/projects/*; command execution allowed; no network.
+
+  Use the execute-dispatch-unit skill if available.
 
   Task W3: Add validation for missing project slug.
+  Inputs: W1 discovery summary identifying the validation entrypoint.
   Scope: edit only src/api/projects/* and tests under tests/api/projects/*.
   Non-goals: do not redesign project routing, database schema, or frontend UI.
   Ownership: other executors may be working elsewhere; do not revert unrelated changes.
+  Acceptance: missing slug returns a typed validation error; existing valid slug behavior unchanged.
   Expected output: completion report with changed files, summary, verification, blockers, and follow-ups.
+  Verification: run targeted project API tests if available; report the command and results.

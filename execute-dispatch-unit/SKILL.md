@@ -31,7 +31,10 @@ A good dispatch packet should include:
 ```yaml
 unit_id: W3
 objective: "Add validation for missing project slug"
-capability: implementer
+required_executor_spec:        # authored by decompose-and-dispatch; role + permissions may also arrive as a prompt preamble
+  capability: implementer
+  permissions:
+    file_access: write-scoped
 allowed_scope:
   - "src/api/projects/*"
   - "tests/api/projects/*"
@@ -155,4 +158,3 @@ Do not include long logs unless requested. Summarize logs and point to files or 
 ## Reference Files
 
 - `reference/example.md` — End-to-end worked example: receive a packet, confirm boundaries, do the work, verify, and return a completion report.
-- `agents/openai.yaml` — Codex app UI metadata (`display_name`, `short_description`, `default_prompt` using Codex's `$skill` syntax). Host-runtime configuration, not portable semantics.

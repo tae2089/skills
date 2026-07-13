@@ -32,22 +32,20 @@ parallel_groups:
 
 ## Delegation Rules
 
-Delegation is optional and runtime-dependent.
+Delegation is optional and runtime-dependent. Whether delegation is allowed at all is defined once in `SKILL.md` (Core Loop step 9); the rules below add per-unit conditions on top of that.
 
-Only delegate when all are true:
+Only delegate a unit when all are true:
 
-- The user explicitly asked for delegation, subagents, workers, parallel execution, or an execution plan that assigns work.
-- The runtime exposes a delegation mechanism.
+- Delegation is allowed (per the `SKILL.md` definition).
 - The work unit is concrete, self-contained, and materially advances the goal.
 - The executor's write scope is clear, or the task is read-only.
-- The handoff prompt is self-contained.
+- The handoff prompt is self-contained. For instantiated executors this includes the spec-derived preamble (role + permissions).
 
 Do not delegate when:
 
-- The runtime has no visible delegation mechanism.
-- The mapping confidence is low and the work is write-heavy or externally visible.
+- The resolution confidence is low and the work is write-heavy or externally visible (per the resolution ladder in `matching.md`, prefer instantiating over delegating to an uncertain named executor).
 - The task requires a single coherent edit across overlapping files.
 - Delegation would duplicate work already being done.
 - The work unit fails the quality gate.
 
-When delegation is not available, keep the executor as `main-agent` and still preserve the capability classification.
+When delegation is not available, keep the executor as `main-agent` and still preserve the required executor spec — it continues to drive scope, sequencing, and verification.
