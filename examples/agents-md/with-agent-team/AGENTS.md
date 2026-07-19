@@ -13,12 +13,13 @@ Follow the global prompt rules first. This file adds project-specific skill rout
 - For multi-step or multi-agent work, use `decompose-and-dispatch` to split the work into bounded units. Use `execute-dispatch-unit` only for a clearly assigned unit with scope, dependencies, and verification.
 - When preparing context for human or AI code review, use `ready-code-review`; do not use it to perform the review itself.
 - To record a session, distill completed work into a replayable recipe, or replay a `recipe.yaml`, use `session-recipe`.
+- After a non-trivial task, review cycle, bug fix, or debugging session is verified, use `compound-learning` to capture reusable learnings and maintain `docs/solutions/`.
 
 ## agent-team Routing
 
 agent-team bundles its own skills; restrict them as follows so methodology stays single-sourced:
 
-- Use only agent-team's CLI operation skills (the `agent-team-*` prefix: run/task/message/inbox/sync/event commands), and load `agent-team-shared` before any command-specific one — it defines the state directory, global flags, and error handling they all assume. Never use its `recipe-*` and `persona-*` skills — the skills routed above own all methodology, even where an excluded skill looks like a closer match (worker checkpoints → `execute-dispatch-unit`'s Ledger Checkpoints; plan sharpening / `recipe-agent-team-planning-grill` → `planning-grill`; decomposition → `decompose-and-dispatch`; architecture → `codebase-design`; terminology → `domain-modeling`).
+- Use only agent-team's CLI operation skills (the `agent-team-*` prefix: run/task/message/inbox/sync/event commands), and load `agent-team-shared` before any command-specific one — it defines the state directory, global flags, and error handling they all assume. Never use its `recipe-*` and `persona-*` skills — the skills routed above own all methodology, even where an excluded skill looks like a closer match (worker checkpoints → `execute-dispatch-unit`'s Ledger Checkpoints; plan sharpening / `recipe-agent-team-planning-grill` → `planning-grill`; decomposition → `decompose-and-dispatch`; architecture → `codebase-design`; terminology → `domain-modeling`; compound learning / `recipe-agent-team-compound-learning` → `compound-learning`).
 - When executing an assigned unit, follow `execute-dispatch-unit` for scope, verification, and reporting; its Ledger Checkpoints section defines which `agent-team-*` calls to make.
 - When planning, `decompose-and-dispatch` owns decomposition and executor resolution, and its Durable Ledger section defines the run/task registration calls.
 - Do not route by the word "recipe": here it means a replayable session recipe (`session-recipe`, `recipe.yaml`); agent-team's `recipe-*` skills are excluded above.

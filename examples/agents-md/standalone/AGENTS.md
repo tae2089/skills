@@ -13,6 +13,7 @@ Follow the global prompt rules first. This file only adds project-specific skill
 - For multi-step or multi-agent work, use `decompose-and-dispatch` to split the work into bounded units. Use `execute-dispatch-unit` only for a clearly assigned unit with scope, dependencies, and verification.
 - When preparing context for human or AI code review, use `ready-code-review`; do not use it to perform the review itself.
 - To record a session, distill completed work into a replayable recipe, or replay a `recipe.yaml`, use `session-recipe`.
+- After a non-trivial task, review cycle, bug fix, or debugging session is verified, use `compound-learning` to capture reusable learnings and maintain `docs/solutions/`.
 
 ## Project Notes
 
