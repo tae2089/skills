@@ -1,6 +1,6 @@
 ---
 name: flow-design
-description: Structure designs as pseudocode and Mermaid diagrams to expose implementation failure points before code exists and document existing flows after code exists. Use when the user asks for pseudocode or a logic/flow plan, a design diagram, an existing-code diagram (sequence, flowchart, state, component, ER), or immediately before implementing new logic with branches or side effects.
+description: Design or document non-trivial control flow with pseudocode and optional Mermaid diagrams. Use when the user asks for pseudocode or flow diagrams, when tracing an existing flow, or before implementing logic with interacting branches, multiple side effects, lifecycle, ordering, or concurrency risk. Skip local guard clauses, one-line edits, config-only changes, and established local patterns.
 ---
 
 # Flow Design
@@ -33,13 +33,13 @@ Use this when the user asks for an existing-code diagram, or when the design pat
 
 ## Diagram Selection
 
-| Question Shape | Diagram | Reference |
-|---|---|---|
-| Who calls whom, in what order, over time | Sequence | `references/types/sequence.md` |
-| Which branches exist and where each path goes | Flowchart | `references/types/flowchart.md` |
-| How an entity's state changes through its lifecycle | State | `references/types/state.md` |
+| Question Shape                                                | Diagram   | Reference                       |
+| ------------------------------------------------------------- | --------- | ------------------------------- |
+| Who calls whom, in what order, over time                      | Sequence  | `references/types/sequence.md`  |
+| Which branches exist and where each path goes                 | Flowchart | `references/types/flowchart.md` |
+| How an entity's state changes through its lifecycle           | State     | `references/types/state.md`     |
 | Which modules depend on which others, and where the seams are | Component | `references/types/component.md` |
-| How persisted data relates | ER | `references/types/er.md` |
+| How persisted data relates                                    | ER        | `references/types/er.md`        |
 
 Common rules for all diagram types:
 

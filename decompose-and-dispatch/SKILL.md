@@ -1,11 +1,11 @@
 ---
 name: decompose-and-dispatch
-description: Break a complex goal into atomic work units, author a required executor spec per unit, and resolve each spec against the runtime's actual executors into an execution-ready dispatch plan with dependencies and parallelism. Use when planning multi-step work, coordinating multiple agents or workers, adapting a plan across coding-agent runtimes, or deciding which agent or tool owns each task.
+description: Decompose a complex goal into independently executable work units and resolve each unit to an executor. Use when the user requests delegated, parallel, or multi-agent work, or when multiple units require dependency, ownership, or capability coordination. Skip ordinary sequential implementation by one agent.
 ---
 
 # Decompose And Dispatch
 
-Use this skill to turn a goal into the smallest practical work units, state what executor each unit *needs*, and only then resolve those needs against whatever the current runtime actually offers.
+Use this skill to turn a goal into the smallest practical work units, state what executor each unit _needs_, and only then resolve those needs against whatever the current runtime actually offers.
 
 The skill is spec-first: the required executor spec is a first-class artifact authored from the work unit's needs, independent of which agents happen to exist. Matching against existing executors is a secondary check — a spec-satisfaction test, not the starting point.
 
@@ -39,16 +39,16 @@ The full schema lives in `reference/work-units.md`.
 
 Portable capability classes (shorthand inside the spec — the spec adds the precision the class alone lacks):
 
-| Capability | Use For |
-| --- | --- |
-| `orchestrator` | Plan control, sequencing, decisions, conflict resolution, integration, final synthesis |
-| `researcher` | Read-only code search, documentation research, source discovery, context gathering |
-| `implementer` | Code edits, refactors, artifact creation, migrations, fixes |
-| `tester` | Reproduction, command execution, test runs, verification evidence |
-| `reviewer` | Correctness review, risk review, regression checks, missing-test analysis |
-| `specialist` | Domain-specific reasoning such as security, frontend, data, platform, product, design, or framework expertise |
-| `operator` | Browser, app, cloud, MCP, connector, CLI, deployment, or external-system operation |
-| `documenter` | Specs, plans, changelogs, handoff notes, runbooks, user-facing docs |
+| Capability     | Use For                                                                                                       |
+| -------------- | ------------------------------------------------------------------------------------------------------------- |
+| `orchestrator` | Plan control, sequencing, decisions, conflict resolution, integration, final synthesis                        |
+| `researcher`   | Read-only code search, documentation research, source discovery, context gathering                            |
+| `implementer`  | Code edits, refactors, artifact creation, migrations, fixes                                                   |
+| `tester`       | Reproduction, command execution, test runs, verification evidence                                             |
+| `reviewer`     | Correctness review, risk review, regression checks, missing-test analysis                                     |
+| `specialist`   | Domain-specific reasoning such as security, frontend, data, platform, product, design, or framework expertise |
+| `operator`     | Browser, app, cloud, MCP, connector, CLI, deployment, or external-system operation                            |
+| `documenter`   | Specs, plans, changelogs, handoff notes, runbooks, user-facing docs                                           |
 
 ## Resolution Ladder
 
