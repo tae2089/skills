@@ -31,6 +31,7 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 | [`execute-dispatch-unit`](execute-dispatch-unit/SKILL.md) | 명확히 할당된 단일 작업 단위를 범위 안에서 실행하고 결과를 보고할 때 |
 | [`flow-design`](flow-design/SKILL.md) | 새 로직의 분기, 부수효과, 순서 제약을 pseudocode나 Mermaid 다이어그램으로 고정하거나 기존 흐름을 문서화할 때 |
 | [`oss-study`](oss-study/SKILL.md) | 오픈소스 코드베이스를 Diátaxis 기반 4가지 질문 모드로 구조화해 학습할 때 |
+| [`overengineering-review`](overengineering-review/SKILL.md) | 새 추상화가 후속 회귀를 3건 이상 유발하거나, 테스트 통과 후 커밋 전 영속 필드·인터페이스 메서드·라이프사이클 상태·호환성 분기·과한 테스트 매트릭스가 추가됐을 때 불필요한 복잡도를 검토할 때. 단순화가 명시적으로 요청되지 않는 한 read-only |
 | [`planning-grill`](planning-grill/SKILL.md) | 모호한 계획을 분해·실행 전에 코드 근거로 검증해 범위·수용기준·실패 모드를 벼릴 때. `decompose-and-dispatch` 상류에서 실행 |
 | [`ready-code-review`](ready-code-review/SKILL.md) | 사람 또는 AI 리뷰어에게 줄 리뷰 컨텍스트, severity 정책, false-positive 억제 규칙, 리뷰 프롬프트를 준비할 때 |
 | [`session-recipe`](session-recipe/SKILL.md) | 세션 기록 설정을 확인하고, 완료된 작업을 재생 가능한 recipe(dispatch packet 시퀀스)로 증류하거나, recipe.yaml을 검증·재생할 때. 세션 기록 자체는 저장소 밖의 `session-recorder` hook 도구가 담당(설치는 그 README 참고) |
@@ -70,6 +71,7 @@ Apply these when their trigger conditions are met:
 | `execute-dispatch-unit` | Executing one assigned bounded dispatch unit with explicit scope, dependencies, and verification. |
 | `domain-modeling` | Aligning terminology or doing domain modeling. |
 | `ready-code-review` | Preparing review context, reviewer instructions, prompts, severity calibration, or false-positive suppression before a human or AI review. |
+| `overengineering-review` | Reviewing a change for unnecessary abstractions, duplicated policy, or scope expansion — during implementation after a new abstraction causes 3+ follow-up regressions, or after tests pass and before commit when persisted fields, interface methods, lifecycle states, or compatibility branches were added. |
 | `compound-learning` | Capturing reusable learnings into the task workspace and `docs/solutions/` after a non-trivial task, review, bug fix, or debugging session is verified. |
 ```
 

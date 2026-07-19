@@ -11,6 +11,7 @@ Follow the global prompt rules first. This file only adds repository-specific ro
 - When one change triggers both `flow-design` and `codebase-design`, run both: draft the flow with `flow-design` first, then use `codebase-design` to shape the interfaces the flow's operations require.
 - When debugging a broken skill workflow, failing validation, confusing invocation, or reported regression, use `diagnosing-bugs` before changing behavior.
 - When preparing a skill package for human or AI review, use `ready-code-review` to produce context, non-goals, severity policy, and false-positive suppressions before asking for findings.
+- After a skill change adds a new abstraction that causes 3+ follow-up regressions, or after its tests pass and before commit when it adds persisted fields, interface methods, lifecycle states, or compatibility branches, use `overengineering-review` to check for unnecessary complexity.
 - When the skill change is fuzzy, high-impact, or lacks testable acceptance criteria, use `planning-grill` to sharpen scope, acceptance, and failure modes before decomposing it.
 - For large cross-skill changes, use `decompose-and-dispatch` to split the work into bounded units. Use `execute-dispatch-unit` only for a clearly assigned unit with scope, dependencies, and verification.
 - After a non-trivial skill change, review cycle, or debugging session is verified, use `compound-learning` to capture reusable learnings.
