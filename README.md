@@ -32,7 +32,7 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 | [`flow-design`](flow-design/SKILL.md) | 새 로직의 분기, 부수효과, 순서 제약을 pseudocode나 Mermaid 다이어그램으로 고정하거나 기존 흐름을 문서화할 때 |
 | [`oss-study`](oss-study/SKILL.md) | 오픈소스 코드베이스를 Diátaxis 기반 4가지 질문 모드로 구조화해 학습할 때 |
 | [`overengineering-review`](overengineering-review/SKILL.md) | 새 추상화가 후속 회귀를 3건 이상 유발하거나, 테스트 통과 후 커밋 전 영속 필드·인터페이스 메서드·라이프사이클 상태·호환성 분기·과한 테스트 매트릭스가 추가됐을 때 불필요한 복잡도를 검토할 때. 단순화가 명시적으로 요청되지 않는 한 read-only |
-| [`planning-grill`](planning-grill/SKILL.md) | 모호한 계획을 분해·실행 전에 코드 근거로 검증해 범위·수용기준·실패 모드를 벼릴 때. `decompose-and-dispatch` 상류에서 실행 |
+| [`planning-grill`](planning-grill/SKILL.md) | 모호한 계획을 실행 전에 코드 근거로 검증해 범위·수용기준·실패 모드를 벼리거나 `task.md` Seed로 고정할 때. 위임·병렬·조정이 필요할 때만 `decompose-and-dispatch` 앞에서 실행 |
 | [`ready-code-review`](ready-code-review/SKILL.md) | 사람 또는 AI 리뷰어에게 줄 리뷰 컨텍스트, severity 정책, false-positive 억제 규칙, 리뷰 프롬프트를 준비할 때 |
 | [`session-recipe`](session-recipe/SKILL.md) | 세션 기록 설정을 확인하고, 완료된 작업을 재생 가능한 recipe(dispatch packet 시퀀스)로 증류하거나, recipe.yaml을 검증·재생할 때. 세션 기록 자체는 저장소 밖의 `session-recorder` hook 도구가 담당(설치는 그 README 참고) |
 | [`writing-great-skills`](writing-great-skills/SKILL.md) | `SKILL.md` 작성, 스킬 리뷰, 런타임 포팅, 트리거 문구, 점진적 공개 구조를 다듬을 때 |
@@ -66,7 +66,7 @@ Apply these when their trigger conditions are met:
 | `diagnosing-bugs` | Debugging bugs, regressions, flaky behavior, or failing tests. |
 | `flow-design` | Pseudocode, logic/flow plans, diagrams, or new logic with branches, side effects, resource lifecycles, or ordering constraints. |
 | `codebase-design` | Designing module boundaries, refactoring, or shaping interfaces. |
-| `planning-grill` | Sharpening a fuzzy plan (scope, acceptance criteria, failure modes) before decomposition or execution. |
+| `planning-grill` | Sharpening fuzzy intent or creating a durable `task.md` Seed before execution; precedes decomposition only for delegated or coordinated work. |
 | `decompose-and-dispatch` | Planning multi-step or multi-agent work. |
 | `execute-dispatch-unit` | Executing one assigned bounded dispatch unit with explicit scope, dependencies, and verification. |
 | `domain-modeling` | Aligning terminology or doing domain modeling. |
@@ -94,10 +94,12 @@ Apply these when their trigger conditions are met:
 
 ## planning-grill 사용 예시
 
-`planning-grill`은 [`decompose-and-dispatch`](decompose-and-dispatch/SKILL.md)로 분해하기 전에 모호한 계획을 코드 근거로 벼리는 상류 단계입니다. 파이프라인 위치는 다음과 같습니다.
+`planning-grill`은 실행 전에 모호한 계획을 코드 근거로 벼리는 상류 단계입니다. 결과는 경량 인라인 계획 또는 durable `task.md` Seed이며, 다음 단계는 각 스킬의 트리거로 결정합니다.
 
 ```text
-[모호한 의도] → planning-grill → [선명한 계획 + 수용기준] → decompose-and-dispatch → execute-dispatch-unit
+[모호한 의도] → planning-grill → [SHARPENED inline plan | task.md Seed]
+                                      ├─ bounded sequential execution
+                                      └─ decompose-and-dispatch (delegated/coordinated)
 ```
 
 먼저 코드·문서를 조사해 저장소가 답할 수 있는 것은 묻지 않고, 남은 결정 중 범위·소유자·작업 순서·수용기준·안전 경계를 바꾸는 것만 blocking 질문으로 던집니다. 질문은 한 턴에 하나, 4줄 Probe Format(필요할 때만 2-3개 선택지 목록을 덧붙임)으로 보냅니다. 예를 들어 "공개 API에 rate limiting 추가"라는 모호한 요청은 이렇게 좁힙니다.
@@ -109,7 +111,7 @@ Recommended answer: per-API-key with a per-IP fallback for unauthenticated route
 Question: should the limit be keyed on the API key rather than the source IP?
 ```
 
-`추천 답안`은 필수이고 틀렸을 때의 대가를 함께 적어, 사용자가 후속 질문 없이 비용을 보고 판단할 수 있게 합니다. 답이 나오면 결정을 `_workspace/<task-name>/`에 기록하고, 저장소·window·초과 응답 형식 같은 나머지 차원을 같은 방식으로 좁힙니다. 수용기준과 작업 경계가 워커가 증거로 완료할 만큼 구체화되면 `SHARPENED` 상태로 `decompose-and-dispatch`에 넘깁니다. blocking 결정이 남아 있으면 `BLOCKED_ON_USER`, 지배적 blocker가 다른 스킬(용어→`domain-modeling`, 구조→`codebase-design`, 흐름→`flow-design`)의 몫이면 `ROUTED`로 종료합니다.
+`추천 답안`은 필수이고 틀렸을 때의 대가를 함께 적어, 사용자가 후속 질문 없이 비용을 보고 판단할 수 있게 합니다. 계획 대화만 필요하면 `LIGHTWEIGHT` 모드로 인라인 결과를 내고, 실행·후속 작업이 있으면 `DURABLE` 모드에서 `_workspace/<task-name>/task.md`를 단일 Seed로 사용해 결과·범위·비목표·동작 시나리오·제약과 불변조건·확정 결정·`Worker Latitude`·검증 항목을 누적합니다. 종료 시 `Artifact`, `Status`, `Next`를 명시하며, `Artifact`가 `inline-only`인지 `task.md` 경로인지가 durable 여부의 단일 근거입니다. 원 대화가 없는 워커도 행동을 바꾸는 추측 없이 구현과 검증을 시작할 수 있을 때만 durable Seed를 `SHARPENED`로 표시합니다. blocking 결정이 남아 있으면 `BLOCKED_ON_USER`, 지배적 blocker가 다른 스킬(용어→`domain-modeling`, 구조→`codebase-design`, 흐름→`flow-design`)의 몫이면 `ROUTED`, 필수 근거·권한·Seed 생성 경로가 없으면 `BLOCKED`로 종료합니다. `decompose-and-dispatch`는 위임·병렬·의존성/소유권 조정이 필요할 때만 다음 소비자가 됩니다. LLM이 매긴 모호성 점수는 이 handoff의 기계적 증거로 취급하지 않습니다.
 
 ## 유지보수 원칙
 
@@ -125,5 +127,7 @@ Question: should the limit be keyed on the API key rather than the source IP?
 `codebase-design`, `diagnosing-bugs`, `domain-modeling`, `writing-great-skills`는 Matt Pocock의 [`mattpocock/skills`](https://github.com/mattpocock/skills) commit `5d78bd0`를 기반으로 적용했습니다.
 
 `planning-grill`의 선택지 목록 규칙은 [`devbrother2024/skills`](https://github.com/devbrother2024/skills)의 `deep-interview` 스킬 commit `de4998a`에서 가져왔습니다.
+
+`planning-grill`의 Interview → Seed 분리는 Q00의 [`ouroboros`](https://github.com/Q00/ouroboros/blob/main/README.ko.md)에서 영향을 받았고, 이 저장소에서는 LLM 점수 대신 cold-handoff 가능한 `task.md` 계약으로 적용했습니다.
 
 `compound-learning`은 [`tae2089/agent-team`](https://github.com/tae2089/agent-team)의 `recipe-agent-team-compound-learning` 스킬 commit `2354d37`을 agent-team CLI 의존 없이 포터블하게 적응했습니다.

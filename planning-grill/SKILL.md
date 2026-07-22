@@ -1,6 +1,6 @@
 ---
 name: planning-grill
-description: Stress-test a fuzzy plan into a concrete, code-aware one before decomposition or execution. Use to sharpen scope and acceptance criteria, surface failure modes, pin the concrete implementation details a worker would otherwise guess (data shapes, defaults, edge cases, formats), or turn vague intent into worker-ready task contracts. Runs upstream of decompose-and-dispatch. Skip when the plan is already concrete with testable acceptance criteria and clear task boundaries.
+description: Stress-test fuzzy intent into a code-aware, worker-ready plan or durable task.md Seed before execution. Use when scope, acceptance criteria, failure modes, data shapes, defaults, edge cases, or handoff boundaries are unclear, or when a durable Seed is requested. May precede decompose-and-dispatch when delegated or coordinated work is needed. Skip concrete plans with testable acceptance criteria and clear task boundaries.
 ---
 
 # Planning Grill
@@ -8,55 +8,73 @@ description: Stress-test a fuzzy plan into a concrete, code-aware one before dec
 The goal is not to debate indefinitely. The goal is to convert vague intent into
 a concrete, code-aware plan with testable acceptance criteria that a worker can
 complete with evidence. This skill sharpens the plan; it does not decompose it or
-map executors — hand a sharpened plan to the `decompose-and-dispatch` skill (if
-available) for that.
+map executors.
 
 Grill at two altitudes, and often both in one pass:
 
 - **Plan-level** — outcome, scope, approach, acceptance criteria.
 - **Detail-level** — pin the concrete implementation decisions that would
   otherwise be left to guesswork (see the Implementation detail dimension in
-  `references/grill-patterns.md`). This is decision-fixing, not implementation —
-  the worker executes the fixed contract via the `execute-dispatch-unit` skill
-  (if available).
+  `references/grill-patterns.md`). This is decision-fixing, not implementation.
 
-## Boundary
+## Modes And Boundaries
 
-For a lightweight planning conversation, run this skill without creating state
-files. Create task state files (`task.md`, `implementation.md`, `walkthrough.md`
-under `_workspace/<task-name>/`) once the user wants durable tracking, execution,
-or follow-up.
+Choose one mode before probing:
+
+- `LIGHTWEIGHT`: the user wants planning conversation only, with no durable
+  tracking, execution, or follow-up. Keep decisions in the final inline summary.
+- `DURABLE`: the user wants a persisted plan, execution, or follow-up. Create the
+  repository's task state files; `_workspace/<task-name>/task.md` is the canonical
+  Seed that the next worker consumes without the original conversation. Keep
+  design-only detail in `implementation.md` and event history in `walkthrough.md`.
+
+Do not create a second Seed that duplicates `task.md`.
 
 This skill routes rather than absorbs. When a blocker is really a different kind
-of work, hand off (use each skill if available):
+of sharpening, hand off and resume the grill after the peer result (use each
+skill if available):
 
 - terminology, naming, overloaded or missing terms → `domain-modeling`
 - module boundaries, interface placement, structural shape → `codebase-design`
 - branching logic, side effects, ordering constraints → `flow-design`
-- correctness, regression risk, or missing verification once the plan is stable → `ready-code-review` or the project's review path
 
-Decomposition is not a routing target: `decompose-and-dispatch` is reachable
-only through the `SHARPENED` handoff, never as an escape from sharpening.
+After `SHARPENED`, choose the next consumer by its own trigger:
+
+- use `decompose-and-dispatch` only for delegated, parallel, multi-agent, or
+  dependency/ownership-coordinated work
+- do not use `execute-dispatch-unit` unless an actual dispatch packet exists
+- otherwise return the contract for the requested next step; normal skill routing
+  applies independently
+
+No downstream skill is an escape from unresolved ambiguity.
 
 ## Workflow
 
 1. Frame the plan: intended outcome, scope, and the system it affects.
-2. Inspect existing code and docs before asking anything the repository can
+2. Select lightweight or durable output. For durable work, read the Seed Contract
+   in `references/grill-patterns.md`, create or update `task.md`, and preserve any
+   task-file schema required by the repository.
+3. Inspect existing code and docs before asking anything the repository can
    answer. When code or docs contradict the plan, surface the contradiction and
    ask which source should change.
-3. Build a short decision checklist across the decision dimensions (see
+4. Build a short decision checklist across the decision dimensions (see
    `references/grill-patterns.md`): goal, scope, vocabulary, constraints,
    dependencies, acceptance, implementation detail, failure modes, handoff.
-4. Resolve unresolved decisions one at a time, most upstream first — follow
+5. Resolve unresolved decisions one at a time, most upstream first — follow
    the dimension order, so goal and scope are settled before details. If a
    decision blocks (see the block criteria in Question Discipline), emit one
-   Probe Format block and wait; otherwise record it as an Open Question or
+   Probe Format block and wait; otherwise record it as an explicit Assumption or
    Risk and proceed with the recommended assumption.
-5. Record each resolved decision immediately in the task state files when they
-   exist.
-6. Convert stable decisions into acceptance criteria and task boundaries only
-   after the relevant ambiguity is resolved.
-7. End with a handoff status (see Handoff Status).
+6. Record each resolved decision immediately in the matching Seed field when
+   `task.md` exists; otherwise use the inline Decision Log Pattern.
+7. Convert stable decisions into observable behavior scenarios, ordered
+   acceptance or validation items, and bounded implementation boundaries. Do
+   this only after the decisions those items depend on are stable; do not create
+   dispatch packets or executor mappings.
+8. Run the completion checks and the Durable Seed Gate when applicable. When the
+   Seed is writable, keep it current for every terminal result; do not mark it
+   `SHARPENED` until the gate passes.
+9. Select the next consumer by its own trigger, then emit the Handoff Envelope.
 
 ## Planning Checks
 
@@ -106,8 +124,8 @@ Rules:
   the requester must own. When a defensible assumption exists, prefer
   recommending it and recording the risk over blocking — touching scope or
   acceptance is not by itself a reason to block on a plan where little is
-  decided yet. Otherwise record the uncertainty under Open Questions or Risks
-  and continue.
+  decided yet. Otherwise record the uncertainty as an explicit assumption or
+  risk with its consequence and verification path, then continue.
 
 The `Options` rules are adapted from the `deep-interview` skill in
 `devbrother2024/skills` at commit
@@ -119,6 +137,25 @@ Good acceptance criteria are testable by a worker or reviewer, tied to behavior,
 artifact content, or command output, scoped to one task or phase, and explicit
 about what does not count as complete. Avoid criteria that only say the result
 should be "clean", "robust", "done", or "better".
+
+## Durable Seed Gate
+
+A durable Seed is ready only when all of these checks pass:
+
+- another worker can identify the outcome, scope, non-goals, affected system,
+  and dependencies without the original conversation
+- every behaviorally material normal, boundary, and failure case maps to an
+  observable acceptance or validation item
+- constraints, invariants, data shapes, defaults, and error semantics whose
+  wrong guess is costly are fixed; genuine free choices are `Worker Latitude`
+- repository evidence and user decisions are distinguishable from assumptions,
+  and contradictions are resolved or explicitly blocking
+- no open question can change behavior, scope, an artifact contract, acceptance,
+  task ordering, or a safety boundary
+
+Do not replace these checks with an LLM-assigned clarity or ambiguity score. A
+score may orient further questioning, but it is not evidence that the Seed is
+worker-ready.
 
 ## ADR Boundary
 
@@ -132,7 +169,8 @@ alternatives. Otherwise keep the decision in the task state files.
 Load when you reach that step; do not load up front.
 
 - `references/grill-patterns.md` — the decision dimensions in detail, worked
-  Probe Format examples, the decision-log format, and stop conditions.
+  Probe Format examples, the durable Seed contract, the decision-log format, and
+  stop conditions.
 
 ## Completion
 
@@ -144,24 +182,36 @@ The grill is complete when:
 - acceptance criteria are testable
 - implementation-detail decisions whose wrong guess is costly are pinned, or
   explicitly marked as worker latitude — not parked under risks
-- unresolved questions are answered, recorded as risks, or turned into blocked
-  work
+- every remaining assumption or risk is explicitly non-blocking, has a
+  consequence and verification path, and does not meet the block criteria
+- when durable mode is active, `task.md` satisfies the Durable Seed Gate and
+  contains the ordered acceptance or validation items the next worker will use
 
 Do not start decomposition or execution just because the plan sounds plausible.
 Hand off only after acceptance criteria and task boundaries are concrete enough
 for a worker to complete with evidence.
 
-## Handoff Status
+## Handoff Envelope
 
-End the grill with a summary of resolved decisions and remaining open
-questions or risks — not a replay of the dialogue — plus one status so the
-handoff is explicit:
+End with the resolved decisions and remaining non-blocking assumptions or risks,
+not a replay of the dialogue, followed by this envelope:
 
-- `SHARPENED`: acceptance criteria and task boundaries are concrete; hand off to
-  `decompose-and-dispatch`.
+```text
+Artifact: inline-only | _workspace/<task-name>/task.md | unavailable (<intended path>)
+Status: SHARPENED | BLOCKED_ON_USER | ROUTED | BLOCKED
+Next: <requested direct step, triggered downstream skill, pending probe, or blocker>
+```
+
+Use the statuses as follows:
+
+- `SHARPENED`: acceptance criteria and task boundaries are concrete and, in
+  durable mode, the Durable Seed Gate passes; `Next` follows the triggered next
+  step rather than defaulting to decomposition.
 - `BLOCKED_ON_USER`: a blocking decision is unanswered; a Probe is pending and no
   handoff happens until it is resolved.
 - `ROUTED`: the dominant blocker belongs to a peer sharpening skill (name it:
   `domain-modeling`, `codebase-design`, or `flow-design` — never
   `decompose-and-dispatch`) and was handed off; the plan returns to the grill
   afterward.
+- `BLOCKED`: required repository evidence, access, permission, or durable
+  artifact creation failed and no safe planning fallback satisfies the request.

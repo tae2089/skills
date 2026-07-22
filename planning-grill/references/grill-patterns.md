@@ -47,9 +47,95 @@ Options:
 - (free-form answer)
 ```
 
+## Seed Contract
+
+Use `_workspace/<task-name>/task.md` as the single durable Seed. If the
+repository defines a `task.md` schema, preserve it and map the fields below into
+the closest existing sections instead of creating duplicate headings or another
+Seed file.
+
+The Seed must make these fields explicit:
+
+- **Outcome and reason**: the user-visible result and why it matters.
+- **Scope and non-goals**: included behavior, excluded behavior, affected system,
+  and ownership boundary.
+- **Evidence and dependencies**: relevant code or document paths, existing
+  contracts, prerequisites, external systems, and task ordering.
+- **Behavior scenarios**: normal, boundary, and failure cases stated as
+  observable outcomes; add one Todo test or validation item per scenario.
+- **Constraints and invariants**: compatibility, permissions, safety, data,
+  persistence, performance, error semantics, defaults, and conditions that must
+  remain true.
+- **Fixed decisions**: costly choices already resolved, each with its reason and
+  impact on behavior or verification.
+- **Worker Latitude**: implementation choices that may vary without changing the
+  contract. Never hide an unresolved behavior decision here.
+- **Risks and open questions**: acceptable uncertainty, verified assumptions,
+  and blocking decisions; identify the owner of every blocker.
+- **Bounded next work and verification**: implementation boundaries plus test or
+  validation items with Todo / In Progress / Done status. Do not create executor
+  specs, dispatch packets, ownership mappings, or parallel groups here.
+- **Handoff**: artifact, terminal status, and the pending probe, blocker, or next
+  consumer. The artifact is the single authority for durability: `inline-only`,
+  a `task.md` path, or `unavailable (<intended path>)`. Valid statuses are
+  `SHARPENED`, `BLOCKED_ON_USER`, `ROUTED`, and `BLOCKED`.
+
+Keep contract content in the Seed and reference, rather than duplicate, design
+detail from `implementation.md` or event history from `walkthrough.md`. Mark a
+field `N/A` with a reason when it does not apply; absence is not a decision.
+
+When the repository has no stronger schema, use this shape and keep each prose
+section to the smallest complete set of bullets:
+
+```markdown
+# Contract
+- Outcome and reason: ...
+- Scope: ...
+- Non-goals: ...
+- Constraints and invariants: ...
+- Evidence and dependencies: ...
+
+# Expected Behavior
+- Normal: given ..., when ..., then ...
+- Boundary: given ..., when ..., then ...
+- Failure: given ..., when ..., then ...
+
+# Fixed Decisions
+- Decision: ... Reason: ... Impact: ...
+
+# Worker Latitude
+- ...
+
+# Risks and Open Questions
+- Risk: ... Evidence or mitigation: ...
+- Blocker: ... Owner: ...
+
+# Test or Validation Plan
+- [Todo] ...
+
+# Implementation
+- [Todo] ...
+
+# Verification
+- [Todo] ...
+
+# Handoff
+- Artifact: _workspace/<task-name>/task.md
+- Status: <SHARPENED | BLOCKED_ON_USER | ROUTED | BLOCKED>
+- Next: <requested direct step, triggered downstream skill, pending probe, or blocker>
+
+# Result
+- [Todo] Record outcome, evidence, and remaining limitations after execution.
+```
+
+Before setting `SHARPENED`, test the Seed as a cold handoff: a worker who has
+only repository access and `task.md` must be able to state what to build, what
+not to build, which observable checks prove completion, and which choices remain
+free. Any behaviorally material guess fails the handoff.
+
 ## Decision Log Pattern
 
-Format for the decision recorded in Workflow step 5. In lightweight mode (no
+Format for the decision recorded in Workflow step 6. In lightweight mode (no
 task state files), log resolved decisions inline in the response using the
 same format:
 
@@ -66,4 +152,5 @@ in SKILL.md — stop asking further questions when:
 
 - the remaining unknowns are implementation details left to explicit worker latitude
 - further questions would not change task boundaries or acceptance criteria
-- unresolved risks are already recorded and acceptable
+- unresolved assumptions or risks are explicit, have a verification path, and do
+  not meet the block criteria in SKILL.md

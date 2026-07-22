@@ -9,7 +9,7 @@ Follow the global prompt rules first. This file only adds project-specific skill
 - Before implementing new logic with branching, side effects, resource lifecycles, or ordering constraints, use `flow-design` and keep the design note in the task workspace.
 - When designing module boundaries, refactoring, or shaping interfaces, use `codebase-design`.
 - When aligning terminology or modeling the domain, use `domain-modeling`.
-- When a plan is fuzzy, high-impact, or lacks testable acceptance criteria, use `planning-grill` to sharpen scope, acceptance, and failure modes before decomposing it.
+- When a plan is fuzzy, high-impact, or lacks testable acceptance criteria, use `planning-grill` to sharpen scope, acceptance, and failure modes before execution. Run it before `decompose-and-dispatch` only when delegated or coordinated work is needed.
 - For multi-step or multi-agent work, use `decompose-and-dispatch` to split the work into bounded units. Use `execute-dispatch-unit` only for a clearly assigned unit with scope, dependencies, and verification.
 - When preparing context for human or AI code review, use `ready-code-review`; do not use it to perform the review itself.
 - After a new abstraction causes 3+ follow-up regressions, or after tests pass and before commit when the change adds persisted fields, interface methods, lifecycle states, or compatibility branches, use `overengineering-review` to check for unnecessary complexity.
