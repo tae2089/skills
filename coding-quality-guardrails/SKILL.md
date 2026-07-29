@@ -1,6 +1,6 @@
 ---
 name: coding-quality-guardrails
-description: Coding quality guardrails for AI agents working on Go, Python, Java/Kotlin, or TypeScript. Use when Codex is coding, reviewing, refactoring, fixing tests, debugging regressions, preparing AI coding-agent prompts, or evaluating changes where AI slop, test gaming, over-abstraction, weak verification claims, or quality debt must be prevented.
+description: Quality guardrails for AI agents coding in Go, Python, Java/Kotlin, or TypeScript. Use when coding, reviewing, refactoring, fixing tests, or preparing coding-agent prompts where AI slop, test gaming, over-abstraction, or weak verification claims must be prevented.
 ---
 
 # Coding Quality Guardrails

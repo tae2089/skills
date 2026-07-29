@@ -1,6 +1,6 @@
 ---
 name: execute-dispatch-unit
-description: Execute exactly one assigned dispatch packet or atomic work unit, staying inside allowed scope, respecting non-goals and forbidden scope, verifying the result, and returning a structured completion report. Use when an agent, worker, or subagent is handed a bounded task with fields such as unit_id, objective, allowed_scope, dependencies, acceptance_criteria, verification, or return_contract — typically a packet produced by decompose-and-dispatch.
+description: Execute exactly one assigned dispatch packet — stay inside allowed scope, verify the result, and return a structured completion report. Use when a worker or subagent is handed a bounded task with fields like unit_id, allowed_scope, acceptance_criteria, or return_contract — typically produced by decompose-and-dispatch.
 ---
 
 # Execute Dispatch Unit

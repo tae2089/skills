@@ -1,6 +1,6 @@
 ---
 name: writing-great-skills
-description: Review, create, or refine portable agent skills for predictable behavior, progressive disclosure, clean invocation metadata, concise instructions, reference splitting, trigger wording, and no-op pruning. Use when writing SKILL.md files, porting skills across Codex, Claude, Gemini, or other agent runtimes, auditing skill quality, or improving skill context load and execution reliability.
+description: Review, create, or refine portable agent skills for progressive disclosure, invocation metadata, concise instructions, and trigger wording. Use when writing SKILL.md files, porting skills across agent runtimes (Codex, Claude, Gemini), auditing skill quality, or reducing skill context load.
 ---
 
 # Writing Great Skills

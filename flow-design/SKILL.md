@@ -1,6 +1,6 @@
 ---
 name: flow-design
-description: Design or document non-trivial control flow with pseudocode and optional Mermaid diagrams. Use when the user asks for pseudocode or flow diagrams, when tracing an existing flow, or before implementing logic with interacting branches, multiple side effects, lifecycle, ordering, or concurrency risk. Skip local guard clauses, one-line edits, config-only changes, and established local patterns.
+description: Design or document non-trivial control flow with pseudocode and optional Mermaid diagrams. Use when asked for pseudocode or flow diagrams, when tracing an existing flow, or before implementing logic with interacting branches, side effects, resource lifecycles, ordering, or concurrency risk. Skip one-line edits, config-only changes, and established local patterns.
 ---
 
 # Flow Design

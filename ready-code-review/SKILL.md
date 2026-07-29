@@ -1,6 +1,6 @@
 ---
 name: ready-code-review
-description: Prepare code-review context briefs, PR/diff context packages, severity rubrics, false-positive suppressions, reusable reviewer instructions, and AI reviewer prompts. Use for AI review preparation, PR or diff review context, review invariants/non-goals, P0/P1/P2/P3 calibration, and instructions for Codex, GitHub Copilot, CodeRabbit, Cursor, or other reviewers. Do not use when the user asks to perform the code review itself.
+description: Prepare code-review context — PR/diff briefs, severity rubrics, false-positive suppressions, and reusable reviewer instructions or AI reviewer prompts. Use for AI review preparation, review invariants/non-goals, or P0–P3 calibration for reviewers like Codex or CodeRabbit. Not for performing the code review itself.
 ---
 
 # Review Context Preparation

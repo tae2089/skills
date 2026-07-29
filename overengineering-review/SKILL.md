@@ -1,6 +1,6 @@
 ---
 name: overengineering-review
-description: Review a code change for unnecessary abstractions, duplicated durable policy, compatibility cascades, oversized integration-test matrices, and scope expansion. Use during implementation when one new abstraction causes three or more follow-up regressions, or after tests are green and before commit when a change adds persisted fields, interface methods, lifecycle states, compatibility branches, destructive-operation safeguards, or substantially more test code than production code; keep the review read-only unless simplification is explicitly requested.
+description: Review code changes for unnecessary abstractions, duplicated policy, compatibility cascades, and scope expansion. Use after an abstraction causes 3+ follow-up regressions, or after tests pass and before commit when a change adds persisted fields, interface methods, lifecycle states, compatibility branches, or much more test code than production code. Read-only unless simplification is requested.
 ---
 
 # Overengineering Review

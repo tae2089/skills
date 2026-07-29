@@ -1,6 +1,6 @@
 ---
 name: decompose-and-dispatch
-description: Decompose a complex goal into independently executable work units and resolve each unit to an executor. Use when the user requests delegated, parallel, or multi-agent work, or when multiple units require dependency, ownership, or capability coordination. Skip ordinary sequential implementation by one agent.
+description: Decompose a complex goal into independently executable work units and resolve each to an executor. Use when the user requests delegated, parallel, or multi-agent work, or when units need dependency or ownership coordination. Skip ordinary sequential implementation by one agent.
 ---
 
 # Decompose And Dispatch

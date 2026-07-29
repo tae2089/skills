@@ -1,6 +1,6 @@
 ---
 name: codebase-design
-description: Shared discipline for designing deep modules, small interfaces, clean seams, adapters, test surfaces, and architecture improvements. Use when designing or reviewing module boundaries, refactors, controller/service composition, interface shape, testability, coupling, dependency injection, or when another skill needs architecture vocabulary for deepening code.
+description: Design discipline for deep modules, small interfaces, and clean seams. Use when designing or reviewing module boundaries, refactors, interface shape, testability, or coupling, or when another skill needs shared architecture vocabulary.
 ---
 
 # Codebase Design

@@ -1,6 +1,6 @@
 ---
 name: session-recipe
-description: Set up and verify ground-truth session recording, distill a finished session into a replayable recipe of dispatch packets, and replay a saved recipe step by step. Use when the user asks to record a session, turn completed work into a recipe, replay a recipe.yaml, validate a recipe file, or set up session-recording hooks.
+description: Set up ground-truth session recording, distill a finished session into a replayable recipe of dispatch packets, and replay a saved recipe. Use when asked to record a session, turn completed work into a recipe, replay or validate a recipe.yaml, or set up session-recording hooks.
 ---
 
 # Session Recipe

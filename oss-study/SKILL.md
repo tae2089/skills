@@ -1,6 +1,6 @@
 ---
 name: oss-study
-description: Study an open-source codebase using a four-mode (Diátaxis-based) question structure that keeps each question to a single learning intent. Use when the user wants to study an unfamiliar repo or library for learning (e.g. "이 오픈소스로 스터디하자", "이 라이브러리 어떻게 동작하는지 공부하자"), or to understand a dependency's internals before adopting it. Not for shipping a fix.
+description: Study an open-source codebase with a four-mode (Diátaxis) question structure, one learning intent per question. Use when the user wants to study an unfamiliar repo or library (e.g. "이 오픈소스로 스터디하자") or understand a dependency's internals before adopting it. Not for shipping a fix.
 ---
 
 # OSS Study

@@ -1,6 +1,6 @@
 ---
 name: domain-modeling
-description: Build and sharpen a project's domain language and decision record. Use when terminology is ambiguous, the user wants canonical terms, glossary work, DDD-style ubiquitous language, ADRs, context docs, naming alignment, or when planning/design work depends on precise domain concepts before implementation.
+description: Build and sharpen a project's domain language and decision record. Use when terminology is ambiguous or the user wants canonical terms, a glossary, DDD ubiquitous language, ADRs, or naming alignment before implementation.
 ---
 
 # Domain Modeling

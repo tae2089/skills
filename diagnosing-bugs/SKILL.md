@@ -1,6 +1,6 @@
 ---
 name: diagnosing-bugs
-description: Disciplined diagnosis loop for hard bugs, regressions, flaky behavior, failing tests, broken UI flows, performance regressions, and user-reported failures. Use when the user asks to debug, diagnose, investigate, reproduce, find root cause, or fix something broken, slow, failing, throwing, intermittent, or behaviorally wrong.
+description: Disciplined diagnosis loop for hard bugs, regressions, flaky behavior, and failing tests. Use when the user asks to debug, investigate, reproduce, find root cause, or fix something broken, slow, intermittent, or behaviorally wrong.
 ---
 
 # Diagnosing Bugs

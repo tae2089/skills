@@ -1,6 +1,6 @@
 ---
 name: planning-grill
-description: Stress-test fuzzy intent into a code-aware, worker-ready plan or durable task.md Seed before execution. Use when scope, acceptance criteria, failure modes, data shapes, defaults, edge cases, or handoff boundaries are unclear, or when a durable Seed is requested. May precede decompose-and-dispatch when delegated or coordinated work is needed. Skip concrete plans with testable acceptance criteria and clear task boundaries.
+description: Stress-test fuzzy intent into a code-aware, worker-ready plan or durable task.md Seed before execution. Use when scope, acceptance criteria, failure modes, defaults, or handoff boundaries are unclear, or when a durable Seed is requested; may precede decompose-and-dispatch. Skip concrete plans with testable acceptance criteria and clear task boundaries.
 ---
 
 # Planning Grill
