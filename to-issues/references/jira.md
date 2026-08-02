@@ -42,5 +42,5 @@ Do not copy sub-task descriptions into `task.md`.
   No comment per sub-task.
 - Scope change on a unit → edit that sub-task and append one line to
   `walkthrough.md`.
-- Whole task complete → one result comment on the PRD ticket: outcome,
-  verification command and result, follow-ups. Never paste `walkthrough.md`.
+- Closing every sub-task does **not** transition the PRD ticket. How the parent
+  closes is the team's own workflow configuration.

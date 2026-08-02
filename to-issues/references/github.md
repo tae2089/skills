@@ -55,15 +55,5 @@ Do not copy sub-issue bodies into `task.md`.
 ## Closing
 
 - Unit finished → close its sub-issue, update the `task.md` line to `Done`.
-- Closing every sub-issue does **not** auto-close the PRD; the parent only shows
-  progress. The PR closes it.
-- The PR body needs the keyword repeated per issue — `Closes #10, #11` closes
-  only #10:
-
-```
-Closes #11
-Closes #10
-```
-
-- Closed issues stay readable, linkable, and searchable (`is:closed`), so they
-  remain valid references.
+- Closing every sub-issue does **not** auto-close the PRD. The parent only shows
+  progress; how it gets closed is the team's own configuration.
