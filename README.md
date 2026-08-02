@@ -1,6 +1,6 @@
 # skills
 
-AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL.md`의 프론트매터와 본문을 진입점으로 삼고, 필요한 세부 절차는 가까운 `references/`, `reference/`, `examples/`, `agents/` 디렉터리에 둡니다.
+AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL.md`의 프론트매터와 본문을 진입점으로 삼고, 필요한 세부 절차는 가까운 `references/`, `examples/`, `agents/` 디렉터리에 둡니다.
 
 ## 구성
 
@@ -8,7 +8,6 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 <skill-name>/
   SKILL.md          # 스킬의 호출 조건과 최상위 절차
   references/       # 상황별 세부 지침
-  reference/        # 일부 스킬의 세부 지침
   examples/         # 재사용 가능한 예시
   scripts/          # 결정적 검증·조작 스크립트
   agents/           # 런타임별 어댑터나 포팅 지침
@@ -25,7 +24,6 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 | [`codebase-design`](codebase-design/SKILL.md) | 모듈 경계, 인터페이스, 리팩터링, 테스트 가능성, 의존성 주입, 결합도를 설계하거나 검토할 때 |
 | [`coding-quality-guardrails`](coding-quality-guardrails/SKILL.md) | Go, Python, Java/Kotlin, TypeScript 작업에서 품질 저하, 테스트 게이밍, 과한 추상화, 약한 검증을 막아야 할 때 |
 | [`compound-learning`](compound-learning/SKILL.md) | 완료·검증된 작업(태스크, 리뷰, 버그 수정, 설계 결정, 디버깅)에서 재사용 가능한 학습을 `_workspace/<task>/compound-learning.md`와 `docs/solutions/` 문서로 증류할 때. 진행 중 작업·불확실한 결과에는 미사용 |
-| [`decompose-and-dispatch`](decompose-and-dispatch/SKILL.md) | `to-issues`가 만든 issue를 의존 순서대로 subagent에 넘겨 실행할 때 |
 | [`diagnosing-bugs`](diagnosing-bugs/SKILL.md) | 버그, 회귀, 플래키 테스트, 실패 테스트, 깨진 UI 흐름, 성능 저하를 증거 기반으로 진단할 때 |
 | [`domain-modeling`](domain-modeling/SKILL.md) | 도메인 용어, 글로서리, ADR, 컨텍스트 문서, 네이밍을 정렬할 때 |
 | [`flow-design`](flow-design/SKILL.md) | 새 로직의 분기, 부수효과, 순서 제약을 pseudocode나 Mermaid 다이어그램으로 고정하거나 기존 흐름을 문서화할 때 |
@@ -33,8 +31,8 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 | [`overengineering-review`](overengineering-review/SKILL.md) | 새 추상화가 후속 회귀를 3건 이상 유발하거나, 테스트 통과 후 커밋 전 영속 필드·인터페이스 메서드·라이프사이클 상태·호환성 분기·과한 테스트 매트릭스가 추가됐을 때 불필요한 복잡도를 검토할 때. 단순화가 명시적으로 요청되지 않는 한 read-only |
 | [`planning-grill`](planning-grill/SKILL.md) | 모호한 계획·결정을 실행 전에 한 번에 한 질문씩 캐물어 합의에 도달할 때. 사실은 직접 조사하고 결정만 사용자에게 넘김. 파일은 만들지 않음 |
 | [`ready-code-review`](ready-code-review/SKILL.md) | 사람 또는 AI 리뷰어에게 줄 리뷰 컨텍스트, severity 정책, false-positive 억제 규칙, 리뷰 프롬프트를 준비할 때 |
-| [`to-issues`](to-issues/SKILL.md) | spec을 리뷰 가능한 크기의 작업 단위로 쪼개 issue로 기록할 때(`task.md` Plan / GitHub sub-issue) |
-| [`to-spec`](to-spec/SKILL.md) | 코드·테스트·설정·문서·인프라를 고치기 전에 계약과 설계를 spec으로 남길 때(`_workspace/` 파일 / GitHub Issues) |
+| [`to-issues`](to-issues/SKILL.md) | spec을 리뷰 가능한 크기의 작업 단위로 쪼개 기록할 때(`task.md` Plan, 발행했으면 트래커 이슈도) |
+| [`to-spec`](to-spec/SKILL.md) | 코드·테스트·설정·문서·인프라를 고치기 전에 문제·해법·유저 스토리·설계를 spec으로 남길 때(`_workspace/` 파일, 필요하면 트래커 발행) |
 | [`writing-great-skills`](writing-great-skills/SKILL.md) | `SKILL.md` 작성, 스킬 리뷰, 런타임 포팅, 트리거 문구, 점진적 공개 구조를 다듬을 때 |
 
 ## 설치
@@ -112,9 +110,8 @@ Apply these when their trigger conditions are met:
 | `flow-design` | Pseudocode, logic/flow plans, diagrams, or new logic with branches, side effects, resource lifecycles, or ordering constraints. |
 | `codebase-design` | Designing module boundaries, refactoring, or shaping interfaces. |
 | `planning-grill` | Stress-testing a fuzzy plan, decision, or idea into a shared understanding, one question at a time. |
-| `to-spec` | Writing the contract and design before editing any project file — local `_workspace/` or GitHub Issues. |
+| `to-spec` | Writing the spec — problem, solution, user stories, implementation decisions — before editing any project file. Always `_workspace/`; publishing to a tracker is a separate step. |
 | `to-issues` | Breaking a written spec into ordered, reviewable work units recorded as issues. |
-| `decompose-and-dispatch` | Running an existing issue list by giving each issue to a subagent, in dependency order. |
 | `domain-modeling` | Aligning terminology or doing domain modeling. |
 | `ready-code-review` | Preparing review context, reviewer instructions, prompts, severity calibration, or false-positive suppression before a human or AI review. |
 | `overengineering-review` | Reviewing a change for unnecessary abstractions, duplicated policy, or scope expansion — during implementation after a new abstraction causes 3+ follow-up regressions, or after tests pass and before commit when persisted fields, interface methods, lifecycle states, or compatibility branches were added. |
@@ -140,57 +137,43 @@ Apply these when their trigger conditions are met:
 
 ## 계획 파이프라인
 
-모호한 의도에서 실행까지 네 단계입니다. 각 스킬은 한 가지만 하고, 앞 단계 산출물만 읽습니다.
+모호한 의도에서 실행 준비까지 세 단계입니다. 각 스킬은 한 가지만 하고, 앞 단계 산출물만 읽습니다.
 
 ```text
 [모호한 의도]
   → planning-grill   대화로 합의 도출 (파일 안 만듦)
-  → to-spec          합의를 spec으로 저장 — 계약 + 설계
-  → to-issues        spec을 리뷰 단위 issue로 쪼갬
-  → decompose-and-dispatch   issue마다 subagent 실행
+  → to-spec          합의를 spec으로 저장 — 문제·해법·유저 스토리·설계
+  → to-issues        spec을 리뷰 단위 작업 유닛으로 쪼갬
+[실행]
 ```
 
-각 단계는 독립 트리거를 가지므로 전부 거칠 필요는 없습니다. 계획 대화만 필요하면 `planning-grill`에서 멈추고, 이미 티켓이 있으면 `to-issues`부터 시작합니다. `decompose-and-dispatch`는 앞 단계와 의존이 없습니다 — 돌릴 대상을 인자로 받고, **목표와 의존** 두 필드만 있으면 누가 만든 티켓이든 실행합니다. `verify:`는 있으면 쓰고 없으면 `unverified`로 보고합니다. **작업 단위는 파일 목록을 갖지 않습니다** — 구현이 어느 파일을 건드릴지는 짜보기 전엔 아무도 모르고, 미리 적은 목록은 subagent를 막거나 무시당하거나 둘 중 하나입니다. 울타리는 목표 한 문장과 부모의 Non-Goals이고, 건드린 파일은 subagent가 끝나고 보고합니다. 병렬 subagent는 각자 worktree에서 돌기 때문에 파일 겹침은 스케줄링 문제가 아니라 병합 충돌이 됩니다. 대신 worktree는 **파일이 안 겹치는 깨짐**을 숨깁니다 — 한쪽이 심볼 이름을 바꾸고 다른 쪽이 옛 이름을 부르면 둘 다 초록불인데 합치면 깨집니다. dispatch는 병합하지 않고, 남은 브랜치와 "합친 뒤 전체 검증 한 번"을 보고합니다.
+각 단계는 독립 트리거를 가지므로 전부 거칠 필요는 없습니다. 계획 대화만 필요하면 `planning-grill`에서 멈추고, 이미 티켓이 있으면 `to-issues`부터 시작합니다.
 
-백엔드는 `to-spec`이 정해 `.tracker` 한 줄짜리 파일에 캐시하고, `to-issues`가 같은 순서로 읽습니다 — 먼저 `_workspace/<task-name>/.tracker`, 없으면 `_workspace/.tracker`. 저장소 하나에 공유 백엔드 작업과 로컬 작업이 섞일 수 있기 때문입니다.
+**실행은 스킬이 아닙니다.** 유닛을 subagent에 넘기는 건 어차피 agent가 하는 일이고, 거기서 기본값이 틀리는 지점만 규칙으로 적어두면 됩니다 — `AGENTS.md`의 `## Delegating To Subagents` 일곱 줄. 항상 컨텍스트에 있으니 검색될 필요가 없고, 그래서 스킬보다 확실하게 걸립니다. 담긴 것: 병렬 subagent마다 worktree 하나, worktree가 복사 못 하는 것(같은 DB·포트·외부 서비스), 파일이 안 겹쳐도 합치면 깨지는 경우, 병합은 안 하고 브랜치만 보고, Out of Scope만 프롬프트에 그대로 복사, 검증 출력 없는 성공 주장 거부, 그리고 혼자 순서대로 다 하는 것도 정상이라는 것.
 
-| 백엔드 | to-spec 산출물 | to-issues 산출물 |
-| --- | --- | --- |
-| `local` | `task.md` Contract + `implementation.md` | `task.md` Plan 항목 |
-| `github` | `type:design` issue + `type:prd` issue | PRD의 native sub-issue |
+**작업 유닛은 파일 목록을 갖지 않습니다** — 구현이 어느 파일을 건드릴지는 짜보기 전엔 아무도 모르고, 미리 적은 목록은 subagent를 막거나 무시당하거나 둘 중 하나입니다. 울타리는 목표 한 문장과 부모의 Out of Scope이고, 건드린 파일은 subagent가 끝나고 보고합니다.
 
-Jira·Linear·Notion처럼 백엔드 파일이 없는 트래커는 `local`로 쓰고 나중에 MCP로 밀어 넣습니다 — 백엔드가 아니라 발행 단계입니다. 계약 네 조각이 티켓 본문이 되고 `task.md`는 링크만 남깁니다.
+`to-spec`은 저장 위치를 고르지 않습니다. `_workspace/<task-name>/` 세 파일을 **항상** 씁니다. 트래커 발행은 그 위에 얹는 선택적 단계로, 저장소의 `AGENTS.md`/`CLAUDE.md`가 트래커를 지정했거나 사용자가 요청할 때만 합니다. 발행하면 `task.md`에는 링크와 Verification·Plan·Result만 남습니다 — 체크박스는 작업이 벌어지는 곳에 있어야 하므로 트래커로 안 올라갑니다.
 
-계약과 설계는 서로 다른 문서입니다. 계약은 **무엇을** 만들고 **언제 끝난 것인지**를, 설계는 **어떻게** 그리고 **왜**를 담습니다. 계약이 접근 방식으로 흘러가면 확인 가능한 기준이 아니게 됩니다. `github`에서는 계약 문서 맨 앞에 무슨 문제를 누구를 위해 푸는지 한 줄을 둡니다 — 팀원은 이 대화 없이 티켓만 열기 때문입니다. `local`은 그 줄을 두지 않습니다.
+| 섹션 | 파일 |
+| --- | --- |
+| Problem Statement, Solution, User Stories, Out of Scope, Verification | `task.md` |
+| Implementation Decisions, Testing Decisions, Further Notes | `implementation.md` |
+| 이벤트 로그 | `walkthrough.md` |
 
-`to-spec`이 남기는 것은 여섯 조각입니다.
+템플릿은 mattpocock의 `to-spec`을 따릅니다. 문제와 해법은 사용자 관점으로 쓰고, 만드는 방법은 Implementation Decisions에 둡니다. 설계 노트에는 파일 경로도 코드 조각도 넣지 않습니다 — 주변 산문보다 빨리 낡습니다. 모듈과 인터페이스 이름으로 씁니다.
 
-| 조각 | 내용 | 상한 |
-| --- | --- | --- |
-| Contract | 기대 동작, 인수 기준. 한 줄마다 **계기**와 **관찰 가능한 결과**를 담습니다 | 5 bullet |
-| Non-Goals | 넣을 법한데 범위 밖인 것 | 3 bullet, 없으면 섹션 생략 |
-| Test Cases | 실제 입력 → 실제 기대 출력. `TC-1`, `TC-2`로 번호를 붙입니다 | 상한 없음, 실패 케이스 최소 하나 |
-| Verification | 그 케이스들을 **어떻게 확인하는지**. 고치기 전 실패 / 프로젝트 전체 / 실물 한 번 | 3개 고정 |
-| Implementation | 접근, 가정, 영향 모듈, 위험, 엣지 케이스, 검토 후 버린 대안 | 12 bullet, 항상 작성 |
-| Walkthrough | append-only 이벤트 로그. **항상 로컬**, 공유 백엔드에 안 올라감 | — |
+User Stories가 뒷단계 전체가 가리키는 번호입니다. 목록을 길게, 기능의 모든 면을 덮도록 씁니다. `to-issues`가 작업 단위마다 `covers: US-1, US-3`으로 인용하고 양방향으로 확인합니다 — 어느 유닛도 안 덮는 스토리(빠뜨린 작업)와 어느 스토리도 안 가리키는 유닛(시키지 않은 작업). 스토리가 없는 동작은 아무도 만들지 않습니다.
 
-Contract·Non-Goals·Verification은 한 곳에 같이 둡니다. `local`이면 `task.md`, `github`이면 `type:prd` issue입니다. `to-issues`가 만든 작업 단위가 링크로 가리키는 곳이 바로 여기라, subagent가 반드시 닿는 유일한 문서이기 때문입니다.
+Verification은 세 항목 고정입니다. 스토리가 스무 개여도 세 항목이고, 내용을 다시 쓰지 않고 번호로 가리킵니다(`US-1`). 각 항목이 다른 실패를 잡습니다. **고치기 전에 실패하는 것을 먼저 확인** — 실패한 적 없는 테스트는 아무것도 검사한다는 증거가 없습니다. 코드를 짠 쪽이 테스트도 짜면 둘이 서로 맞으면서 스펙과 어긋날 수 있습니다. **프로젝트 전체** — 작업 단위의 `verify:`는 자기 범위만 돌기 때문에 둘이 같은 명령이 될 수 없습니다. **실물 한 번 손으로** — 스위트는 초록인데 바이너리가 안 뜨는 경우를 잡습니다. 전체 검증을 대신 돌려주는 스킬은 없습니다. `task.md`의 체크 안 된 항목이 유일한 표시입니다.
 
-Non-Goals는 방향이 어긋나는 것을 막습니다. 구현자가 손댈 법한 인접 모듈, 디프가 유도하는 정리 작업, 두 번째 호출자가 필요로 할 일반화 — 이런 것에 씁니다. 아무도 시도하지 않을 것은 적지 않습니다. 검토했다 버린 접근은 non-goal이 아니라 설계 노트입니다.
+버그 수정은 Problem Statement에 재현과 현재 동작을, Solution에 기대 동작을 씁니다. 첫 검증 항목이 고치기 전 그 재현이 실패하는 것입니다.
 
-Test Cases는 계약을 실제 값으로 옮긴 것입니다. 계약이 규칙이면 TC는 그 규칙의 실례 하나입니다. 읽는 곳이 셋입니다 — 구현자는 이걸 먼저 테스트로 쓰고, `to-issues`는 각 작업 단위의 `verify:`가 어느 케이스를 도는지 여기서 가져오며(`covers: TC-1, TC-3`), 리뷰어는 목록을 대조합니다. `to-issues`는 어느 unit도 안 덮는 TC(빠뜨린 작업)와 어느 TC도 안 가리키는 unit(시키지 않은 작업)을 양쪽으로 확인합니다. 그래서 **TC 개수에 상한이 없습니다** — 상한을 두면 unit 개수에 상한을 두는 것과 같아집니다. 대신 두 가지로 거릅니다. 틀렸을 때 만드는 물건이 달라지는 케이스만 남기고, 같은 코드 경로를 타는 케이스는 하나로 접습니다(`port: "eighty"`와 `port: "abc"`는 한 개). 접으면서 뺀 값들이 없어지는 건 아닙니다 — 그 값들을 전부 도는 건 테스트 파일이 할 일입니다.
+**자동 검사 대신 사람이 두 번 승인합니다.** `to-spec`은 테스트를 붙일 seam을 먼저 그려 확인받고, `to-issues`는 쪼갠 목록을 번호로 제시해 굵기와 의존 관계를 묻습니다. 스펙에 규칙을 더 얹어 자기가 자기를 검사하게 만드는 대신, 이미 방에 있는 사람에게 보여줍니다.
 
-정해지지 않은 값은 지어내지 않고 `[NEEDS CLARIFICATION: 무엇이 안 정해졌는지]`로 그 자리에 남깁니다. 추측한 값은 계약이 되고, 뒷단계는 그게 결정된 값인지 구별하지 못합니다. `grep -rn "NEEDS CLARIFICATION"`으로 찾아 `planning-grill`로 돌아갑니다.
+`to-issues`는 유닛을 **수직 슬라이스**로 자릅니다 — 한 층만 훑는 게 아니라 스키마·API·UI·테스트를 관통하는 좁고 완결된 경로. 예외는 넓은 리팩터입니다. 컬럼 이름 변경처럼 호출부 수천 개가 한 번에 깨지는 기계적 변경은 수직 슬라이스로 만들 수 없으니 expand–contract로 늘어놓습니다 — 새 형태를 옆에 추가하고, 호출부를 배치로 옮기고, 마지막에 옛 형태를 지웁니다. 각 배치가 자기 유닛이고 앞 단계에 의존합니다.
 
-Test Cases와 Verification은 층이 다릅니다. TC는 **무엇이 참이어야 하는가**를 실제 값으로 적은 것이고, Verification은 **그걸 어떻게 확인하는가**를 적은 명령입니다. 그래서 Verification에는 케이스를 나열하지 않습니다 — 케이스별 확인은 테스트 파일이 하고, 그 테스트 파일이 TC에서 나옵니다. TC가 스무 개여도 Verification은 세 항목입니다. 값을 다시 쓰지 않고 번호로 가리킵니다(`TC-1`).
-
-세 항목이 각각 다른 실패를 잡습니다. **고치기 전에 실패하는 것을 먼저 확인** — 실패한 적 없는 테스트는 아무것도 검사한다는 증거가 없습니다. 초록불은 생각보다 약한 증거입니다. 코드를 짠 쪽이 테스트도 짜면 둘이 서로 맞으면서 계약과 어긋날 수 있습니다. **프로젝트 전체** — spec의 Verification은 전체를 돌고 작업 단위의 `verify:`는 자기 범위만 돌아서 둘이 같은 명령이 될 수 없습니다. **실물 한 번 손으로** — 스위트는 초록인데 바이너리가 안 뜨는 경우를 잡습니다. 전체 검증을 자동으로 돌려주는 스킬은 없습니다. `task.md`의 체크 안 된 항목이 유일한 표시입니다.
-
-버그 수정은 계약 대신 재현 / 현재 동작 / 기대 동작을 씁니다. TC-1이 재현이고, 첫 검증 항목이 고치기 전 그 테스트가 실패하는 것입니다.
-
-`decompose-and-dispatch`는 부모의 Non-Goals만 subagent 프롬프트에 그대로 복사합니다. 이미 잘못된 것을 만들기 시작한 subagent는 링크를 따라가지 않기 때문입니다.
-
-산출물의 산문 — 계약, 비목표, 설계 노트, 로그 — 은 사용자 언어로 씁니다. 명령·파일 경로·라벨(`type:prd`)·상태값(`Todo`/`Done`)은 검색 대상이라 그대로 둡니다.
+산출물의 산문 — 문제, 해법, 스토리, 설계 노트, 로그 — 은 사용자 언어로 씁니다. 명령·파일 경로·라벨(`type:prd`)·상태값(`Todo`/`Done`)은 검색 대상이라 그대로 둡니다.
 
 `planning-grill`은 저장소가 답할 수 있는 사실은 직접 조사하고, 결정만 한 턴에 하나씩 사용자에게 묻습니다. 모든 질문에 추천 답과 **틀렸을 때의 대가**를 함께 적어, 사용자가 후속 질문 없이 비용을 보고 판단하게 합니다.
 
@@ -199,7 +182,7 @@ Recommended: per-API-key, with a per-IP fallback for unauthenticated routes.
 If wrong: authed clients behind one shared IP throttle each other.
 ```
 
-GitHub 이슈 생성이나 팀 트래커 푸쉬는 팀에 보이고 되돌리기 번거로우므로, `to-spec`과 `to-issues` 모두 공유 백엔드 첫 쓰기 전에 무엇을 만들지 알리고 확인을 받습니다.
+트래커 발행은 팀에 보이고 되돌리기 번거로우므로, `to-spec`과 `to-issues` 모두 첫 쓰기 전에 무엇을 만들지 알리고 확인을 받습니다.
 
 ## 유지보수 원칙
 

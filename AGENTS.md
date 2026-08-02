@@ -13,10 +13,21 @@ Follow the global prompt rules first. This file only adds repository-specific ro
 - When preparing a skill package for human or AI review, use `ready-code-review` to produce context, non-goals, severity policy, and false-positive suppressions before asking for findings.
 - After a skill change adds a new abstraction that causes 3+ follow-up regressions, or after its tests pass and before commit when it adds persisted fields, interface methods, lifecycle states, or compatibility branches, use `overengineering-review` to check for unnecessary complexity.
 - When the skill change is fuzzy, high-impact, or lacks testable acceptance criteria, use `planning-grill` to reach a shared understanding of scope, acceptance, and failure modes. It writes no files.
-- Before editing any skill file, use `to-spec` to record the contract and design in `_workspace/<task-name>/`.
+- Before editing any skill file, use `to-spec` to write the spec — problem, solution, user stories, implementation decisions — in `_workspace/<task-name>/`.
 - When the spec covers more than one reviewable chunk, use `to-issues` to cut it into ordered work units in the `task.md` Plan section.
-- For large cross-skill changes, use `decompose-and-dispatch` to run those units — one subagent per unit, in dependency order.
 - After a non-trivial skill change, review cycle, or debugging session is verified, use `compound-learning` to capture reusable learnings.
+
+## Delegating To Subagents
+
+Applies whenever work units are handed to subagents, in dependency order.
+
+- Parallel subagents each get their own git worktree. Never two writers in one working tree.
+- A worktree copies the repo, not the world — the same database, port, or external service still collides. Run those units in sequence.
+- Two units can pass alone and break together with no file in common: one renames a symbol, the other calls the old name. Run the project's whole verification once on the merged tree.
+- Do not merge the branches. Report them, and say the merged-tree verification still has to run.
+- Copy the parent's Out of Scope into the subagent prompt verbatim; link everything else. A subagent already building the wrong thing does not follow a link.
+- A subagent claiming success without the verification output has not finished. Re-dispatch it.
+- Running every unit yourself in dependency order is a valid plan, not a failed delegation.
 
 ## Repository Notes
 
