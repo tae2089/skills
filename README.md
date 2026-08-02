@@ -150,7 +150,7 @@ Apply these when their trigger conditions are met:
   → decompose-and-dispatch   issue마다 subagent 실행
 ```
 
-각 단계는 독립 트리거를 가지므로 전부 거칠 필요는 없습니다. 계획 대화만 필요하면 `planning-grill`에서 멈추고, 이미 티켓이 있으면 `to-issues`부터 시작합니다. `decompose-and-dispatch`는 앞 단계와 의존이 없습니다 — 돌릴 대상을 인자로 받고, **목표와 의존** 두 필드만 있으면 누가 만든 티켓이든 실행합니다. `scope`와 `verify:`는 있으면 쓰고 없으면 보고합니다. 병렬 subagent는 각자 worktree에서 돌기 때문에 파일 겹침은 스케줄링 문제가 아니라 병합 충돌이 됩니다. 대신 worktree는 **파일이 안 겹치는 깨짐**을 숨깁니다 — 한쪽이 심볼 이름을 바꾸고 다른 쪽이 옛 이름을 부르면 둘 다 초록불인데 합치면 깨집니다. dispatch는 병합하지 않고, 남은 브랜치와 "합친 뒤 전체 검증 한 번"을 보고합니다.
+각 단계는 독립 트리거를 가지므로 전부 거칠 필요는 없습니다. 계획 대화만 필요하면 `planning-grill`에서 멈추고, 이미 티켓이 있으면 `to-issues`부터 시작합니다. `decompose-and-dispatch`는 앞 단계와 의존이 없습니다 — 돌릴 대상을 인자로 받고, **목표와 의존** 두 필드만 있으면 누가 만든 티켓이든 실행합니다. `verify:`는 있으면 쓰고 없으면 `unverified`로 보고합니다. **작업 단위는 파일 목록을 갖지 않습니다** — 구현이 어느 파일을 건드릴지는 짜보기 전엔 아무도 모르고, 미리 적은 목록은 subagent를 막거나 무시당하거나 둘 중 하나입니다. 울타리는 목표 한 문장과 부모의 Non-Goals이고, 건드린 파일은 subagent가 끝나고 보고합니다. 병렬 subagent는 각자 worktree에서 돌기 때문에 파일 겹침은 스케줄링 문제가 아니라 병합 충돌이 됩니다. 대신 worktree는 **파일이 안 겹치는 깨짐**을 숨깁니다 — 한쪽이 심볼 이름을 바꾸고 다른 쪽이 옛 이름을 부르면 둘 다 초록불인데 합치면 깨집니다. dispatch는 병합하지 않고, 남은 브랜치와 "합친 뒤 전체 검증 한 번"을 보고합니다.
 
 백엔드는 `to-spec`이 정해 `.tracker` 한 줄짜리 파일에 캐시하고, `to-issues`가 같은 순서로 읽습니다 — 먼저 `_workspace/<task-name>/.tracker`, 없으면 `_workspace/.tracker`. 저장소 하나에 공유 백엔드 작업과 로컬 작업이 섞일 수 있기 때문입니다.
 

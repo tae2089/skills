@@ -4,8 +4,8 @@ There is no issue tracker. A `task.md` Plan line **is** the issue.
 
 Do not create separate files per unit. A subagent reads the Contract in
 `task.md` and its own Plan line — that is the whole issue. The Plan line's
-`scope:` and `verify:` are already what `implementation.md` boiled down to; the
-subagent does not go read the original.
+`verify:` is already what `implementation.md` boiled down to; the subagent does
+not go read the original.
 
 ## Shape
 
@@ -14,12 +14,10 @@ Fill the Plan section `to-spec` left empty:
 ```markdown
 ## Plan
 - [ ] Todo — 01 설정 파일 파싱
-      scope: internal/config/**
       covers: TC-1, TC-3
       verify: `go test ./internal/config/...` — 전부 통과
       needs: —
 - [ ] Todo — 02 시작 시점에 파서 연결
-      scope: cmd/server/main.go
       covers: TC-1
       verify: `go test ./cmd/server/...` — 전부 통과
       needs: 01

@@ -1,8 +1,8 @@
 # Parallelism And Conflict Rules
 
 Each parallel subagent gets its own git worktree. Two units writing the same file
-produce two branches that conflict at merge, not a race. Overlapping write scopes
-are not a reason to serialize.
+produce two branches that conflict at merge, not a race. Two units likely to touch
+the same code is not a reason to serialize them.
 
 Good parallel candidates:
 
@@ -46,7 +46,7 @@ it. Say that in the report every time parallel units land.
 
 Keep a unit on the main agent when:
 
-- the change needs one coherent edit across files another unit owns
+- the change needs one coherent edit that another unit is also making
 - another agent is already doing that work
 
 Running everything on the main agent in dependency order is a valid plan. Say so
