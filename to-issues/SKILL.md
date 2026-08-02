@@ -29,10 +29,13 @@ Size each unit as **one reviewable chunk** — roughly one pull request. Not one
 per test; not one per file. Over-splitting floods the board and multiplies
 handoff cost.
 
+Bound a unit by behavior, never by a file list. Which files an implementation
+touches is not known until it is written, and a list guessed now either blocks the
+subagent or gets ignored. The objective and the spec's Non-Goals are the bounds.
+
 Each unit must state:
 
 - **Objective** — the observable change, in one sentence.
-- **Scope** — the files or modules it may touch, and what it must not touch.
 - **Covers** — the spec's test cases this unit satisfies, by number: `TC-1, TC-3`.
 - **Verification** — the exact command to run, and the expected result.
 - **Depends on** — the units that must land first, by their issue reference.
@@ -67,7 +70,7 @@ genuinely turns out to be needed, that is a contract change: go back to
 Order the units so that dependencies come first. Say which ones can run at the
 same time — `decompose-and-dispatch` uses that to decide what runs in parallel.
 
-Done when: every unit has all five fields, every test case is covered by at least
+Done when: every unit has all four fields, every test case is covered by at least
 one unit, and the dependency order is explicit.
 
 ## Step 3 — Write the issues

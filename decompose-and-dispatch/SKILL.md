@@ -33,12 +33,13 @@ Each unit must carry these two:
 A unit missing either is not ready. Say which unit and which field, and stop. Do
 not fill the gap by guessing.
 
-Two more fields get used when the unit has them:
+**verification** — the exact command and its expected result — gets used when the
+unit has it. Passed down, and the output is required back. Never invent one. A unit
+with none still runs and goes in the report as `unverified`.
 
-- **scope** — the files it may write. Passed down as `allowed_scope`.
-- **verification** — the exact command and its expected result. Passed down, and
-  the output is required back. Never invent one. A unit with none still runs and
-  goes in the report as `unverified`.
+A unit does not carry a file list, and this skill does not ask for one. Nobody
+knows which files an implementation touches until it is written. The objective and
+the parent's non-goals are the bounds; the subagent reports the files afterwards.
 
 Tickets from any producer run here, not only the ones `to-issues` wrote.
 
@@ -62,10 +63,10 @@ Each subagent prompt must be self-contained and carry exactly this:
 
 - the unit reference — file path and unit number, ticket key, or issue number
 - the objective, verbatim from the unit
-- `allowed_scope` and the instruction to touch nothing else, when the unit says
 - the parent's non-goals, verbatim, if the parent states any
 - the verification command and its expected result, when the unit has one
-- the report contract: what changed, the verification output, anything left undone
+- the report contract: **every file it changed**, the verification output, anything
+  left undone
 
 Non-goals are the one thing that gets copied rather than linked. A subagent that
 has already started building the wrong thing does not stop to follow a link.

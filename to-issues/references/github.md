@@ -27,7 +27,6 @@ For each unit, in dependency order:
 gh issue create --title "01 parse the config file" --body "$(cat <<'EOF'
 Parent: #11
 
-**Scope**: internal/config/**
 **Covers**: TC-1, TC-3
 **Verify**: `go test ./internal/config/...` — 전부 통과
 **Depends on**: none
