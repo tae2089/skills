@@ -1,6 +1,6 @@
 ---
 name: compound-learning
-description: Capture reusable learnings from completed, verified work into task-scoped notes and durable solution docs so future agents skip re-discovery. Use for "compound learning", "document what worked", "capture a reusable pattern", or "update solution docs". Not for in-progress or uncertain work, trivial fixes, performing code review itself, or replaying a session as a recipe (that is session-recipe).
+description: Capture reusable learnings from completed, verified work into task-scoped notes and durable solution docs so future agents skip re-discovery. Use for "compound learning", "document what worked", "capture a reusable pattern", or "update solution docs". Not for in-progress or uncertain work, trivial fixes, or performing code review itself.
 ---
 
 # Compound Learning

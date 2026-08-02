@@ -25,21 +25,66 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 | [`codebase-design`](codebase-design/SKILL.md) | 모듈 경계, 인터페이스, 리팩터링, 테스트 가능성, 의존성 주입, 결합도를 설계하거나 검토할 때 |
 | [`coding-quality-guardrails`](coding-quality-guardrails/SKILL.md) | Go, Python, Java/Kotlin, TypeScript 작업에서 품질 저하, 테스트 게이밍, 과한 추상화, 약한 검증을 막아야 할 때 |
 | [`compound-learning`](compound-learning/SKILL.md) | 완료·검증된 작업(태스크, 리뷰, 버그 수정, 설계 결정, 디버깅)에서 재사용 가능한 학습을 `_workspace/<task>/compound-learning.md`와 `docs/solutions/` 문서로 증류할 때. 진행 중 작업·불확실한 결과에는 미사용 |
-| [`decompose-and-dispatch`](decompose-and-dispatch/SKILL.md) | 복잡한 목표를 원자적 작업 단위로 나누고 실행 가능한 디스패치 계획으로 바꿀 때 |
+| [`decompose-and-dispatch`](decompose-and-dispatch/SKILL.md) | `to-issues`가 만든 issue를 의존 순서대로 subagent에 넘겨 실행할 때 |
 | [`diagnosing-bugs`](diagnosing-bugs/SKILL.md) | 버그, 회귀, 플래키 테스트, 실패 테스트, 깨진 UI 흐름, 성능 저하를 증거 기반으로 진단할 때 |
 | [`domain-modeling`](domain-modeling/SKILL.md) | 도메인 용어, 글로서리, ADR, 컨텍스트 문서, 네이밍을 정렬할 때 |
-| [`execute-dispatch-unit`](execute-dispatch-unit/SKILL.md) | 명확히 할당된 단일 작업 단위를 범위 안에서 실행하고 결과를 보고할 때 |
 | [`flow-design`](flow-design/SKILL.md) | 새 로직의 분기, 부수효과, 순서 제약을 pseudocode나 Mermaid 다이어그램으로 고정하거나 기존 흐름을 문서화할 때 |
 | [`oss-study`](oss-study/SKILL.md) | 오픈소스 코드베이스를 Diátaxis 기반 4가지 질문 모드로 구조화해 학습할 때 |
 | [`overengineering-review`](overengineering-review/SKILL.md) | 새 추상화가 후속 회귀를 3건 이상 유발하거나, 테스트 통과 후 커밋 전 영속 필드·인터페이스 메서드·라이프사이클 상태·호환성 분기·과한 테스트 매트릭스가 추가됐을 때 불필요한 복잡도를 검토할 때. 단순화가 명시적으로 요청되지 않는 한 read-only |
-| [`planning-grill`](planning-grill/SKILL.md) | 모호한 계획을 실행 전에 코드 근거로 검증해 범위·수용기준·실패 모드를 벼리거나 `task.md` Seed로 고정할 때. 위임·병렬·조정이 필요할 때만 `decompose-and-dispatch` 앞에서 실행 |
+| [`planning-grill`](planning-grill/SKILL.md) | 모호한 계획·결정을 실행 전에 한 번에 한 질문씩 캐물어 합의에 도달할 때. 사실은 직접 조사하고 결정만 사용자에게 넘김. 파일은 만들지 않음 |
 | [`ready-code-review`](ready-code-review/SKILL.md) | 사람 또는 AI 리뷰어에게 줄 리뷰 컨텍스트, severity 정책, false-positive 억제 규칙, 리뷰 프롬프트를 준비할 때 |
-| [`session-recipe`](session-recipe/SKILL.md) | 세션 기록 설정을 확인하고, 완료된 작업을 재생 가능한 recipe(dispatch packet 시퀀스)로 증류하거나, recipe.yaml을 검증·재생할 때. 세션 기록 자체는 저장소 밖의 `session-recorder` hook 도구가 담당(설치는 그 README 참고) |
+| [`to-issues`](to-issues/SKILL.md) | spec을 리뷰 가능한 크기의 작업 단위로 쪼개 issue로 기록할 때(`task.md` Plan / Jira sub-task / GitHub sub-issue) |
+| [`to-spec`](to-spec/SKILL.md) | 코드·테스트·설정·문서·인프라를 고치기 전에 계약과 설계를 spec으로 남길 때(`_workspace/` 파일 / Jira+Confluence / GitHub Issues) |
 | [`writing-great-skills`](writing-great-skills/SKILL.md) | `SKILL.md` 작성, 스킬 리뷰, 런타임 포팅, 트리거 문구, 점진적 공개 구조를 다듬을 때 |
 
 ## 설치
 
 이 저장소 또는 개별 스킬 디렉터리를 Codex, Claude, Gemini 등 각 에이전트 런타임이 인식하는 스킬 경로에 둡니다. 설치 경로와 로드 방식은 런타임마다 다르지만, 이 README의 운영 모델은 동일합니다.
+
+| 런타임 | 전역 스킬 경로 |
+| --- | --- |
+| Claude | `~/.claude/skills/` |
+| Codex | `~/.codex/skills/` |
+| Gemini | `~/.gemini/skills/` |
+
+권장 방식은 저장소를 한 곳에 두고 각 스킬을 심볼릭 링크로 거는 것입니다. 링크는 저장소를 고치는 즉시 반영되므로 사본이 뒤처지지 않습니다.
+
+```bash
+REPO=~/path/to/skills
+DEST=~/.claude/skills
+
+for d in "$REPO"/*/; do
+  name=$(basename "$d")
+  case "$name" in _workspace|examples) continue ;; esac
+  ln -sfn "$d" "$DEST/$name"
+done
+```
+
+사본으로 설치했다면 저장소를 고칠 때마다 직접 동기화해야 합니다. 이때 **삭제된 스킬이 남는 것**이 가장 흔한 사고입니다. 설치본에만 남은 옛 스킬은 계속 로드되고, 없어진 스킬을 가리키는 라우팅과 함께 조용히 오작동합니다.
+
+```bash
+REPO=~/path/to/skills
+DEST=~/.claude/skills
+
+# 추가·수정만 반영
+for d in "$REPO"/*/; do
+  name=$(basename "$d")
+  case "$name" in _workspace|examples) continue ;; esac
+  rsync -a --delete "$d" "$DEST/$name/"
+done
+```
+
+`--delete`는 스킬 하나 안쪽에만 겁니다. 스킬 경로 전체에 걸면 이 저장소에서 오지 않은 다른 스킬까지 지웁니다.
+
+저장소에서 스킬을 삭제했다면 설치본에서도 직접 지워야 합니다. 무엇이 남았는지는 아래로 확인합니다.
+
+```bash
+skill_names() { (cd "$1" && ls -d */) | tr -d / | grep -vE '^(_workspace|examples)$' | sort; }
+
+comm -13 <(skill_names "$REPO") <(skill_names "$DEST")
+```
+
+출력된 이름 중 이 저장소에서 삭제한 스킬만 골라 지웁니다. 다른 출처의 스킬도 함께 나오므로 목록을 그대로 `rm`에 넘기지 마세요.
 
 설치는 스킬 파일을 사용할 수 있게 만드는 단계입니다. 실제 운영에서는 아래처럼 전역 프롬프트와 프로젝트별 프롬프트를 나눠 라우팅 규칙을 둡니다.
 
@@ -66,9 +111,10 @@ Apply these when their trigger conditions are met:
 | `diagnosing-bugs` | Debugging bugs, regressions, flaky behavior, or failing tests. |
 | `flow-design` | Pseudocode, logic/flow plans, diagrams, or new logic with branches, side effects, resource lifecycles, or ordering constraints. |
 | `codebase-design` | Designing module boundaries, refactoring, or shaping interfaces. |
-| `planning-grill` | Sharpening fuzzy intent or creating a durable `task.md` Seed before execution; precedes decomposition only for delegated or coordinated work. |
-| `decompose-and-dispatch` | Planning multi-step or multi-agent work. |
-| `execute-dispatch-unit` | Executing one assigned bounded dispatch unit with explicit scope, dependencies, and verification. |
+| `planning-grill` | Stress-testing a fuzzy plan, decision, or idea into a shared understanding, one question at a time. |
+| `to-spec` | Writing the contract and design before editing any project file — local `_workspace/`, Jira + Confluence, or GitHub Issues. |
+| `to-issues` | Breaking a written spec into ordered, reviewable work units recorded as issues. |
+| `decompose-and-dispatch` | Running an existing issue list by giving each issue to a subagent, in dependency order. |
 | `domain-modeling` | Aligning terminology or doing domain modeling. |
 | `ready-code-review` | Preparing review context, reviewer instructions, prompts, severity calibration, or false-positive suppression before a human or AI review. |
 | `overengineering-review` | Reviewing a change for unnecessary abstractions, duplicated policy, or scope expansion — during implementation after a new abstraction causes 3+ follow-up regressions, or after tests pass and before commit when persisted fields, interface methods, lifecycle states, or compatibility branches were added. |
@@ -92,26 +138,36 @@ Apply these when their trigger conditions are met:
 
 이 저장소 자체의 [AGENTS.md](AGENTS.md)도 살아 있는 예시지만, 스킬 저장소 특화 라우팅이므로 일반 프로젝트에는 위 템플릿이 맞습니다.
 
-## planning-grill 사용 예시
+## 계획 파이프라인
 
-`planning-grill`은 실행 전에 모호한 계획을 코드 근거로 벼리는 상류 단계입니다. 결과는 경량 인라인 계획 또는 durable `task.md` Seed이며, 다음 단계는 각 스킬의 트리거로 결정합니다.
+모호한 의도에서 실행까지 네 단계입니다. 각 스킬은 한 가지만 하고, 앞 단계 산출물만 읽습니다.
 
 ```text
-[모호한 의도] → planning-grill → [SHARPENED inline plan | task.md Seed]
-                                      ├─ bounded sequential execution
-                                      └─ decompose-and-dispatch (delegated/coordinated)
+[모호한 의도]
+  → planning-grill   대화로 합의 도출 (파일 안 만듦)
+  → to-spec          합의를 spec으로 저장 — 계약 + 설계
+  → to-issues        spec을 리뷰 단위 issue로 쪼갬
+  → decompose-and-dispatch   issue마다 subagent 실행
 ```
 
-먼저 코드·문서를 조사해 저장소가 답할 수 있는 것은 묻지 않고, 남은 결정 중 범위·소유자·작업 순서·수용기준·안전 경계를 바꾸는 것만 blocking 질문으로 던집니다. 질문은 한 턴에 하나, 4줄 Probe Format(필요할 때만 2-3개 선택지 목록을 덧붙임)으로 보냅니다. 예를 들어 "공개 API에 rate limiting 추가"라는 모호한 요청은 이렇게 좁힙니다.
+각 단계는 독립 트리거를 가지므로 전부 거칠 필요는 없습니다. 계획 대화만 필요하면 `planning-grill`에서 멈추고, 이미 티켓이 있으면 `to-issues`부터 시작합니다.
 
-```md
-Current understanding: add rate limiting to the public API without breaking existing clients.
-Blocked decision: limit key — per-IP vs per-API-key changes middleware shape and the test matrix.
-Recommended answer: per-API-key with a per-IP fallback for unauthenticated routes (if wrong: authed clients sharing an IP throttle each other).
-Question: should the limit be keyed on the API key rather than the source IP?
+백엔드는 `to-spec`이 한 번 정해 `_workspace/.tracker`에 캐시하고, 뒤 단계는 그것을 읽기만 합니다.
+
+| 백엔드 | to-spec 산출물 | to-issues 산출물 |
+| --- | --- | --- |
+| `local` | `task.md` Contract + `implementation.md` | `task.md` Plan 항목 |
+| `jira` | Confluence seed page + Jira PRD 티켓 | PRD의 sub-task |
+| `github` | `type:seed` issue + `type:prd` issue | PRD의 native sub-issue |
+
+`planning-grill`은 저장소가 답할 수 있는 사실은 직접 조사하고, 결정만 한 턴에 하나씩 사용자에게 묻습니다. 모든 질문에 추천 답과 **틀렸을 때의 대가**를 함께 적어, 사용자가 후속 질문 없이 비용을 보고 판단하게 합니다.
+
+```text
+Recommended: per-API-key, with a per-IP fallback for unauthenticated routes.
+If wrong: authed clients behind one shared IP throttle each other.
 ```
 
-`추천 답안`은 필수이고 틀렸을 때의 대가를 함께 적어, 사용자가 후속 질문 없이 비용을 보고 판단할 수 있게 합니다. 계획 대화만 필요하면 `LIGHTWEIGHT` 모드로 인라인 결과를 내고, 실행·후속 작업이 있으면 `DURABLE` 모드에서 `_workspace/<task-name>/task.md`를 단일 Seed로 사용해 결과·범위·비목표·동작 시나리오·제약과 불변조건·확정 결정·`Worker Latitude`·검증 항목을 누적합니다. 종료 시 `Artifact`, `Status`, `Next`를 명시하며, `Artifact`가 `inline-only`인지 `task.md` 경로인지가 durable 여부의 단일 근거입니다. 원 대화가 없는 워커도 행동을 바꾸는 추측 없이 구현과 검증을 시작할 수 있을 때만 durable Seed를 `SHARPENED`로 표시합니다. blocking 결정이 남아 있으면 `BLOCKED_ON_USER`, 지배적 blocker가 다른 스킬(용어→`domain-modeling`, 구조→`codebase-design`, 흐름→`flow-design`)의 몫이면 `ROUTED`, 필수 근거·권한·Seed 생성 경로가 없으면 `BLOCKED`로 종료합니다. `decompose-and-dispatch`는 위임·병렬·의존성/소유권 조정이 필요할 때만 다음 소비자가 됩니다. LLM이 매긴 모호성 점수는 이 handoff의 기계적 증거로 취급하지 않습니다.
+Jira 티켓·Confluence 페이지·GitHub 이슈 생성은 팀에 보이고 되돌리기 번거로우므로, `to-spec`과 `to-issues` 모두 공유 백엔드 첫 쓰기 전에 무엇을 만들지 알리고 확인을 받습니다.
 
 ## 유지보수 원칙
 
@@ -124,10 +180,8 @@ Question: should the limit be keyed on the API key rather than the source IP?
 
 ## 출처
 
-`codebase-design`, `diagnosing-bugs`, `domain-modeling`, `writing-great-skills`는 Matt Pocock의 [`mattpocock/skills`](https://github.com/mattpocock/skills) commit `5d78bd0`를 기반으로 적용했습니다.
+`codebase-design`, `diagnosing-bugs`, `domain-modeling`, `planning-grill`, `writing-great-skills`는 Matt Pocock의 [`mattpocock/skills`](https://github.com/mattpocock/skills) commit `5d78bd0`를 기반으로 적용했습니다. `planning-grill`은 그중 `grilling` 스킬을 거의 그대로 따르되, 추천 답에 틀렸을 때의 대가를 함께 적는 규칙 하나를 더했습니다.
 
-`planning-grill`의 선택지 목록 규칙은 [`devbrother2024/skills`](https://github.com/devbrother2024/skills)의 `deep-interview` 스킬 commit `de4998a`에서 가져왔습니다.
-
-`planning-grill`의 Interview → Seed 분리는 Q00의 [`ouroboros`](https://github.com/Q00/ouroboros/blob/main/README.ko.md)에서 영향을 받았고, 이 저장소에서는 LLM 점수 대신 cold-handoff 가능한 `task.md` 계약으로 적용했습니다.
+Interview → spec 분리는 Q00의 [`ouroboros`](https://github.com/Q00/ouroboros/blob/main/README.ko.md)에서 영향을 받았고, 이 저장소에서는 LLM 점수 대신 `planning-grill` → `to-spec` → `to-issues` 단계 분리로 적용했습니다.
 
 `compound-learning`은 [`tae2089/agent-team`](https://github.com/tae2089/agent-team)의 `recipe-agent-team-compound-learning` 스킬 commit `2354d37`을 agent-team CLI 의존 없이 포터블하게 적응했습니다.

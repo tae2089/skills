@@ -9,21 +9,21 @@ Follow the global prompt rules first. This file adds project-specific skill rout
 - Before implementing new logic with branching, side effects, resource lifecycles, or ordering constraints, use `flow-design` and keep the design note in the task workspace.
 - When designing module boundaries, refactoring, or shaping interfaces, use `codebase-design`.
 - When aligning terminology or modeling the domain, use `domain-modeling`.
-- When a plan is fuzzy, high-impact, or lacks testable acceptance criteria, use `planning-grill` to sharpen scope, acceptance, and failure modes before execution. Run it before `decompose-and-dispatch` only when delegated or coordinated work is needed.
-- For multi-step or multi-agent work, use `decompose-and-dispatch` to split the work into bounded units. Use `execute-dispatch-unit` only for a clearly assigned unit with scope, dependencies, and verification.
+- When a plan is fuzzy, high-impact, or lacks testable acceptance criteria, use `planning-grill` to reach a shared understanding of scope, acceptance, and failure modes before execution. It writes no files.
+- Before editing any project file, use `to-spec` to record the contract and design. It picks the backend once — local `_workspace/`, Jira + Confluence, or GitHub Issues — and caches it in `_workspace/.tracker`.
+- When the spec covers more than one reviewable chunk, use `to-issues` to cut it into ordered work units with acceptance and a verification command each.
+- For multi-step or multi-agent work, use `decompose-and-dispatch` to run those units — one subagent per unit, in dependency order.
 - When preparing context for human or AI code review, use `ready-code-review`; do not use it to perform the review itself.
 - After a new abstraction causes 3+ follow-up regressions, or after tests pass and before commit when the change adds persisted fields, interface methods, lifecycle states, or compatibility branches, use `overengineering-review` to check for unnecessary complexity.
-- To record a session, distill completed work into a replayable recipe, or replay a `recipe.yaml`, use `session-recipe`.
 - After a non-trivial task, review cycle, bug fix, or debugging session is verified, use `compound-learning` to capture reusable learnings and maintain `docs/solutions/`.
 
 ## agent-team Routing
 
 agent-team bundles its own skills; restrict them as follows so methodology stays single-sourced:
 
-- Use only agent-team's CLI operation skills (the `agent-team-*` prefix: run/task/message/inbox/sync/event commands), and load `agent-team-shared` before any command-specific one — it defines the state directory, global flags, and error handling they all assume. Never use its `recipe-*` and `persona-*` skills — the skills routed above own all methodology, even where an excluded skill looks like a closer match (worker checkpoints → `execute-dispatch-unit`'s Ledger Checkpoints; plan sharpening / `recipe-agent-team-planning-grill` → `planning-grill`; decomposition → `decompose-and-dispatch`; architecture → `codebase-design`; terminology → `domain-modeling`; compound learning / `recipe-agent-team-compound-learning` → `compound-learning`).
-- When executing an assigned unit, follow `execute-dispatch-unit` for scope, verification, and reporting; its Ledger Checkpoints section defines which `agent-team-*` calls to make.
-- When planning, `decompose-and-dispatch` owns decomposition and executor resolution, and its Durable Ledger section defines the run/task registration calls.
-- Do not route by the word "recipe": here it means a replayable session recipe (`session-recipe`, `recipe.yaml`); agent-team's `recipe-*` skills are excluded above.
+- Use only agent-team's CLI operation skills (the `agent-team-*` prefix: run/task/message/inbox/sync/event commands), and load `agent-team-shared` before any command-specific one — it defines the state directory, global flags, and error handling they all assume. Never use its `recipe-*` and `persona-*` skills — the skills routed above own all methodology, even where an excluded skill looks like a closer match (plan sharpening / `recipe-agent-team-planning-grill` → `planning-grill`; work breakdown → `to-issues`; delegated execution → `decompose-and-dispatch`; architecture → `codebase-design`; terminology → `domain-modeling`; compound learning / `recipe-agent-team-compound-learning` → `compound-learning`).
+- The work units live in the backend `to-spec` chose, not in the agent-team ledger. Use the `agent-team-*` commands for run/task registration and messaging on top of those units; never let them re-decompose the work.
+- Do not route by the word "recipe": agent-team's `recipe-*` skills are excluded above.
 
 ## Project Notes
 
