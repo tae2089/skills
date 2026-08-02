@@ -16,8 +16,8 @@ Read `_workspace/.tracker` (one line: `local`, `jira`, or `github`). If it is
 missing, `to-spec` has not run — run that first instead of guessing a backend.
 
 Then read the spec from that backend: the local `task.md` Contract plus
-`implementation.md`, or the PRD ticket plus the Confluence seed page, or the
-`type:prd` issue plus the `type:seed` issue.
+`implementation.md`, or the PRD ticket plus the Confluence design page, or the
+`type:prd` issue plus the `type:design` issue.
 
 Done when: the backend is known and the contract is in front of you.
 

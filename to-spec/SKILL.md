@@ -49,8 +49,8 @@ Otherwise — or when unsure — **Full tier**.
 Escalate Fast → Full the moment diagnosis, a new design decision, scope
 expansion, or another behavioral increment appears.
 
-Fast tier skips the design artifact (`implementation.md` / seed page / seed
-issue) in every backend.
+Fast tier skips the design artifact (`implementation.md` / Confluence design
+page / `type:design` issue) in every backend.
 
 Done when: the tier is stated and, for Fast tier, each of the four conditions is true.
 
@@ -69,6 +69,13 @@ Every backend stores the same three pieces:
 | Contract | Expected behavior, acceptance criteria. Max 5 bullets. |
 | Design | Approach, assumptions, affected modules, risks, edge cases. Max 12 bullets. Full tier only. |
 | Journal | Append-only event log. **Always local**, never mirrored to Jira or GitHub. |
+
+The contract says *what* and *when it is done*; the design says *how* and *why*.
+Keep them apart — a contract that drifts into approach stops being checkable.
+
+On `jira` and `github` the contract opens with one line naming the problem it
+solves and for whom, because a teammate opens that ticket without this
+conversation. `local` skips the line — nobody reads it cold.
 
 Journal format, one line per event — record only design decisions, failed
 verifications with cause, scope changes, and final verification:

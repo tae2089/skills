@@ -157,8 +157,10 @@ Apply these when their trigger conditions are met:
 | 백엔드 | to-spec 산출물 | to-issues 산출물 |
 | --- | --- | --- |
 | `local` | `task.md` Contract + `implementation.md` | `task.md` Plan 항목 |
-| `jira` | Confluence seed page + Jira PRD 티켓 | PRD의 sub-task |
-| `github` | `type:seed` issue + `type:prd` issue | PRD의 native sub-issue |
+| `jira` | Confluence design page + Jira PRD 티켓 | PRD의 sub-task |
+| `github` | `type:design` issue + `type:prd` issue | PRD의 native sub-issue |
+
+계약과 설계는 서로 다른 문서입니다. 계약은 **무엇을** 만들고 **언제 끝난 것인지**를, 설계는 **어떻게** 그리고 **왜**를 담습니다. 계약이 접근 방식으로 흘러가면 확인 가능한 기준이 아니게 됩니다. `jira`·`github`에서는 계약 문서 맨 앞에 무슨 문제를 누구를 위해 푸는지 한 줄을 둡니다 — 팀원은 이 대화 없이 티켓만 열기 때문입니다. `local`은 그 줄을 두지 않습니다.
 
 `planning-grill`은 저장소가 답할 수 있는 사실은 직접 조사하고, 결정만 한 턴에 하나씩 사용자에게 묻습니다. 모든 질문에 추천 답과 **틀렸을 때의 대가**를 함께 적어, 사용자가 후속 질문 없이 비용을 보고 판단하게 합니다.
 

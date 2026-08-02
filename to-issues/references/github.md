@@ -3,7 +3,7 @@
 One native sub-issue per work unit, under the `type:prd` issue `to-spec` created.
 
 ```
-[type:prd]   #11  contract, acceptance criteria
+[type:prd]   #11  problem, contract, acceptance criteria
              ├─ #12  01 parse the config file
              ├─ #13  02 wire the parser into startup
              └─ #14  03 document the config keys
