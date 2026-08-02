@@ -25,7 +25,7 @@ Applies whenever work units are handed to subagents, in dependency order.
 - A worktree copies the repo, not the world — the same database, port, or external service still collides. Run those units in sequence.
 - Two units can pass alone and break together with no file in common: one renames a symbol, the other calls the old name. Run the project's whole verification once on the merged tree.
 - Do not merge the branches. Report them, and say the merged-tree verification still has to run.
-- Copy the parent's Out of Scope into the subagent prompt verbatim; link everything else. A subagent already building the wrong thing does not follow a link.
+- Copy the parent's Out of Scope — whatever the spec or ticket calls its not-doing list — into the subagent prompt verbatim; link everything else. A subagent already building the wrong thing does not follow a link.
 - A subagent claiming success without the verification output has not finished. Re-dispatch it.
 - Running every unit yourself in dependency order is a valid plan, not a failed delegation.
 

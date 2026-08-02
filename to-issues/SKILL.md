@@ -1,6 +1,6 @@
 ---
 name: to-issues
-description: Break a written spec into ordered, reviewable work units and record them as issues — `task.md` Plan lines, plus tracker issues when the spec was published. Use after `to-spec` has written the spec, when starting from an existing PRD issue, or when the user asks to split work into issues or tickets. Stops at the written units; running them is a separate ask.
+description: Break a written spec into ordered, reviewable work units and record them as issues — `task.md` Plan lines, plus tracker issues when the spec was published. Use after `to-spec` has written the spec, or when the user asks to split work into issues or tickets. Stops at the written units; running them is a separate ask.
 ---
 
 # To Issues
@@ -42,7 +42,8 @@ subagent or gets ignored. The objective and the spec's Out of Scope are the boun
 Each unit must state:
 
 - **Objective** — the end-to-end behavior this unit makes work, in one sentence,
-  from the user's side. Not a layer-by-layer list.
+  from the user's side. Not a layer-by-layer list. It becomes the unit's title line
+  in the Plan, so keep it short enough to read as one.
 - **Covers** — the user stories this unit satisfies, by number: `US-1, US-3`.
 - **Verification** — the exact command to run, and the expected result. Build it
   from the spec's Testing Decisions, which name the modules that get tested.
@@ -88,6 +89,10 @@ dependency order is explicit.
 
 Present the breakdown as a numbered list before creating anything. Per unit: title,
 what it delivers, and what blocks it.
+
+Then the numbering check from Step 2 — which stories no unit covers, which units
+cover no story. Empty on both sides is a result: say so, so the user can tell a clean
+check from a skipped one.
 
 Ask:
 
