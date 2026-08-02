@@ -17,32 +17,37 @@ The user says what to run: a parent reference, a list of references, or a file
 path. If they gave a parent, read its children.
 
 - **a file** — the `## Plan` section of the file (each line is one unit)
-- **Jira** — the parent ticket's sub-tasks, or the listed keys
 - **GitHub** — `gh issue list` filtered to the parent's sub-issues, or the listed numbers
+- **any other tracker** — the parent's children, through whatever MCP server is connected
 
 If no target was given, ask for one. Do not go looking for a plan to run —
 guessing wrong means subagents write files for work nobody asked for.
 
-Each unit must carry all five of these:
+Each unit must carry these two:
 
 | Field | What it is |
 |---|---|
 | objective | the observable change, one sentence |
-| scope | the files it may write |
-| acceptance | the condition that proves it is done |
-| verification | the exact command and its expected result |
 | depends on | the units that must land first, or none |
 
-A unit missing any of them is not ready. Say which unit and which field, and
-stop. Do not fill the gap by guessing.
+A unit missing either is not ready. Say which unit and which field, and stop. Do
+not fill the gap by guessing.
+
+Two more fields get used when the unit has them:
+
+- **scope** — the files it may write. Passed down as `allowed_scope`.
+- **verification** — the exact command and its expected result. Passed down, and
+  the output is required back. Never invent one. A unit with none still runs and
+  goes in the report as `unverified`.
+
+Tickets from any producer run here, not only the ones `to-issues` wrote.
 
 ## Step 2 — Group by dependency
 
 Units whose dependencies are all done can start now. Everything else waits.
 
 Among the ready units, decide which may run at the same time — see
-[reference/parallelism.md](reference/parallelism.md). Two units that write the
-same files never run together, whatever their dependency lines say.
+[reference/parallelism.md](reference/parallelism.md).
 
 ## Step 3 — Dispatch
 
@@ -50,13 +55,16 @@ Delegate only when the runtime can spawn subagents **and** the user asked for
 delegated, parallel, or multi-agent work. Otherwise run the units yourself, in
 order — that is a normal outcome, not a fallback.
 
+Parallel subagents each get their own git worktree — never two writers in one
+working tree.
+
 Each subagent prompt must be self-contained and carry exactly this:
 
 - the unit reference — file path and unit number, ticket key, or issue number
 - the objective, verbatim from the unit
-- `allowed_scope`: the files it may write, and the instruction to touch nothing else
+- `allowed_scope` and the instruction to touch nothing else, when the unit says
 - the parent's non-goals, verbatim, if the parent states any
-- the verification command and its expected result
+- the verification command and its expected result, when the unit has one
 - the report contract: what changed, the verification output, anything left undone
 
 Non-goals are the one thing that gets copied rather than linked. A subagent that
@@ -67,15 +75,24 @@ subagent reads the parent if it needs the contract.
 
 ## Step 4 — Collect and report
 
-A unit is done only when its verification command ran and passed. A subagent
-claiming success without that output has not finished — say so and re-dispatch.
+A unit that has a verification command is done only when that command ran and
+passed. A subagent claiming success without the output has not finished — say so
+and re-dispatch. A unit with no command is done when the subagent says so, and
+stays `unverified` in the report.
 
-Update each unit's status where it lives as results come in. Report at the end:
-units done, units blocked and why, and what runs next.
+Update each unit's status where it lives as results come in.
+
+Parallel work leaves one branch per worktree. **This skill does not merge them.**
+Report the branches, and say the project's whole verification command has to run
+once after the merge — [reference/parallelism.md](reference/parallelism.md) says
+why every unit passing alone is not enough.
+
+Report at the end: units done, units unverified, units blocked and why, branches
+left to merge, and what runs next.
 
 End with one of:
 
-- `READY_TO_EXECUTE` — every unit has a runner and a verification command.
+- `READY_TO_EXECUTE` — every unit has a runner.
 - `PARTIAL` — some units ran; name the blocked ones and what unblocks them.
 - `BLOCKED` — required context, permission, or runtime capability is missing and
   no safe fallback exists.

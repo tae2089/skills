@@ -16,24 +16,29 @@ Three files, always.
 ## Non-Goals
 - 범위 안이라고 오해할 만하지만 아닌 것
 
+## Test Cases
+1. 실제 입력 → 실제 기대 출력
+2. 실패 케이스 최소 하나
+
 ## Plan
 - (filled by to-issues)
 
 ## Verification
-- [ ] Todo — 전체 실행 명령과 기대 결과
+- [ ] Todo — 고치기 전 TC-1 테스트가 실패하는 것 확인 (출력 남길 것)
+- [ ] Todo — 프로젝트 전체 명령과 기대 결과
+- [ ] Todo — TC-1을 실제로 한 번 실행
 
 ## Result
 - (filled at completion)
 ```
 
-Max 5 bullets in Contract, 3 in Non-Goals. Drop the Non-Goals heading entirely
-when nothing plausible is out of scope — an empty section reads as "no bounds".
+Section rules are in `SKILL.md`, Step 2 — they are the same on every backend. Two
+things are local-only:
 
-The Verification command covers the whole project. A unit's `verify:` covers a
-part. Never point this line at a unit — if it can be satisfied by one unit's
-command, it is not checking the whole task.
-
-Nothing runs this command for you. The unchecked box is the reminder.
+- Drop the Non-Goals heading when nothing plausible is out of scope. Never drop
+  Test Cases; if you cannot write one, the contract is not concrete enough yet.
+- Nothing runs the Verification commands for you. The unchecked boxes are the
+  reminder.
 
 ## `implementation.md`
 
@@ -44,12 +49,9 @@ safety or contract completeness needs more.
 Never restate the contract, the plan, or a code walkthrough. Only information
 needed to implement.
 
-A dropped approach is an implementation note, not a non-goal. Non-goals say what
-is out of scope; this says why the chosen route beat the one next to it.
-
 ## `walkthrough.md`
 
-Append-only. One line per event:
+Format and content rules are in `SKILL.md`, Step 2. A filled example:
 
 ```
 [14:32] decision: 낙관적 잠금 선택 — 쓰기 경합이 낮아 행 잠금은 과함
@@ -57,16 +59,23 @@ Append-only. One line per event:
 [15:10] verification: 전체 스위트 통과, 214 passed
 ```
 
-Only failed verifications with cause, scope changes, and the final verification
-result. Decisions made before the work started belong in `implementation.md`.
-Read only the tail (~20 lines).
-
 ## Promoting to a shared backend
 
-If teammates start needing this task's state, write `jira` or `github` into
+If teammates start needing this task's state, write `github` into
 `_workspace/<task-name>/.tracker` — the per-task file, not the repo-wide one.
 Other tasks in this repo keep their own backend.
 
 Then move the contract and the implementation notes into that backend and reduce
 `task.md` to a link plus the plan. Do not keep both full copies. `walkthrough.md`
 stays local either way.
+
+## Pushing to a tracker with no backend here — Jira, Linear, Notion
+
+No reference file, and `.tracker` stays `local`. When the user asks, push through
+whatever MCP server is connected: a one-line problem statement, then Contract,
+Non-Goals, Test Cases, Verification. A teammate opens the ticket cold and needs the
+reason as well as the contract.
+
+Then replace those four sections in `task.md` with the ticket link — the ticket is
+canonical from there. Implementation notes stay in `implementation.md` unless the
+user wants a design page. `walkthrough.md` never goes.

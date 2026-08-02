@@ -10,8 +10,8 @@ Follow the global prompt rules first. This file only adds project-specific skill
 - When designing module boundaries, refactoring, or shaping interfaces, use `codebase-design`.
 - When aligning terminology or modeling the domain, use `domain-modeling`.
 - When a plan is fuzzy, high-impact, or lacks testable acceptance criteria, use `planning-grill` to reach a shared understanding of scope, acceptance, and failure modes before execution. It writes no files.
-- Before editing any project file, use `to-spec` to record the contract and design. It picks the backend once — local `_workspace/`, Jira + Confluence, or GitHub Issues — and caches it in `_workspace/.tracker`.
-- When the spec covers more than one reviewable chunk, use `to-issues` to cut it into ordered work units with acceptance and a verification command each.
+- Before editing any project file, use `to-spec` to record the contract and design. It picks the backend once — local `_workspace/` or GitHub Issues — and caches it in `_workspace/.tracker`.
+- When the spec covers more than one reviewable chunk, use `to-issues` to cut it into ordered work units with a scope and a verification command each.
 - For multi-step or multi-agent work, use `decompose-and-dispatch` to run those units — one subagent per unit, in dependency order.
 - When preparing context for human or AI code review, use `ready-code-review`; do not use it to perform the review itself.
 - After a new abstraction causes 3+ follow-up regressions, or after tests pass and before commit when the change adds persisted fields, interface methods, lifecycle states, or compatibility branches, use `overengineering-review` to check for unnecessary complexity.
