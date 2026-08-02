@@ -1,6 +1,6 @@
 ---
 name: to-spec
-description: Turn an agreed plan into a written spec — contract, acceptance criteria, and design — in local `_workspace/` files, Jira + Confluence, or GitHub Issues. Use before editing any code, test, config, doc, or infra file for a project-changing task; after `planning-grill` reaches a shared understanding; or when deciding where a contract or design doc should live. Hand off to `to-issues` to break the spec into work units.
+description: Turn an agreed plan into a written spec — contract, acceptance criteria, and design — in local `_workspace/` files or GitHub Issues. Use before editing any code, test, config, doc, or infra file for a project-changing task; after `planning-grill` reaches a shared understanding; or when deciding where a contract or design doc should live. Hand off to `to-issues` to break the spec into work units.
 ---
 
 # To Spec
@@ -13,118 +13,128 @@ content in two places — link instead.
 
 ## Step 1 — Resolve the backend
 
-Resolve in this order, stopping at the first hit:
+First hit wins: `_workspace/<task-name>/.tracker`, then `_workspace/.tracker`, then
+a tracker declared in the repo's `AGENTS.md` / `CLAUDE.md`. One line: `local` or
+`github`. Write the per-task file only when this task differs from the repo
+default.
 
-1. `_workspace/<task-name>/.tracker` exists → read it (one line: `local`, `jira`, or `github`).
-2. `_workspace/.tracker` exists → read it.
-3. The repo's `AGENTS.md` / `CLAUDE.md` declares a tracker → use it.
-4. Ask the user once: local, jira, or github? Then write the answer to `_workspace/.tracker`.
+None of those exist? Ask the user once — `local` when no teammate will read this
+task's state, `github` when someone else needs the contract — and write the answer
+to `_workspace/.tracker`. Never infer it from the git remote. `to-issues` reads the
+same files and never asks again.
 
-The per-task file exists so one repo can hold a shared-backend task and a
-throwaway local task at the same time. Write it only when this task differs from
-the repo default.
+Any other tracker — Jira, Linear, Notion — is `local` plus a push, not a backend.
+See `references/local.md`.
 
-Never infer the backend from the git remote — a GitHub remote does not mean the
-team tracks work in GitHub Issues.
-
-Choose `local` when no teammate will read this task's state. Choose `jira` or
-`github` when someone other than you needs the contract or the design.
-
-Root for `_workspace/`: the git repository the task belongs to; if there is no
-single repository, the working directory. Keep `_workspace/` untracked via an
-existing repo rule or a local Git exclude. Do not edit a tracked `.gitignore`
-solely for agent state.
-
-`to-issues` resolves the backend with the **same two-step order** and does not
-ask again. Changing the order in one skill and not the other splits the backend
-silently — the contract lands in one place and the work units in another.
+Root for `_workspace/`: the git repository the task belongs to, else the working
+directory. Keep it untracked via an existing repo rule or a local Git exclude — do
+not edit a tracked `.gitignore` for agent state.
 
 Done when: the backend is known and cached in a `.tracker` file.
 
 ## Step 2 — Write the spec
 
-Load exactly one:
+Load exactly one. It holds the template and where each piece goes:
 
 - **local** → [references/local.md](references/local.md)
-- **jira** → [references/jira.md](references/jira.md)
 - **github** → [references/github.md](references/github.md)
 
-Every backend stores the same five pieces:
+Every backend stores the same six pieces:
 
-| Piece | Content |
-|---|---|
-| Contract | Expected behavior, acceptance criteria. Max 5 bullets. |
-| Non-Goals | What a reasonable reader would expect in scope but is not. Max 3 bullets. Omit when nothing plausible is out of scope. |
-| Verification | The command that proves the whole task is done, and its expected result. One line. |
-| Implementation | Approach, assumptions, affected modules, risks, edge cases, alternatives considered and dropped. Max 12 bullets. |
-| Walkthrough | Append-only event log. **Always local**, never mirrored to Jira or GitHub. |
+| Piece | Content | Cap |
+|---|---|---|
+| Contract | Expected behavior and acceptance criteria. Every bullet names a **trigger** and an **observable result**. | 5 bullets |
+| Non-Goals | What a reasonable reader would expect in scope but is not. | 3 bullets |
+| Test Cases | Real input → real expected output, numbered `TC-1`, `TC-2`, … | none |
+| Verification | The commands that check those cases. | 3 entries |
+| Implementation | Approach, assumptions, affected modules, risks, edge cases, alternatives dropped and why. | 12 bullets |
+| Walkthrough | Append-only event log, one line per event: `[time] decision\|error\|verification: one-line summary`. **Always local**, never mirrored to a shared backend. | — |
 
-The contract says *what* and *when it is done*; the implementation notes say
-*how* and *why*. Keep them apart — a contract that drifts into approach stops
-being checkable.
+Contract, Non-Goals, Test Cases, and Verification live in one place — a work unit
+links there, so it is the only spec a subagent is guaranteed to reach.
 
-Contract, Non-Goals, and Verification live together in one place: `task.md` on
-`local`, the PRD ticket or `type:prd` issue elsewhere. That place is what a unit
-links to, so it is the only spec a subagent is guaranteed to reach.
+### Never invent a value the user has not given
 
-On `jira` and `github` the contract opens with one line naming the problem it
-solves and for whom, because a teammate opens that ticket without this
-conversation. `local` skips the line — nobody reads it cold.
+Write the gap in place instead:
 
-**Always write the implementation notes.** There is no small-task exemption. Starting
-work with no written approach is how the same decision gets made twice, in two
-different ways, by two different people.
+    - 설정 파일 경로는 [NEEDS CLARIFICATION: 고정 경로인가, --config 플래그인가?]
 
-Check the notes against these four before handing off. Any one of them true means
-the notes need more than a sentence:
+A guess becomes the contract, and nobody downstream can tell it from a decision.
+Markers are greppable. One or two unknowns — ask now and fill them in. More than
+that, the plan was never settled: go back to `planning-grill`.
 
-- a public interface, schema, persistence, migration, external side-effect, security/auth, concurrency, or compatibility change
-- no existing local pattern to copy
-- competing design choices that had to be settled
-- diagnosis or cross-module coordination
+### A contract bullet with no trigger is not testable
 
-**Non-Goals stop drift.** Write a non-goal when the work sits next to something
-an implementer would plausibly reach for: an adjacent module, a cleanup the
-diff invites, a generalization the second caller would need. Do not list things
-nobody would attempt — an empty-ish Non-Goals section reads as "nothing is out
-of bounds", which is worse than no section.
+Not "config parsing should be robust" — "잘못된 YAML을 만나면 문제된 키를 담은
+타입 에러를 반환하고 exit 1". With no observable result, only the author can check
+it.
 
-    Non-Goals
-    - `internal/worker`의 환경변수 호출부는 그대로 둔다.
-    - 설정 핫 리로드는 안 한다. 반영하려면 재시작해야 한다.
+### Non-Goals name what someone would plausibly reach for
 
-An approach you considered and dropped is **not** a non-goal — it is an
-implementation note. `--no-reload because inotify is unreliable on the CI mounts`
-belongs next to the approach it lost to.
+An adjacent module, a cleanup the diff invites, a generalization the second caller
+would need. Do not list what nobody would attempt — a thin section reads as
+"nothing is out of bounds". An approach you considered and dropped is an
+implementation note, not a non-goal.
 
-**Verification runs the whole project.** Not a subset — `go test ./...`, never
-`go test ./internal/config/...`. In a repo with no test surface, the repo's own
-full build or validate command. A work unit's `verify:` is always a part; this is
-always the whole. That is why the two never say the same thing.
+### A test case has real values in it, or it is not one
 
-Walkthrough format, one line per event:
+The contract states a rule; a case states one instance of it, in values you could
+type. A "case" that restates a contract bullet in words is not one — delete it.
 
-```
-[time] decision|error|verification: one-line summary
-```
+**No cap on the count.** A task cut into nine work units needs at least nine cases
+— `to-issues` flags a unit covering none as work nobody asked for. Two filters keep
+the list from becoming the test file in prose:
 
-Record only what the plan could not know in advance: failed verifications with
-their cause, scope changes, and the final verification result. Decisions made
-*before* work started belong in the implementation notes, not here — they came
-out of `planning-grill` and already have a home.
+- Keep only the cases where getting it wrong changes what gets built.
+- Two cases the same code path satisfies are one case. `port: "eighty"` and
+  `port: "abc"` hit the same branch — keep the value most likely to break. The rest
+  belong in the test file, which should loop over all of them.
 
-Read only its tail (~20 lines) unless older context is needed.
+### Verification says how you find out; test cases say what must be true
 
-Do not write the work breakdown here. The ordered plan is `to-issues`' job.
+So it lists runners, never cases. Three entries, whatever the case count:
 
-Done when: the contract, the verification command, and the implementation notes
-exist in their canonical location, and no target file has been edited yet.
+1. **Fail first.** A test that never failed has not been shown to check anything.
+   The code author usually writes the tests, so both can agree and both be wrong.
+2. **The whole project** — `go test ./...`, never `go test ./internal/config/...`.
+   No test surface: the repo's own full build or validate command. A work unit's
+   `verify:` is a part; this is the whole, so the two never collide.
+3. **The real artifact, once, by hand.** A suite that passes while the binary does
+   not start is a suite testing itself.
+
+Cite a case by number, never by value — `TC-1`, not `exit 1, stderr에 server.port`.
+Copied values go stale on one side. Cases grow; this list stays at three.
+
+### Implementation notes are always written, whatever the task size
+
+No file paths and no code snippets — both go out of date faster than the prose
+around them. Name modules and interfaces instead.
+
+### A bug fix has no from-scratch contract
+
+The behavior exists and is wrong. Replace the contract with 재현 (the exact input
+that triggers it), 현재 동작 (what happens now, quoted from real output), and
+기대 동작 (what should happen instead). TC-1 is the reproduction; verification
+entry 1 is that test failing before the fix.
+
+### The walkthrough records only what the plan could not know
+
+Failed verifications with their cause, scope changes, and the final verification
+result. Decisions made before work started belong in the implementation notes.
+Read only the tail (~20 lines).
+
+Do not write the work breakdown here — that is `to-issues`' job.
+
+Done when: the contract, the numbered test cases, the verification list, and the
+implementation notes exist in their canonical location, and no target file has been
+edited yet.
 
 ## Step 3 — Hand off
 
-Report the backend and where the contract and the implementation notes landed — a
-path, a ticket key, or an issue number. Then hand off to `to-issues` to break the
-spec into work units.
+Report the backend, where the contract and the implementation notes landed (a path,
+a ticket key, or an issue number), and every `[NEEDS CLARIFICATION: ...]` still in
+the spec — those are the questions `planning-grill` did not settle. Then hand off to
+`to-issues`.
 
 Do not implement behavior whose contract is not written down.
 
@@ -134,4 +144,4 @@ Do not implement behavior whose contract is not written down.
 - **Never copy content between locations.** Reference by path + section heading, or by ticket/issue link. Exception: output explicitly built to be pasted into a tool that cannot read files.
 - **Link, don't duplicate.** When the contract lives in a ticket, the local file holds the ticket link and a one-line summary — not the ticket body.
 - **The walkthrough never leaves the machine.** No backend mirrors it.
-- Creating a Jira ticket, a Confluence page, or a GitHub issue is visible to the team. Say what you are about to create and get the user's confirmation before the first write to a shared backend.
+- Creating a GitHub issue, or pushing to any team tracker, is visible to the team. Say what you are about to create and get the user's confirmation before the first write.

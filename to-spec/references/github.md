@@ -21,8 +21,8 @@ Shape once `to-issues` has run:
               └─ #14  increment 3
 ```
 
-Sub-issues carry no label — the native parent/child link already expresses the
-hierarchy. Labels mark only what the hierarchy cannot: design vs prd.
+Sub-issues carry no label. Labels mark only what the parent/child link cannot:
+design vs prd.
 
 If the org has native **Issue Types** configured, use those instead of `type:*`
 labels.
@@ -54,14 +54,22 @@ get the user's confirmation before the first `gh issue create`.
 ## Non-Goals
 - ...                                    <!-- max 3; drop the heading if empty -->
 
+## Test Cases
+1. `port: "eighty"` → `ConfigError{Key:"server.port"}`, exit 1
+2. 파일 없음 → 기본값으로 뜨고 경고 한 줄     <!-- no cap; one failure case minimum -->
+
 ## Verification
-`go test ./...` — all pass
+- 고치기 전 TC-1 테스트가 실패하는 것 확인
+- `go test ./...` — 전부 통과
+- TC-1을 실제 바이너리로 한 번 — `./server --config testdata/bad.yaml`
 
 Design: #10
 ```
 
-The Verification command runs the whole project. Sub-issues carry their own
-partial commands; this one is not a copy of any of them.
+Section rules are in `SKILL.md`, Step 2. Two things are github-only: sub-issues
+carry their own partial commands, so the PRD's Verification list is never a copy
+of one of them; and a `[NEEDS CLARIFICATION: ...]` left in the body is something a
+teammate can answer in a comment.
 
 3. **Local `task.md`** — pointer only:
 
@@ -78,13 +86,8 @@ Design: #10
 - (filled at completion)
 ```
 
-The problem line exists because a teammate opening the PRD cold gets the
-contract but not the reason for it. One line is the whole budget — background
-belongs in the design issue.
-
-Non-Goals and Verification sit in the PRD, not the design issue, because
-`to-issues` links every sub-issue to the PRD. A subagent following that link
-reaches the bounds and the check; the design issue is one hop further.
+A sub-issue links to the PRD, not to the design issue — that is why the bounds
+and the check sit in the PRD. Background goes in the design issue.
 
 Do not create `implementation.md` — the design issue replaces it.
 Do not copy the issue body into `task.md`.

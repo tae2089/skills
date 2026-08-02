@@ -33,8 +33,8 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 | [`overengineering-review`](overengineering-review/SKILL.md) | 새 추상화가 후속 회귀를 3건 이상 유발하거나, 테스트 통과 후 커밋 전 영속 필드·인터페이스 메서드·라이프사이클 상태·호환성 분기·과한 테스트 매트릭스가 추가됐을 때 불필요한 복잡도를 검토할 때. 단순화가 명시적으로 요청되지 않는 한 read-only |
 | [`planning-grill`](planning-grill/SKILL.md) | 모호한 계획·결정을 실행 전에 한 번에 한 질문씩 캐물어 합의에 도달할 때. 사실은 직접 조사하고 결정만 사용자에게 넘김. 파일은 만들지 않음 |
 | [`ready-code-review`](ready-code-review/SKILL.md) | 사람 또는 AI 리뷰어에게 줄 리뷰 컨텍스트, severity 정책, false-positive 억제 규칙, 리뷰 프롬프트를 준비할 때 |
-| [`to-issues`](to-issues/SKILL.md) | spec을 리뷰 가능한 크기의 작업 단위로 쪼개 issue로 기록할 때(`task.md` Plan / Jira sub-task / GitHub sub-issue) |
-| [`to-spec`](to-spec/SKILL.md) | 코드·테스트·설정·문서·인프라를 고치기 전에 계약과 설계를 spec으로 남길 때(`_workspace/` 파일 / Jira+Confluence / GitHub Issues) |
+| [`to-issues`](to-issues/SKILL.md) | spec을 리뷰 가능한 크기의 작업 단위로 쪼개 issue로 기록할 때(`task.md` Plan / GitHub sub-issue) |
+| [`to-spec`](to-spec/SKILL.md) | 코드·테스트·설정·문서·인프라를 고치기 전에 계약과 설계를 spec으로 남길 때(`_workspace/` 파일 / GitHub Issues) |
 | [`writing-great-skills`](writing-great-skills/SKILL.md) | `SKILL.md` 작성, 스킬 리뷰, 런타임 포팅, 트리거 문구, 점진적 공개 구조를 다듬을 때 |
 
 ## 설치
@@ -112,7 +112,7 @@ Apply these when their trigger conditions are met:
 | `flow-design` | Pseudocode, logic/flow plans, diagrams, or new logic with branches, side effects, resource lifecycles, or ordering constraints. |
 | `codebase-design` | Designing module boundaries, refactoring, or shaping interfaces. |
 | `planning-grill` | Stress-testing a fuzzy plan, decision, or idea into a shared understanding, one question at a time. |
-| `to-spec` | Writing the contract and design before editing any project file — local `_workspace/`, Jira + Confluence, or GitHub Issues. |
+| `to-spec` | Writing the contract and design before editing any project file — local `_workspace/` or GitHub Issues. |
 | `to-issues` | Breaking a written spec into ordered, reviewable work units recorded as issues. |
 | `decompose-and-dispatch` | Running an existing issue list by giving each issue to a subagent, in dependency order. |
 | `domain-modeling` | Aligning terminology or doing domain modeling. |
@@ -150,33 +150,43 @@ Apply these when their trigger conditions are met:
   → decompose-and-dispatch   issue마다 subagent 실행
 ```
 
-각 단계는 독립 트리거를 가지므로 전부 거칠 필요는 없습니다. 계획 대화만 필요하면 `planning-grill`에서 멈추고, 이미 티켓이 있으면 `to-issues`부터 시작합니다. `decompose-and-dispatch`는 앞 단계와 의존이 없습니다 — 돌릴 대상을 인자로 받고, 다섯 필드(목표·범위·수용 기준·검증 명령·의존)를 갖춘 티켓이면 누가 만들었든 실행합니다.
+각 단계는 독립 트리거를 가지므로 전부 거칠 필요는 없습니다. 계획 대화만 필요하면 `planning-grill`에서 멈추고, 이미 티켓이 있으면 `to-issues`부터 시작합니다. `decompose-and-dispatch`는 앞 단계와 의존이 없습니다 — 돌릴 대상을 인자로 받고, **목표와 의존** 두 필드만 있으면 누가 만든 티켓이든 실행합니다. `scope`와 `verify:`는 있으면 쓰고 없으면 보고합니다. 병렬 subagent는 각자 worktree에서 돌기 때문에 파일 겹침은 스케줄링 문제가 아니라 병합 충돌이 됩니다. 대신 worktree는 **파일이 안 겹치는 깨짐**을 숨깁니다 — 한쪽이 심볼 이름을 바꾸고 다른 쪽이 옛 이름을 부르면 둘 다 초록불인데 합치면 깨집니다. dispatch는 병합하지 않고, 남은 브랜치와 "합친 뒤 전체 검증 한 번"을 보고합니다.
 
 백엔드는 `to-spec`이 정해 `.tracker` 한 줄짜리 파일에 캐시하고, `to-issues`가 같은 순서로 읽습니다 — 먼저 `_workspace/<task-name>/.tracker`, 없으면 `_workspace/.tracker`. 저장소 하나에 공유 백엔드 작업과 로컬 작업이 섞일 수 있기 때문입니다.
 
 | 백엔드 | to-spec 산출물 | to-issues 산출물 |
 | --- | --- | --- |
 | `local` | `task.md` Contract + `implementation.md` | `task.md` Plan 항목 |
-| `jira` | Confluence design page + Jira PRD 티켓 | PRD의 sub-task |
 | `github` | `type:design` issue + `type:prd` issue | PRD의 native sub-issue |
 
-계약과 설계는 서로 다른 문서입니다. 계약은 **무엇을** 만들고 **언제 끝난 것인지**를, 설계는 **어떻게** 그리고 **왜**를 담습니다. 계약이 접근 방식으로 흘러가면 확인 가능한 기준이 아니게 됩니다. `jira`·`github`에서는 계약 문서 맨 앞에 무슨 문제를 누구를 위해 푸는지 한 줄을 둡니다 — 팀원은 이 대화 없이 티켓만 열기 때문입니다. `local`은 그 줄을 두지 않습니다.
+Jira·Linear·Notion처럼 백엔드 파일이 없는 트래커는 `local`로 쓰고 나중에 MCP로 밀어 넣습니다 — 백엔드가 아니라 발행 단계입니다. 계약 네 조각이 티켓 본문이 되고 `task.md`는 링크만 남깁니다.
 
-`to-spec`이 남기는 것은 다섯 조각입니다.
+계약과 설계는 서로 다른 문서입니다. 계약은 **무엇을** 만들고 **언제 끝난 것인지**를, 설계는 **어떻게** 그리고 **왜**를 담습니다. 계약이 접근 방식으로 흘러가면 확인 가능한 기준이 아니게 됩니다. `github`에서는 계약 문서 맨 앞에 무슨 문제를 누구를 위해 푸는지 한 줄을 둡니다 — 팀원은 이 대화 없이 티켓만 열기 때문입니다. `local`은 그 줄을 두지 않습니다.
+
+`to-spec`이 남기는 것은 여섯 조각입니다.
 
 | 조각 | 내용 | 상한 |
 | --- | --- | --- |
-| Contract | 기대 동작, 인수 기준 | 5 bullet |
+| Contract | 기대 동작, 인수 기준. 한 줄마다 **계기**와 **관찰 가능한 결과**를 담습니다 | 5 bullet |
 | Non-Goals | 넣을 법한데 범위 밖인 것 | 3 bullet, 없으면 섹션 생략 |
-| Verification | 프로젝트 **전체**를 도는 명령 하나. `go test ./...`이지 `go test ./internal/...`이 아님 | 1줄 |
+| Test Cases | 실제 입력 → 실제 기대 출력. `TC-1`, `TC-2`로 번호를 붙입니다 | 상한 없음, 실패 케이스 최소 하나 |
+| Verification | 그 케이스들을 **어떻게 확인하는지**. 고치기 전 실패 / 프로젝트 전체 / 실물 한 번 | 3개 고정 |
 | Implementation | 접근, 가정, 영향 모듈, 위험, 엣지 케이스, 검토 후 버린 대안 | 12 bullet, 항상 작성 |
 | Walkthrough | append-only 이벤트 로그. **항상 로컬**, 공유 백엔드에 안 올라감 | — |
 
-Contract·Non-Goals·Verification은 한 곳에 같이 둡니다. `local`이면 `task.md`, 나머지는 PRD 티켓이나 `type:prd` issue입니다. `to-issues`가 만든 작업 단위가 링크로 가리키는 곳이 바로 여기라, subagent가 반드시 닿는 유일한 문서이기 때문입니다.
+Contract·Non-Goals·Verification은 한 곳에 같이 둡니다. `local`이면 `task.md`, `github`이면 `type:prd` issue입니다. `to-issues`가 만든 작업 단위가 링크로 가리키는 곳이 바로 여기라, subagent가 반드시 닿는 유일한 문서이기 때문입니다.
 
 Non-Goals는 방향이 어긋나는 것을 막습니다. 구현자가 손댈 법한 인접 모듈, 디프가 유도하는 정리 작업, 두 번째 호출자가 필요로 할 일반화 — 이런 것에 씁니다. 아무도 시도하지 않을 것은 적지 않습니다. 검토했다 버린 접근은 non-goal이 아니라 설계 노트입니다.
 
-검증은 두 층입니다. spec의 Verification은 프로젝트 전체를 돌고, 작업 단위의 `verify:`는 자기 범위만 돕니다. 항상 전체와 부분이라 같은 명령이 될 수 없습니다. 전체 검증을 자동으로 돌려주는 스킬은 없습니다 — `task.md`의 체크 안 된 항목이 유일한 표시입니다.
+Test Cases는 계약을 실제 값으로 옮긴 것입니다. 계약이 규칙이면 TC는 그 규칙의 실례 하나입니다. 읽는 곳이 셋입니다 — 구현자는 이걸 먼저 테스트로 쓰고, `to-issues`는 각 작업 단위의 `verify:`가 어느 케이스를 도는지 여기서 가져오며(`covers: TC-1, TC-3`), 리뷰어는 목록을 대조합니다. `to-issues`는 어느 unit도 안 덮는 TC(빠뜨린 작업)와 어느 TC도 안 가리키는 unit(시키지 않은 작업)을 양쪽으로 확인합니다. 그래서 **TC 개수에 상한이 없습니다** — 상한을 두면 unit 개수에 상한을 두는 것과 같아집니다. 대신 두 가지로 거릅니다. 틀렸을 때 만드는 물건이 달라지는 케이스만 남기고, 같은 코드 경로를 타는 케이스는 하나로 접습니다(`port: "eighty"`와 `port: "abc"`는 한 개). 접으면서 뺀 값들이 없어지는 건 아닙니다 — 그 값들을 전부 도는 건 테스트 파일이 할 일입니다.
+
+정해지지 않은 값은 지어내지 않고 `[NEEDS CLARIFICATION: 무엇이 안 정해졌는지]`로 그 자리에 남깁니다. 추측한 값은 계약이 되고, 뒷단계는 그게 결정된 값인지 구별하지 못합니다. `grep -rn "NEEDS CLARIFICATION"`으로 찾아 `planning-grill`로 돌아갑니다.
+
+Test Cases와 Verification은 층이 다릅니다. TC는 **무엇이 참이어야 하는가**를 실제 값으로 적은 것이고, Verification은 **그걸 어떻게 확인하는가**를 적은 명령입니다. 그래서 Verification에는 케이스를 나열하지 않습니다 — 케이스별 확인은 테스트 파일이 하고, 그 테스트 파일이 TC에서 나옵니다. TC가 스무 개여도 Verification은 세 항목입니다. 값을 다시 쓰지 않고 번호로 가리킵니다(`TC-1`).
+
+세 항목이 각각 다른 실패를 잡습니다. **고치기 전에 실패하는 것을 먼저 확인** — 실패한 적 없는 테스트는 아무것도 검사한다는 증거가 없습니다. 초록불은 생각보다 약한 증거입니다. 코드를 짠 쪽이 테스트도 짜면 둘이 서로 맞으면서 계약과 어긋날 수 있습니다. **프로젝트 전체** — spec의 Verification은 전체를 돌고 작업 단위의 `verify:`는 자기 범위만 돌아서 둘이 같은 명령이 될 수 없습니다. **실물 한 번 손으로** — 스위트는 초록인데 바이너리가 안 뜨는 경우를 잡습니다. 전체 검증을 자동으로 돌려주는 스킬은 없습니다. `task.md`의 체크 안 된 항목이 유일한 표시입니다.
+
+버그 수정은 계약 대신 재현 / 현재 동작 / 기대 동작을 씁니다. TC-1이 재현이고, 첫 검증 항목이 고치기 전 그 테스트가 실패하는 것입니다.
 
 `decompose-and-dispatch`는 부모의 Non-Goals만 subagent 프롬프트에 그대로 복사합니다. 이미 잘못된 것을 만들기 시작한 subagent는 링크를 따라가지 않기 때문입니다.
 
@@ -189,7 +199,7 @@ Recommended: per-API-key, with a per-IP fallback for unauthenticated routes.
 If wrong: authed clients behind one shared IP throttle each other.
 ```
 
-Jira 티켓·Confluence 페이지·GitHub 이슈 생성은 팀에 보이고 되돌리기 번거로우므로, `to-spec`과 `to-issues` 모두 공유 백엔드 첫 쓰기 전에 무엇을 만들지 알리고 확인을 받습니다.
+GitHub 이슈 생성이나 팀 트래커 푸쉬는 팀에 보이고 되돌리기 번거로우므로, `to-spec`과 `to-issues` 모두 공유 백엔드 첫 쓰기 전에 무엇을 만들지 알리고 확인을 받습니다.
 
 ## 유지보수 원칙
 

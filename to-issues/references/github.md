@@ -3,7 +3,7 @@
 One native sub-issue per work unit, under the `type:prd` issue `to-spec` created.
 
 ```
-[type:prd]   #11  problem, contract, acceptance criteria
+[type:prd]   #11  problem, contract, test cases, verification
              ├─ #12  01 parse the config file
              ├─ #13  02 wire the parser into startup
              └─ #14  03 document the config keys
@@ -28,12 +28,15 @@ gh issue create --title "01 parse the config file" --body "$(cat <<'EOF'
 Parent: #11
 
 **Scope**: internal/config/**
-**Accept**: malformed YAML returns a typed error, never panics
-**Verify**: `go test ./internal/config/...` — all pass
+**Covers**: TC-1, TC-3
+**Verify**: `go test ./internal/config/...` — 전부 통과
 **Depends on**: none
 EOF
 )"
 ```
+
+`Covers` cites the PRD's `## Test Cases` numbers. Every case must appear in at
+least one sub-issue.
 
 Then link each one as a native sub-issue of the PRD. Do not copy the PRD's
 contract into the body — the `Parent: #11` line is the link.

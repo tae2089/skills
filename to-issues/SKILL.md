@@ -1,6 +1,6 @@
 ---
 name: to-issues
-description: Break a written spec into ordered, reviewable work units and record them as issues — `task.md` Plan lines, Jira sub-tasks, or GitHub sub-issues. Use after `to-spec` has written the contract, when starting from an existing PRD ticket or issue, or when the user asks to split work into issues or tickets. Hand off to `decompose-and-dispatch` to run them.
+description: Break a written spec into ordered, reviewable work units and record them as issues — `task.md` Plan lines or GitHub sub-issues. Use after `to-spec` has written the contract, when starting from an existing PRD issue, or when the user asks to split work into issues or tickets. Hand off to `decompose-and-dispatch` to run them.
 ---
 
 # To Issues
@@ -12,18 +12,14 @@ The spec already exists — `to-spec` wrote it. Read it; do not restate it.
 
 ## Step 1 — Read the backend and the spec
 
-Resolve the backend the same way `to-spec` did, stopping at the first hit:
-
-1. `_workspace/<task-name>/.tracker` (one line: `local`, `jira`, or `github`).
-2. `_workspace/.tracker`.
-
-If neither exists, `to-spec` has not run — run that first instead of guessing a
-backend. Do not invent a third resolution rule here; a different order from
-`to-spec` puts the contract in one backend and the work units in another.
+Read `_workspace/<task-name>/.tracker`, else `_workspace/.tracker`. Neither exists
+means `to-spec` has not run — run it first rather than guessing a backend or adding
+a resolution rule of your own.
 
 Then read the spec from that backend: the local `task.md` Contract plus
-`implementation.md`, or the PRD ticket plus the Confluence design page, or the
-`type:prd` issue plus the `type:design` issue.
+`implementation.md`, or the `type:prd` issue plus the `type:design` issue. A
+`local` task whose contract was pushed to some other tracker holds the link in
+`task.md` — follow it.
 
 Done when: the backend is known and the contract is in front of you.
 
@@ -37,14 +33,31 @@ Each unit must state:
 
 - **Objective** — the observable change, in one sentence.
 - **Scope** — the files or modules it may touch, and what it must not touch.
-- **Acceptance** — the condition that proves it is done: a behavior, a file's
-  content, or a command's output.
+- **Covers** — the spec's test cases this unit satisfies, by number: `TC-1, TC-3`.
 - **Verification** — the exact command to run, and the expected result.
 - **Depends on** — the units that must land first, by their issue reference.
   Empty for units that can start immediately.
 
 A unit with no verification command is not ready. Go back to the spec and find
-what would prove it.
+what would prove it — nobody watches a subagent work, so the command is the only
+thing that can say "done".
+
+**Take the check from the test cases; do not invent one.** The spec's
+`## Test Cases` are values the user agreed to. A unit's verification command
+exercises one or more of them, and `covers:` says which. A condition invented
+here is a contract nobody approved.
+
+When every unit is written, check the numbering both ways:
+
+- a test case no unit covers → work you forgot to cut
+- a unit covering no test case → work nobody asked for
+
+Report both before creating anything. A test case with no unit is the more
+dangerous one: everything passes and the feature is incomplete.
+
+If the spec still holds a `[NEEDS CLARIFICATION: ...]` marker, do not write a
+unit that depends on the missing answer. Say which marker blocks which unit and
+send it back to `to-spec`.
 
 Check every unit against the spec's Non-Goals before writing it. A unit that
 implements a non-goal does not get created — the spec said no. If the work
@@ -54,20 +67,20 @@ genuinely turns out to be needed, that is a contract change: go back to
 Order the units so that dependencies come first. Say which ones can run at the
 same time — `decompose-and-dispatch` uses that to decide what runs in parallel.
 
-Done when: every unit has all five fields and the dependency order is explicit.
+Done when: every unit has all five fields, every test case is covered by at least
+one unit, and the dependency order is explicit.
 
 ## Step 3 — Write the issues
 
 Load exactly one:
 
 - **local** → [references/local.md](references/local.md)
-- **jira** → [references/jira.md](references/jira.md)
 - **github** → [references/github.md](references/github.md)
 
-Creating Jira sub-tasks or GitHub sub-issues is visible to the team and awkward
-to undo. List what you are about to create — count, titles, parent — and get the
-user's confirmation before the first write. The local backend needs no
-confirmation.
+Creating GitHub sub-issues, or pushing units to any team tracker, is visible to
+the team and awkward to undo. List what you are about to create — count, titles,
+parent — and get the user's confirmation before the first write. The local backend
+needs no confirmation.
 
 Done when: every unit exists in the backend, in order, linked to its parent, and
 the local `task.md` Plan lists them with `Todo` status.
