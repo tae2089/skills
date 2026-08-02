@@ -1,107 +1,144 @@
 ---
 name: to-issues
-description: Break a written spec into ordered, reviewable work units and record them as issues — `task.md` Plan lines or GitHub sub-issues. Use after `to-spec` has written the contract, when starting from an existing PRD issue, or when the user asks to split work into issues or tickets. Hand off to `decompose-and-dispatch` to run them.
+description: Break a written spec into ordered, reviewable work units and record them as issues — `task.md` Plan lines, plus tracker issues when the spec was published. Use after `to-spec` has written the spec, when starting from an existing PRD issue, or when the user asks to split work into issues or tickets. Stops at the written units; running them is a separate ask.
 ---
 
 # To Issues
 
 Turn one spec into the ordered work units that implement it. Each unit becomes an
-issue. `decompose-and-dispatch` gives each issue to a subagent.
+issue, sized so one agent can take it start to finish.
 
 The spec already exists — `to-spec` wrote it. Read it; do not restate it.
 
-## Step 1 — Read the backend and the spec
+Adapted from Matt Pocock's `to-tickets` skill in `mattpocock/skills`.
 
-Read `_workspace/<task-name>/.tracker`, else `_workspace/.tracker`. Neither exists
-means `to-spec` has not run — run it first rather than guessing a backend or adding
-a resolution rule of your own.
+## Step 1 — Read the spec
 
-Then read the spec from that backend: the local `task.md` Contract plus
-`implementation.md`, or the `type:prd` issue plus the `type:design` issue. A
-`local` task whose contract was pushed to some other tracker holds the link in
-`task.md` — follow it.
+`_workspace/<task-name>/task.md` plus `implementation.md`. No `task.md` means
+`to-spec` has not run — run it first.
 
-Done when: the backend is known and the contract is in front of you.
+A published spec leaves `task.md` holding a link instead of the sections. Follow it
+and read the ticket.
+
+Done when: the user stories and the implementation decisions are in front of you.
 
 ## Step 2 — Cut the work into units
 
-Size each unit as **one reviewable chunk** — roughly one pull request. Not one
-per test; not one per file. Over-splitting floods the board and multiplies
-handoff cost.
+Each unit is a **vertical slice**: a narrow but complete path through every layer it
+touches — schema, API, UI, tests. Not a horizontal slice of one layer.
+
+- A finished slice can be demoed or verified on its own.
+- A slice fits in one fresh context window.
+- Any prefactoring — "make the change easy, then make the easy change" — is its own
+  unit, and it comes first.
+
+Size each unit as one reviewable chunk, roughly one pull request. Not one per user
+story; not one per file. Over-splitting floods the board and multiplies handoff cost.
 
 Bound a unit by behavior, never by a file list. Which files an implementation
 touches is not known until it is written, and a list guessed now either blocks the
-subagent or gets ignored. The objective and the spec's Non-Goals are the bounds.
+subagent or gets ignored. The objective and the spec's Out of Scope are the bounds.
 
 Each unit must state:
 
-- **Objective** — the observable change, in one sentence.
-- **Covers** — the spec's test cases this unit satisfies, by number: `TC-1, TC-3`.
-- **Verification** — the exact command to run, and the expected result.
-- **Depends on** — the units that must land first, by their issue reference.
-  Empty for units that can start immediately.
+- **Objective** — the end-to-end behavior this unit makes work, in one sentence,
+  from the user's side. Not a layer-by-layer list.
+- **Covers** — the user stories this unit satisfies, by number: `US-1, US-3`.
+- **Verification** — the exact command to run, and the expected result. Build it
+  from the spec's Testing Decisions, which name the modules that get tested.
+- **Depends on** — the units that must land first, by their issue reference. Empty
+  for units that can start immediately.
 
-A unit with no verification command is not ready. Go back to the spec and find
-what would prove it — nobody watches a subagent work, so the command is the only
-thing that can say "done".
+A unit with no verification command is not ready. Nobody watches a subagent work, so
+the command is the only thing that can say "done".
 
-**Take the check from the test cases; do not invent one.** The spec's
-`## Test Cases` are values the user agreed to. A unit's verification command
-exercises one or more of them, and `covers:` says which. A condition invented
-here is a contract nobody approved.
+### Wide refactors are the exception to vertical slicing
 
-When every unit is written, check the numbering both ways:
+A wide refactor is one mechanical change — rename a column, retype a shared symbol —
+that breaks thousands of call sites at once. No vertical slice can land green, so do
+not force one. Sequence it **expand–contract** instead:
 
-- a test case no unit covers → work you forgot to cut
-- a unit covering no test case → work nobody asked for
+1. **Expand** — add the new form beside the old. Nothing breaks. One unit.
+2. **Migrate** — move call sites over in batches, sized by how far the change
+   reaches: per package, per directory. Each batch is its own unit, and each depends
+   on the expand. The old form still exists, so each batch stays green.
+3. **Contract** — delete the old form once no caller remains. Depends on every
+   migrate batch.
 
-Report both before creating anything. A test case with no unit is the more
-dangerous one: everything passes and the feature is incomplete.
+When even the batches cannot stay green alone, keep the sequence but give them one
+shared integration branch, and add a final integrate-and-verify unit that depends on
+all of them. Green is promised only there.
 
-If the spec still holds a `[NEEDS CLARIFICATION: ...]` marker, do not write a
-unit that depends on the missing answer. Say which marker blocks which unit and
-send it back to `to-spec`.
+### Check the numbering both ways
 
-Check every unit against the spec's Non-Goals before writing it. A unit that
-implements a non-goal does not get created — the spec said no. If the work
-genuinely turns out to be needed, that is a contract change: go back to
-`to-spec`, do not quietly add the unit here.
+- a user story no unit covers → work you forgot to cut
+- a unit covering no user story → work nobody asked for
 
-Order the units so that dependencies come first. Say which ones can run at the
-same time — `decompose-and-dispatch` uses that to decide what runs in parallel.
+A story with no unit is the more dangerous one: everything passes and the feature is
+incomplete. Report both.
 
-Done when: every unit has all four fields, every test case is covered by at least
-one unit, and the dependency order is explicit.
+Check every unit against the spec's Out of Scope before writing it. A unit that
+implements one does not get created — the spec said no. If it genuinely turns out to
+be needed, that is a spec change: go back to `to-spec`.
 
-## Step 3 — Write the issues
+Done when: every unit has all four fields, every user story is covered, and the
+dependency order is explicit.
 
-Load exactly one:
+## Step 3 — Quiz the user
 
-- **local** → [references/local.md](references/local.md)
-- **github** → [references/github.md](references/github.md)
+Present the breakdown as a numbered list before creating anything. Per unit: title,
+what it delivers, and what blocks it.
 
-Creating GitHub sub-issues, or pushing units to any team tracker, is visible to
-the team and awkward to undo. List what you are about to create — count, titles,
-parent — and get the user's confirmation before the first write. The local backend
-needs no confirmation.
+Ask:
 
-Done when: every unit exists in the backend, in order, linked to its parent, and
-the local `task.md` Plan lists them with `Todo` status.
+- Does the granularity feel right — too coarse, too fine?
+- Are the blocking edges right? Does each unit depend only on units that genuinely
+  gate it?
+- Should any units be merged or split further?
 
-## Step 4 — Hand off
+Iterate until the user approves. This is the gate — nothing downstream checks the
+breakdown again.
 
-Report the parent reference, the unit count, and which units have no dependencies
-and can start now. To run them, hand the parent reference to
-`decompose-and-dispatch` — that skill takes the target as an argument and knows
-nothing about this one.
+Done when: the user has approved the list.
 
-## Cross-cutting rules
+## Step 4 — Write the issues
 
-- **Never copy the spec into a unit.** A unit links to the parent; the parent
-  holds the contract. Repeat only what the unit's own scope needs.
-- **Never put a secret value in an issue.**
-- Re-running this skill on a spec that already has issues amends the existing
-  ones. Do not create a second set.
-- When execution shows a unit was cut wrong, fix that unit's issue and note the
-  change in `walkthrough.md`. A contract that turns out wrong goes back to
-  `to-spec`, not edited here.
+Fill the Plan section of `task.md`, always:
+
+```markdown
+## Plan
+- [ ] Todo — 01 설정 파일 파싱
+      covers: US-1, US-3
+      verify: `go test ./internal/config/...` — 전부 통과
+      needs: —
+- [ ] Todo — 02 시작 시점에 파서 연결
+      covers: US-4
+      verify: `go test ./cmd/server/...` — 전부 통과
+      needs: 01
+```
+
+Number units `01`, `02`, … in dependency order, blockers first, so a subagent can be
+pointed at one by number. `needs: —` means it can start now.
+
+Headings and field names are fixed; the text in them goes in the user's language.
+
+A Plan line **is** the issue when the spec was never published. Do not create a file
+per unit — a subagent reads `task.md` and its own line. Never copy the spec into a
+unit — the unit points at the parent, and the parent holds the stories.
+
+When the spec was published, also create one issue per unit on that tracker — see
+[references/publishing.md](references/publishing.md). Re-running this skill on a
+spec that already has units amends them; never create a second set.
+
+Statuses are `Todo` → `In Progress` → `Done`. Whoever runs the units moves them —
+when they are dispatched, the agent holding the verification output does it. `Done`
+only after that unit's `verify` command passed.
+
+Done when: every unit is in the Plan in dependency order with `Todo` status, and
+mirrored to the tracker if the spec was published.
+
+## Step 5 — Hand off
+
+Report the unit count and which units have no dependencies and can start now. Stop
+there. Running the units is a separate ask, and the project's own rules say how to
+delegate them.

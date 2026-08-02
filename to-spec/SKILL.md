@@ -1,98 +1,93 @@
 ---
 name: to-spec
-description: Turn an agreed plan into a written spec — contract, acceptance criteria, and design — in local `_workspace/` files or GitHub Issues. Use before editing any code, test, config, doc, or infra file for a project-changing task; after `planning-grill` reaches a shared understanding; or when deciding where a contract or design doc should live. Hand off to `to-issues` to break the spec into work units.
+description: Turn an agreed plan into a written spec — problem, solution, user stories, and implementation decisions — in `_workspace/` files, published to a tracker when the project has one. Use before editing any code, test, config, doc, or infra file for a project-changing task; after `planning-grill` reaches a shared understanding; or when the user asks for a spec, PRD, or design doc. Hand off to `to-issues` to break the spec into work units.
 ---
 
 # To Spec
 
-Write the spec **before** any target file is edited. The contract and the design
-exist first; the work units come later, from `to-issues`.
+Write the spec **before** any target file is edited. The spec exists first; the work
+units come later, from `to-issues`.
 
-Each piece of state has exactly **one** canonical location. Never keep the same
-content in two places — link instead.
+Do not interview the user. Synthesize what the conversation already settled. If the
+plan is still fuzzy, go back to `planning-grill`.
 
-## Step 1 — Resolve the backend
+Adapted from Matt Pocock's `to-spec` skill in `mattpocock/skills`.
 
-First hit wins: `_workspace/<task-name>/.tracker`, then `_workspace/.tracker`, then
-a tracker declared in the repo's `AGENTS.md` / `CLAUDE.md`. One line: `local` or
-`github`. Write the per-task file only when this task differs from the repo
-default.
+## Step 1 — Where it goes
 
-None of those exist? Ask the user once — `local` when no teammate will read this
-task's state, `github` when someone else needs the contract — and write the answer
-to `_workspace/.tracker`. Never infer it from the git remote. `to-issues` reads the
-same files and never asks again.
+Always `_workspace/<task-name>/`, kebab-case. Root: the git repository the task
+belongs to, else the working directory. Keep it untracked through an existing repo
+rule or a local Git exclude — do not edit a tracked `.gitignore` for agent state.
 
-Any other tracker — Jira, Linear, Notion — is `local` plus a push, not a backend.
-See `references/local.md`.
+Publishing to a tracker is a step on top, not a different place. Publish when the
+repo's `AGENTS.md` / `CLAUDE.md` names a tracker, or when the user asks. Never infer
+one from the git remote. The local files are written either way, and `task.md` holds
+the link — see [references/publishing.md](references/publishing.md).
 
-Root for `_workspace/`: the git repository the task belongs to, else the working
-directory. Keep it untracked via an existing repo rule or a local Git exclude — do
-not edit a tracked `.gitignore` for agent state.
+Done when: `_workspace/<task-name>/` exists.
 
-Done when: the backend is known and cached in a `.tracker` file.
+## Step 2 — Read the code, then agree on the seams
 
-## Step 2 — Write the spec
+Explore the repo for the current state of the area you are touching, unless you
+already have. Use the project's own vocabulary in the spec, and respect any ADRs
+covering that area.
 
-Load exactly one. It holds the template and where each piece goes:
+Then sketch the seams you will test the feature at. Prefer seams that already exist.
+Use the highest seam you can. The fewer seams across the codebase the better — one
+is ideal.
 
-- **local** → [references/local.md](references/local.md)
-- **github** → [references/github.md](references/github.md)
+**Show the user the seams and check they match what they expect.** A seam chosen
+wrong here makes every test below it test the wrong thing.
 
-Every backend stores the same six pieces:
+Done when: the user has seen the seams and agreed.
 
-| Piece | Content | Cap |
-|---|---|---|
-| Contract | Expected behavior and acceptance criteria. Every bullet names a **trigger** and an **observable result**. | 5 bullets |
-| Non-Goals | What a reasonable reader would expect in scope but is not. | 3 bullets |
-| Test Cases | Real input → real expected output, numbered `TC-1`, `TC-2`, … | none |
-| Verification | The commands that check those cases. | 3 entries |
-| Implementation | Approach, assumptions, affected modules, risks, edge cases, alternatives dropped and why. | 12 bullets |
-| Walkthrough | Append-only event log, one line per event: `[time] decision\|error\|verification: one-line summary`. **Always local**, never mirrored to a shared backend. | — |
+## Step 3 — Write the spec
 
-Contract, Non-Goals, Test Cases, and Verification live in one place — a work unit
-links there, so it is the only spec a subagent is guaranteed to reach.
+Three files. Nothing is repeated between them — link instead.
 
-### Never invent a value the user has not given
+| Section | File |
+|---|---|
+| Problem Statement, Solution, User Stories, Out of Scope, Verification | `task.md` |
+| Implementation Decisions, Testing Decisions, Further Notes | `implementation.md` |
+| the event log | `walkthrough.md` |
 
-Write the gap in place instead:
+### `task.md`
 
-    - 설정 파일 경로는 [NEEDS CLARIFICATION: 고정 경로인가, --config 플래그인가?]
+```markdown
+# <task-name>
 
-A guess becomes the contract, and nobody downstream can tell it from a decision.
-Markers are greppable. One or two unknowns — ask now and fill them in. More than
-that, the plan was never settled: go back to `planning-grill`.
+## Problem Statement
+지금 사용자가 겪는 문제. 사용자 관점으로.
 
-### A contract bullet with no trigger is not testable
+## Solution
+그 문제가 어떻게 없어지는가. 사용자 관점으로 — 만드는 방법이 아니라.
 
-Not "config parsing should be robust" — "잘못된 YAML을 만나면 문제된 키를 담은
-타입 에러를 반환하고 exit 1". With no observable result, only the author can check
-it.
+## User Stories
+1. As a <actor>, I want <feature>, so that <benefit>
+2. ...
 
-### Non-Goals name what someone would plausibly reach for
+## Out of Scope
+- 범위 안이라고 오해할 만하지만 아닌 것
 
-An adjacent module, a cleanup the diff invites, a generalization the second caller
-would need. Do not list what nobody would attempt — a thin section reads as
-"nothing is out of bounds". An approach you considered and dropped is an
-implementation note, not a non-goal.
+## Verification
+- [ ] Todo — 고치기 전 US-1의 검사가 실패하는 것 확인 (출력 남길 것)
+- [ ] Todo — 프로젝트 전체 명령과 기대 결과
+- [ ] Todo — 실물을 손으로 한 번
 
-### A test case has real values in it, or it is not one
+## Plan
+- (filled by to-issues)
 
-The contract states a rule; a case states one instance of it, in values you could
-type. A "case" that restates a contract bullet in words is not one — delete it.
+## Result
+- (filled at completion)
+```
 
-**No cap on the count.** A task cut into nine work units needs at least nine cases
-— `to-issues` flags a unit covering none as work nobody asked for. Two filters keep
-the list from becoming the test file in prose:
+### User stories are the numbering everything downstream points at
 
-- Keep only the cases where getting it wrong changes what gets built.
-- Two cases the same code path satisfies are one case. `port: "eighty"` and
-  `port: "abc"` hit the same branch — keep the value most likely to break. The rest
-  belong in the test file, which should loop over all of them.
+Make the list long. It should cover every aspect of the feature, not the headline
+cases. `to-issues` cites them as `US-1, US-3` and checks the numbering both ways, so
+a behavior with no story is a behavior nobody builds.
 
-### Verification says how you find out; test cases say what must be true
-
-So it lists runners, never cases. Three entries, whatever the case count:
+### Verification says how you find out, in three fixed entries
 
 1. **Fail first.** A test that never failed has not been shown to check anything.
    The code author usually writes the tests, so both can agree and both be wrong.
@@ -102,46 +97,59 @@ So it lists runners, never cases. Three entries, whatever the case count:
 3. **The real artifact, once, by hand.** A suite that passes while the binary does
    not start is a suite testing itself.
 
-Cite a case by number, never by value — `TC-1`, not `exit 1, stderr에 server.port`.
-Copied values go stale on one side. Cases grow; this list stays at three.
+Cite a story by number, never by restating it. Stories grow; this list stays at
+three.
 
-### Implementation notes are always written, whatever the task size
+### `implementation.md`
+
+**Implementation Decisions** — modules built or modified, the interfaces that
+change, technical clarifications from the user, architectural decisions, schema
+changes, API contracts, specific interactions.
 
 No file paths and no code snippets — both go out of date faster than the prose
-around them. Name modules and interfaces instead.
+around them. Name modules and interfaces instead. One exception: a snippet from a
+prototype that pins a decision more precisely than prose can — a state machine, a
+reducer, a schema, a type shape. Keep the decision-rich part, not a working demo.
 
-### A bug fix has no from-scratch contract
+**Testing Decisions** — what makes a good test here (test external behavior, never
+implementation details), which modules get tested, and prior art in the codebase for
+that kind of test. `to-issues` builds each unit's verify command from the module
+list, so name real ones.
 
-The behavior exists and is wrong. Replace the contract with 재현 (the exact input
-that triggers it), 현재 동작 (what happens now, quoted from real output), and
-기대 동작 (what should happen instead). TC-1 is the reproduction; verification
-entry 1 is that test failing before the fix.
+**Further Notes** — anything else worth carrying forward.
 
-### The walkthrough records only what the plan could not know
+### `walkthrough.md`
 
-Failed verifications with their cause, scope changes, and the final verification
-result. Decisions made before work started belong in the implementation notes.
-Read only the tail (~20 lines).
+Append-only, one line per event:
+
+```
+[14:32] decision: 낙관적 잠금 선택 — 쓰기 경합이 낮아 행 잠금은 과함
+[14:51] error: `pytest tests/test_sync.py` 실패 — fixture가 닫힌 세션을 재사용
+[15:10] verification: 전체 스위트 통과, 214 passed
+```
+
+Only what the plan could not know: failed verifications with their cause, scope
+changes, and the final verification result. Decisions made before work started are
+implementation decisions. Read only the tail (~20 lines). This file never leaves the
+machine — no tracker mirrors it.
+
+### A bug fix has no from-scratch problem statement
+
+The behavior exists and is wrong. Problem Statement is 재현 — the exact input that
+triggers it — plus 현재 동작, quoted from real output. Solution is 기대 동작.
+Verification entry 1 is that reproduction failing before the fix.
 
 Do not write the work breakdown here — that is `to-issues`' job.
 
-Done when: the contract, the numbered test cases, the verification list, and the
-implementation notes exist in their canonical location, and no target file has been
-edited yet.
+Done when: all three files exist and no target file has been edited.
 
-## Step 3 — Hand off
+## Step 4 — Hand off
 
-Report the backend, where the contract and the implementation notes landed (a path,
-a ticket key, or an issue number), and every `[NEEDS CLARIFICATION: ...]` still in
-the spec — those are the questions `planning-grill` did not settle. Then hand off to
-`to-issues`.
-
-Do not implement behavior whose contract is not written down.
+Report where the spec landed — a path, and a ticket or issue reference when it was
+published. Then hand off to `to-issues`.
 
 ## Cross-cutting rules
 
-- **Write the prose in the user's language.** Contract, non-goals, implementation notes, and walkthrough lines are read by people. Commands, file paths, labels (`type:prd`), and status values (`Todo` / `Done`) stay verbatim — they are searchable strings, not prose.
-- **Never copy content between locations.** Reference by path + section heading, or by ticket/issue link. Exception: output explicitly built to be pasted into a tool that cannot read files.
-- **Link, don't duplicate.** When the contract lives in a ticket, the local file holds the ticket link and a one-line summary — not the ticket body.
-- **The walkthrough never leaves the machine.** No backend mirrors it.
-- Creating a GitHub issue, or pushing to any team tracker, is visible to the team. Say what you are about to create and get the user's confirmation before the first write.
+- **Write the prose in the user's language.** The spec is read by people. Section headings, commands, file paths, labels (`type:prd`), and status values (`Todo` / `Done`) stay verbatim — they are searchable strings, not prose. The templates above are filled in Korean as an example; only their headings are fixed.
+- **Never keep the same content in two places.** Reference it by path plus section heading, or by ticket link. When the spec is published, the local file holds the link and a one-line summary, not the body.
+- Publishing is visible to the team and awkward to undo. Say what you are about to create and get the user's confirmation before the first write.
