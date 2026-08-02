@@ -43,13 +43,12 @@ Done when: the user has seen the seams and agreed.
 
 ## Step 3 — Write the spec
 
-Three files. Nothing is repeated between them — link instead.
+Two files. Nothing is repeated between them — link instead.
 
 | Section | File |
 |---|---|
 | Problem Statement, Solution, User Stories, Out of Scope, Verification | `task.md` |
 | Implementation Decisions, Testing Decisions, Further Notes | `implementation.md` |
-| the event log | `walkthrough.md` |
 
 ### `task.md`
 
@@ -118,21 +117,6 @@ list, so name real ones.
 
 **Further Notes** — anything else worth carrying forward.
 
-### `walkthrough.md`
-
-Append-only, one line per event:
-
-```
-[14:32] decision: 낙관적 잠금 선택 — 쓰기 경합이 낮아 행 잠금은 과함
-[14:51] error: `pytest tests/test_sync.py` 실패 — fixture가 닫힌 세션을 재사용
-[15:10] verification: 전체 스위트 통과, 214 passed
-```
-
-Only what the plan could not know: failed verifications with their cause, scope
-changes, and the final verification result. Decisions made before work started are
-implementation decisions. Read only the tail (~20 lines). This file never leaves the
-machine — no tracker mirrors it.
-
 ### A bug fix has no from-scratch problem statement
 
 The behavior exists and is wrong. Problem Statement is 재현 — the exact input that
@@ -141,7 +125,7 @@ Verification entry 1 is that reproduction failing before the fix.
 
 Do not write the work breakdown here — that is `to-issues`' job.
 
-Done when: all three files exist and no target file has been edited.
+Done when: both files exist and no target file has been edited.
 
 ## Step 4 — Hand off
 

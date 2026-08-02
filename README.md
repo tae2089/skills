@@ -153,13 +153,12 @@ Apply these when their trigger conditions are met:
 
 **작업 유닛은 파일 목록을 갖지 않습니다** — 구현이 어느 파일을 건드릴지는 짜보기 전엔 아무도 모르고, 미리 적은 목록은 subagent를 막거나 무시당하거나 둘 중 하나입니다. 울타리는 목표 한 문장과 부모의 Out of Scope이고, 건드린 파일은 subagent가 끝나고 보고합니다.
 
-`to-spec`은 저장 위치를 고르지 않습니다. `_workspace/<task-name>/` 세 파일을 **항상** 씁니다. 트래커 발행은 그 위에 얹는 선택적 단계로, 저장소의 `AGENTS.md`/`CLAUDE.md`가 트래커를 지정했거나 사용자가 요청할 때만 합니다. 발행하면 `task.md`에는 링크와 Verification·Plan·Result만 남습니다 — 체크박스는 작업이 벌어지는 곳에 있어야 하므로 트래커로 안 올라갑니다.
+`to-spec`은 저장 위치를 고르지 않습니다. `_workspace/<task-name>/` 두 파일을 **항상** 씁니다. 트래커 발행은 그 위에 얹는 선택적 단계로, 저장소의 `AGENTS.md`/`CLAUDE.md`가 트래커를 지정했거나 사용자가 요청할 때만 합니다. 발행하면 `task.md`에는 링크와 Verification·Plan·Result만 남습니다 — 체크박스는 작업이 벌어지는 곳에 있어야 하므로 트래커로 안 올라갑니다.
 
 | 섹션 | 파일 |
 | --- | --- |
 | Problem Statement, Solution, User Stories, Out of Scope, Verification | `task.md` |
 | Implementation Decisions, Testing Decisions, Further Notes | `implementation.md` |
-| 이벤트 로그 | `walkthrough.md` |
 
 템플릿은 mattpocock의 `to-spec`을 따릅니다. 문제와 해법은 사용자 관점으로 쓰고, 만드는 방법은 Implementation Decisions에 둡니다. 설계 노트에는 파일 경로도 코드 조각도 넣지 않습니다 — 주변 산문보다 빨리 낡습니다. 모듈과 인터페이스 이름으로 씁니다.
 

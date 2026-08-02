@@ -1,6 +1,6 @@
 # Publishing the spec to a tracker
 
-The three `_workspace/` files are written first, always. Publishing copies the
+The `_workspace/` files are written first, always. Publishing copies the
 `task.md` sections to a tracker so teammates can read them, and leaves a link
 behind.
 
@@ -19,7 +19,6 @@ happens, not on a ticket nobody re-opens. The child issues carry the per-unit ve
 commands, so the ticket is not left without one.
 
 `implementation.md` stays local unless the user wants a design page for it.
-`walkthrough.md` never goes.
 
 ## Then shrink the local copy
 
