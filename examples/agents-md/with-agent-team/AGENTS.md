@@ -10,18 +10,18 @@ Follow the global prompt rules first. This file adds project-specific skill rout
 - When designing module boundaries, refactoring, or shaping interfaces, use `codebase-design`.
 - When aligning terminology or modeling the domain, use `domain-modeling`.
 - When a plan is fuzzy, high-impact, or lacks testable acceptance criteria, use `planning-grill` to reach a shared understanding of scope, acceptance, and failure modes before execution. It writes no files.
-- Before editing any project file, use `to-spec` to write the spec — problem, solution, user stories, and implementation decisions. It always writes `_workspace/<task-name>/`; publishing to a tracker is a separate step, only when this file names one or the user asks.
-- When the user explicitly asks to create tracker tickets from that PRD, use `to-issues`; it reads `.scratch/.tracker` and creates approved remote tickets or shared local Markdown tickets.
+- When the user explicitly asks for a spec, PRD, or design doc, use `to-spec`; it synthesizes what the conversation already settled — problem, solution, user stories, implementation and testing decisions — and publishes one spec to the destination configured in `.scratch/.tracker`. It does not create the work breakdown.
+- When the user explicitly asks for the work breakdown, use `to-issues`; it cuts that spec into tracer-bullet tickets with blocking edges and publishes them to the same destination.
 - When preparing context for human or AI code review, use `ready-code-review`; do not use it to perform the review itself.
 - After a new abstraction causes 3+ follow-up regressions, or after tests pass and before commit when the change adds persisted fields, interface methods, lifecycle states, or compatibility branches, use `overengineering-review` to check for unnecessary complexity.
 - After a non-trivial task, review cycle, bug fix, or debugging session is verified, use `compound-learning` to capture reusable learnings and maintain `docs/solutions/`.
 
 ## Issue Tracker
 
-- `.scratch/.tracker` and `.scratch/*/issues/` are shared in version control and must not be ignored. The configuration selects one destination for `to-issues`.
+- `.scratch/.tracker`, `.scratch/*/spec.md`, and `.scratch/*/issues/` are shared in version control and must not be ignored. The configuration selects one destination for both `to-spec` and `to-issues`.
 - Use `provider: local`, `provider: github`, `provider: gitlab`, or `provider: jira`. Remote providers also require `target: <repository-or-project>`.
-- Add `ready-label: <label>` only when new tickets should receive that label. With no key, `to-issues` applies no label.
-- If the file is missing or the configured remote tool is unavailable, `to-issues` previews a fallback to `.scratch/<feature-slug>/issues/` and writes only after approval.
+- Add `ready-label: <label>` only when new specs and tickets should receive that label. With no key, neither skill applies a label.
+- If the file is missing or the configured remote tool is unavailable, both skills preview a fallback to `.scratch/<feature-slug>/` — `spec.md` for the spec, `issues/` for the tickets — and write only after approval.
 - Never put tokens, passwords, private keys, webhook URLs, or credential-bearing connection strings in `.scratch/.tracker`.
 
 ## Delegating To Subagents
@@ -41,7 +41,7 @@ Applies whenever work units are handed to subagents, in dependency order.
 agent-team bundles its own skills; restrict them as follows so methodology stays single-sourced:
 
 - Use only agent-team's CLI operation skills (the `agent-team-*` prefix: run/task/message/inbox/sync/event commands), and load `agent-team-shared` before any command-specific one — it defines the state directory, global flags, and error handling they all assume. Never use its `recipe-*` and `persona-*` skills — the skills routed above own all methodology, even where an excluded skill looks like a closer match (plan sharpening / `recipe-agent-team-planning-grill` → `planning-grill`; work breakdown → `to-issues`; delegated execution → the Delegating To Subagents rules above; architecture → `codebase-design`; terminology → `domain-modeling`; compound learning / `recipe-agent-team-compound-learning` → `compound-learning`).
-- The work units are the remote or shared local child tickets created by `to-issues`, not a copied list in `_workspace/` or the agent-team ledger. Use the `agent-team-*` commands for run/task registration and messaging on top of those tickets; never let them re-decompose the work.
+- The work units are the remote or shared local child tickets created by `to-issues`, not a copied list in a local note or the agent-team ledger. Use the `agent-team-*` commands for run/task registration and messaging on top of those tickets; never let them re-decompose the work.
 - Do not route by the word "recipe": agent-team's `recipe-*` skills are excluded above.
 
 ## Project Notes

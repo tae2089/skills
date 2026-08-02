@@ -13,8 +13,8 @@ Follow the global prompt rules first. This file only adds repository-specific ro
 - When preparing a skill package for human or AI review, use `ready-code-review` to produce context, non-goals, severity policy, and false-positive suppressions before asking for findings.
 - After a skill change adds a new abstraction that causes 3+ follow-up regressions, or after its tests pass and before commit when it adds persisted fields, interface methods, lifecycle states, or compatibility branches, use `overengineering-review` to check for unnecessary complexity.
 - When the skill change is fuzzy, high-impact, or lacks testable acceptance criteria, use `planning-grill` to reach a shared understanding of scope, acceptance, and failure modes. It writes no files.
-- Before editing any skill file, use `to-spec` to write the spec — problem, solution, user stories, implementation decisions — in `_workspace/<task-name>/`.
-- When the spec covers more than one reviewable chunk, use `to-issues` to cut it into ordered work units in the `task.md` Plan section.
+- When the user explicitly asks for a spec, PRD, or design doc, use `to-spec`; it synthesizes what the conversation already settled — problem, solution, user stories, implementation and testing decisions — and publishes one spec to the destination configured in `.scratch/.tracker`, after showing that destination and label for approval. It does not interview; go back to `planning-grill` while the plan is still fuzzy.
+- When the user explicitly asks for the work breakdown, use `to-issues`; it cuts that spec into tracer-bullet tickets with blocking edges and publishes them to the same destination — remote tickets, or shared local Markdown under `.scratch/<feature-slug>/issues/`.
 - After a non-trivial skill change, review cycle, or debugging session is verified, use `compound-learning` to capture reusable learnings.
 
 ## Delegating To Subagents

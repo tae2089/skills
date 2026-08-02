@@ -12,7 +12,9 @@ Break a plan, spec, or conversation into a set of **issues** — tracer-bullet v
 
 ### 1. Gather context
 
-Work from whatever is already in the conversation context. If the user passes a reference (a spec path, an issue number or URL) as an argument, fetch it and read its full body and comments.
+Work from the spec `to-spec` published. Depending on the configured provider that is either a tracker issue — fetch it and read its full body and comments — or the local file `.scratch/<feature-slug>/spec.md`. A tracker issue becomes the parent of every ticket you create.
+
+If the user passes a different reference (another spec path, an issue number or URL) as an argument, use that instead. With no spec and no reference, work from whatever is already in the conversation context.
 
 ### 2. Explore the codebase (optional)
 
@@ -84,6 +86,8 @@ Work the **frontier**: any ticket whose blockers are all done. For a purely line
 
 # <NN> — <Ticket title>
 
+**Spec:** `../spec.md` — omit when the spec lives on a remote tracker instead.
+
 **What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective — not a layer-by-layer implementation list.
 
 **Blocked by:** the numbers/titles of the issues that gate this one, or "None — can start immediately".
@@ -97,7 +101,7 @@ Work the **frontier**: any ticket whose blockers are all done. For a purely line
 
 ## Parent
 
-A reference to the parent issue on the tracker (if the source was an existing issue, otherwise omit this section).
+A reference to the parent issue on the tracker — the spec `to-spec` published, or whatever existing issue the work came from. Omit this section when there is no such issue.
 
 ## What to build
 
