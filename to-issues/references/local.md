@@ -3,8 +3,9 @@
 There is no issue tracker. A `task.md` Plan line **is** the issue.
 
 Do not create separate files per unit. A subagent reads the Contract in
-`task.md`, the design in `implementation.md`, and its own Plan line — that is the
-whole issue.
+`task.md` and its own Plan line — that is the whole issue. The Plan line's
+`scope:`, `accept:`, and `verify:` are already what `implementation.md` boiled
+down to; the subagent does not go read the original.
 
 ## Shape
 

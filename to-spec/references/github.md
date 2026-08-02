@@ -5,15 +5,17 @@ GitHub Issues are canonical. The local file is a thin pointer.
 | Piece | Location |
 |---|---|
 | Contract | Issue labeled `type:prd` |
-| Design | Issue labeled `type:design` — the remote stand-in for `implementation.md` |
+| Non-Goals | Same issue, below the contract |
+| Verification | Same issue, last section |
+| Implementation | Issue labeled `type:design` — the remote stand-in for `implementation.md` |
 | Plan | Native sub-issues of the PRD issue — created by `to-issues` |
-| Journal | `_workspace/<task-name>/walkthrough.md` — local, never uploaded |
+| Walkthrough | `_workspace/<task-name>/walkthrough.md` — local, never uploaded |
 
 Shape once `to-issues` has run:
 
 ```
-[type:design] #10  approach, assumptions, risks
-[type:prd]    #11  problem, contract, acceptance criteria — body links #10
+[type:design] #10  approach, alternatives dropped, assumptions, risks
+[type:prd]    #11  problem, contract, non-goals, verification — body links #10
               ├─ #12  increment 1   (native sub-issue)
               ├─ #13  increment 2
               └─ #14  increment 3
@@ -40,8 +42,27 @@ Create missing ones with `gh label create`.
 Creating issues is visible to the team. State what you are about to create and
 get the user's confirmation before the first `gh issue create`.
 
-1. **Design issue** (Full tier only) — `gh issue create --label type:design`. Approach, assumptions, affected modules, risks, edge cases. Max 12 bullets.
-2. **PRD issue** — `gh issue create --label type:prd`. Body opens with one line saying what problem this solves and for whom, then the contract and acceptance criteria, max 5 bullets, then a link to the design issue. Fast tier skips step 1 and the link, but keeps the problem line.
+1. **Design issue** — `gh issue create --label type:design`. Approach, alternatives considered and dropped, assumptions, affected modules, risks, edge cases. Max 12 bullets. Always created; there is no skip.
+2. **PRD issue** — `gh issue create --label type:prd`, body in this order:
+
+```markdown
+설정을 바꿀 때마다 재배포해야 한다. 운영자가 파일 하나만 고치면 되게 만든다.  <!-- problem, one line -->
+
+## Contract
+- ...                                    <!-- max 5 bullets -->
+
+## Non-Goals
+- ...                                    <!-- max 3; drop the heading if empty -->
+
+## Verification
+`go test ./...` — all pass
+
+Design: #10
+```
+
+The Verification command runs the whole project. Sub-issues carry their own
+partial commands; this one is not a copy of any of them.
+
 3. **Local `task.md`** — pointer only:
 
 ```markdown
@@ -60,6 +81,10 @@ Design: #10
 The problem line exists because a teammate opening the PRD cold gets the
 contract but not the reason for it. One line is the whole budget — background
 belongs in the design issue.
+
+Non-Goals and Verification sit in the PRD, not the design issue, because
+`to-issues` links every sub-issue to the PRD. A subagent following that link
+reaches the bounds and the check; the design issue is one hop further.
 
 Do not create `implementation.md` — the design issue replaces it.
 Do not copy the issue body into `task.md`.

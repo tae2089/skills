@@ -38,8 +38,7 @@ Keep a unit on the main agent when:
 - its `allowed_scope` overlaps a unit already running
 - the change needs one coherent edit across files another unit owns
 - another agent is already doing that work
-- the unit's verification command is missing — it goes back to `to-issues`
-  instead
+- the unit's verification command is missing — report the gap and stop instead
 
 Running everything on the main agent in dependency order is a valid plan. Say so
 plainly rather than reporting it as a failure to delegate.

@@ -12,8 +12,14 @@ The spec already exists — `to-spec` wrote it. Read it; do not restate it.
 
 ## Step 1 — Read the backend and the spec
 
-Read `_workspace/.tracker` (one line: `local`, `jira`, or `github`). If it is
-missing, `to-spec` has not run — run that first instead of guessing a backend.
+Resolve the backend the same way `to-spec` did, stopping at the first hit:
+
+1. `_workspace/<task-name>/.tracker` (one line: `local`, `jira`, or `github`).
+2. `_workspace/.tracker`.
+
+If neither exists, `to-spec` has not run — run that first instead of guessing a
+backend. Do not invent a third resolution rule here; a different order from
+`to-spec` puts the contract in one backend and the work units in another.
 
 Then read the spec from that backend: the local `task.md` Contract plus
 `implementation.md`, or the PRD ticket plus the Confluence design page, or the
@@ -40,6 +46,11 @@ Each unit must state:
 A unit with no verification command is not ready. Go back to the spec and find
 what would prove it.
 
+Check every unit against the spec's Non-Goals before writing it. A unit that
+implements a non-goal does not get created — the spec said no. If the work
+genuinely turns out to be needed, that is a contract change: go back to
+`to-spec`, do not quietly add the unit here.
+
 Order the units so that dependencies come first. Say which ones can run at the
 same time — `decompose-and-dispatch` uses that to decide what runs in parallel.
 
@@ -64,7 +75,9 @@ the local `task.md` Plan lists them with `Todo` status.
 ## Step 4 — Hand off
 
 Report the parent reference, the unit count, and which units have no dependencies
-and can start now. Then hand off to `decompose-and-dispatch`.
+and can start now. To run them, hand the parent reference to
+`decompose-and-dispatch` — that skill takes the target as an argument and knows
+nothing about this one.
 
 ## Cross-cutting rules
 

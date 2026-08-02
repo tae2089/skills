@@ -150,9 +150,9 @@ Apply these when their trigger conditions are met:
   → decompose-and-dispatch   issue마다 subagent 실행
 ```
 
-각 단계는 독립 트리거를 가지므로 전부 거칠 필요는 없습니다. 계획 대화만 필요하면 `planning-grill`에서 멈추고, 이미 티켓이 있으면 `to-issues`부터 시작합니다.
+각 단계는 독립 트리거를 가지므로 전부 거칠 필요는 없습니다. 계획 대화만 필요하면 `planning-grill`에서 멈추고, 이미 티켓이 있으면 `to-issues`부터 시작합니다. `decompose-and-dispatch`는 앞 단계와 의존이 없습니다 — 돌릴 대상을 인자로 받고, 다섯 필드(목표·범위·수용 기준·검증 명령·의존)를 갖춘 티켓이면 누가 만들었든 실행합니다.
 
-백엔드는 `to-spec`이 한 번 정해 `_workspace/.tracker`에 캐시하고, 뒤 단계는 그것을 읽기만 합니다.
+백엔드는 `to-spec`이 정해 `.tracker` 한 줄짜리 파일에 캐시하고, `to-issues`가 같은 순서로 읽습니다 — 먼저 `_workspace/<task-name>/.tracker`, 없으면 `_workspace/.tracker`. 저장소 하나에 공유 백엔드 작업과 로컬 작업이 섞일 수 있기 때문입니다.
 
 | 백엔드 | to-spec 산출물 | to-issues 산출물 |
 | --- | --- | --- |
@@ -161,6 +161,26 @@ Apply these when their trigger conditions are met:
 | `github` | `type:design` issue + `type:prd` issue | PRD의 native sub-issue |
 
 계약과 설계는 서로 다른 문서입니다. 계약은 **무엇을** 만들고 **언제 끝난 것인지**를, 설계는 **어떻게** 그리고 **왜**를 담습니다. 계약이 접근 방식으로 흘러가면 확인 가능한 기준이 아니게 됩니다. `jira`·`github`에서는 계약 문서 맨 앞에 무슨 문제를 누구를 위해 푸는지 한 줄을 둡니다 — 팀원은 이 대화 없이 티켓만 열기 때문입니다. `local`은 그 줄을 두지 않습니다.
+
+`to-spec`이 남기는 것은 다섯 조각입니다.
+
+| 조각 | 내용 | 상한 |
+| --- | --- | --- |
+| Contract | 기대 동작, 인수 기준 | 5 bullet |
+| Non-Goals | 넣을 법한데 범위 밖인 것 | 3 bullet, 없으면 섹션 생략 |
+| Verification | 프로젝트 **전체**를 도는 명령 하나. `go test ./...`이지 `go test ./internal/...`이 아님 | 1줄 |
+| Implementation | 접근, 가정, 영향 모듈, 위험, 엣지 케이스, 검토 후 버린 대안 | 12 bullet, 항상 작성 |
+| Walkthrough | append-only 이벤트 로그. **항상 로컬**, 공유 백엔드에 안 올라감 | — |
+
+Contract·Non-Goals·Verification은 한 곳에 같이 둡니다. `local`이면 `task.md`, 나머지는 PRD 티켓이나 `type:prd` issue입니다. `to-issues`가 만든 작업 단위가 링크로 가리키는 곳이 바로 여기라, subagent가 반드시 닿는 유일한 문서이기 때문입니다.
+
+Non-Goals는 방향이 어긋나는 것을 막습니다. 구현자가 손댈 법한 인접 모듈, 디프가 유도하는 정리 작업, 두 번째 호출자가 필요로 할 일반화 — 이런 것에 씁니다. 아무도 시도하지 않을 것은 적지 않습니다. 검토했다 버린 접근은 non-goal이 아니라 설계 노트입니다.
+
+검증은 두 층입니다. spec의 Verification은 프로젝트 전체를 돌고, 작업 단위의 `verify:`는 자기 범위만 돕니다. 항상 전체와 부분이라 같은 명령이 될 수 없습니다. 전체 검증을 자동으로 돌려주는 스킬은 없습니다 — `task.md`의 체크 안 된 항목이 유일한 표시입니다.
+
+`decompose-and-dispatch`는 부모의 Non-Goals만 subagent 프롬프트에 그대로 복사합니다. 이미 잘못된 것을 만들기 시작한 subagent는 링크를 따라가지 않기 때문입니다.
+
+산출물의 산문 — 계약, 비목표, 설계 노트, 로그 — 은 사용자 언어로 씁니다. 명령·파일 경로·라벨(`type:prd`)·상태값(`Todo`/`Done`)은 검색 대상이라 그대로 둡니다.
 
 `planning-grill`은 저장소가 답할 수 있는 사실은 직접 조사하고, 결정만 한 턴에 하나씩 사용자에게 묻습니다. 모든 질문에 추천 답과 **틀렸을 때의 대가**를 함께 적어, 사용자가 후속 질문 없이 비용을 보고 판단하게 합니다.
 
