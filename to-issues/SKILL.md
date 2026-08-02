@@ -12,7 +12,9 @@ Break a plan, spec, or conversation into a set of **issues** — tracer-bullet v
 
 ### 1. Gather context
 
-Work from the spec `to-spec` published. Depending on the configured provider that is either a tracker issue — fetch it and read its full body and comments — or the local file `.scratch/<feature-slug>/spec.md`. A tracker issue becomes the parent of every ticket you create.
+Work from the spec `to-spec` published. Depending on the configured provider that is a tracker issue — fetch it and read its full body and comments — a Confluence page when `spec-target` is set, or the local file `.scratch/<feature-slug>/spec.md`.
+
+Whatever issue `to-spec` published is the parent of every ticket you create. With `spec-target` set that parent is the Jira issue linking the Confluence page, not the page itself: a page cannot parent an issue.
 
 If the user passes a different reference (another spec path, an issue number or URL) as an argument, use that instead. With no spec and no reference, work from whatever is already in the conversation context.
 
@@ -101,7 +103,7 @@ Work the **frontier**: any ticket whose blockers are all done. For a purely line
 
 ## Parent
 
-A reference to the parent issue on the tracker — the spec `to-spec` published, or whatever existing issue the work came from. Omit this section when there is no such issue.
+A reference to the parent issue on the tracker — the issue `to-spec` published, or whatever existing issue the work came from. When the spec lives on a Confluence page, link that page here too. Omit this section when there is no such issue.
 
 ## What to build
 

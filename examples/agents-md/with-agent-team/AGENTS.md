@@ -20,6 +20,7 @@ Follow the global prompt rules first. This file adds project-specific skill rout
 
 - `.scratch/.tracker`, `.scratch/*/spec.md`, and `.scratch/*/issues/` are shared in version control and must not be ignored. The configuration selects one destination for both `to-spec` and `to-issues`.
 - Use `provider: local`, `provider: github`, `provider: gitlab`, or `provider: jira`. Remote providers also require `target: <repository-or-project>`.
+- With `provider: jira`, add `spec-target: <site>/wiki/spaces/<SPACE>` to keep the spec in Confluence. `to-spec` then creates a seed index page on first use, the spec page under it, and one Jira parent issue that links the page — at the project's default standard issue type, never an epic. Without the key the spec stays a Jira issue.
 - Add `ready-label: <label>` only when new specs and tickets should receive that label. With no key, neither skill applies a label.
 - If the file is missing or the configured remote tool is unavailable, both skills preview a fallback to `.scratch/<feature-slug>/` — `spec.md` for the spec, `issues/` for the tickets — and write only after approval.
 - Never put tokens, passwords, private keys, webhook URLs, or credential-bearing connection strings in `.scratch/.tracker`.

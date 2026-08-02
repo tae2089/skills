@@ -28,16 +28,20 @@ Read [the tracker configuration](../to-issues/references/tracker-config.md), the
 - **Missing configuration** → publish locally. The approval preview must say it will also create `.scratch/.tracker` with `provider: local`.
 - **`provider: local`** → publish locally.
 - **Valid `github`, `gitlab`, or `jira` configuration** → use its exact `target`, and only when the matching tool is available and already authenticated.
+- **`provider: jira` with `spec-target`** → the spec becomes a Confluence page and one normal Jira issue links it. Follow "Jira with Confluence" in the tracker configuration.
 - **Malformed configuration, unsupported provider, missing remote target, or unavailable tool** → explain why remote publication stopped, preserve the existing configuration, and publish locally.
 
-Show the provider, the destination, the spec title, and the label you will apply. If local is a fallback, show the reason. Get the user's approval before the first configuration write or publication — the seam check in step 2 does not approve this write. If the user does not approve, stop without writing anything.
+Show the provider and every object you will create, so nothing team-visible appears unannounced. For Jira with Confluence that is the seed page when one is missing, the spec page and the page it goes under, and the Jira project plus the issue type — the project's default standard type, never an epic. Otherwise it is the destination and the spec title. Always show the label you will apply, and the reason when local is a fallback.
+
+Get the user's approval before the first configuration write or publication — the seam check in step 2 does not approve this write. If the user does not approve, stop without writing anything.
 
 5. Publish the spec.
 
 - **Remote tracker** → create one issue holding the whole spec.
+- **Jira with `spec-target`** → the three ordered writes in "Jira with Confluence": the seed page when one is missing, then the spec page under it, then one parent issue at the project's default standard type whose description links that page. Stop at the first failure and report what already exists.
 - **Local** → when the configuration was missing, first write `.scratch/.tracker` with only `provider: local`. Then write the spec to `.scratch/<feature-slug>/spec.md`.
 
-Apply the configured `ready-label` — on a remote ticket as the tracker's own label, in `spec.md` as a `**Status:** <ready-label>` line under the title. With no `ready-label` key, apply no label and no status line. Never create a label that does not exist, and no further triage is needed.
+Apply the configured `ready-label` — on a remote issue as the tracker's own label, on a Confluence page as a page label when the connected tool supports one, in `spec.md` as a `**Status:** <ready-label>` line under the title. With no `ready-label` key, apply no label and no status line. Never create a label that does not exist, and no further triage is needed.
 
 Before publishing locally in a Git repository, check that neither `.scratch/.tracker` nor `.scratch/<feature-slug>/spec.md` is ignored. If either is, stop before writing and explain that the team cannot share the spec until the ignore rule changes.
 

@@ -151,7 +151,30 @@ ready-label: ready-for-agent
 
 `provider: local`이면 스펙은 `.scratch/<feature-slug>/spec.md`, 티켓은 `.scratch/<feature-slug>/issues/NN-*.md`로 갑니다. 한 폴더 안에서 부모와 자식이 파일로 구분됩니다.
 
-설정이 없으면 승인 화면에 `provider: local` 설정과 그 로컬 경로 계획을 함께 보여줍니다. 잘못된 provider, 빠진 원격 target, 사용할 수 없는 연결 도구도 이유를 알린 뒤 같은 로컬 경로를 제안합니다. 기존 설정은 덮어쓰지 않습니다. 원격에 하나라도 만든 뒤 실패하면 로컬 복사본을 만들지 않고 만들어진 것과 실패를 보고합니다.
+**Jira는 Confluence와 같이 씁니다.** Jira 이슈는 긴 스펙을 담는 그릇이 못 되고, 반대로 Confluence 페이지는 Jira 이슈의 부모가 못 됩니다. 그래서 선택 키 `spec-target` 하나로 스펙과 부모를 갈라놓습니다. `provider: jira`가 아닐 때 이 키가 있으면 잘못된 설정입니다.
+
+```text
+provider: jira
+target: your-company.atlassian.net/PROJ
+spec-target: your-company.atlassian.net/wiki/spaces/ENG
+ready-label: ready-for-agent
+```
+
+`spec-target`은 Confluence space를 가리키거나, 그 안의 기존 페이지 하나를 가리킵니다. space를 가리키면 스펙 페이지들이 **씨앗 페이지** 아래에 매달립니다 — 스펙 전부를 담는 인덱스 페이지 하나로, 첫 사용에 만들어집니다. 기본 제목은 `Specs`이고, 본문에 규칙을 적습니다: 자식 페이지 하나가 스펙 하나, 작업 분해는 Jira에 있음. 같은 제목 페이지가 이미 둘이면 멈춥니다 — 애매한 부모는 부모가 아닙니다. 페이지를 직접 가리키면 그 페이지가 부모이고 씨앗은 안 만듭니다.
+
+이 설정에서 `to-spec`이 만드는 객체는 셋이고, 앞이 성공해야 다음으로 갑니다.
+
+| 순서 | 객체 | 내용 |
+| --- | --- | --- |
+| 1 | Confluence 씨앗 페이지 | 없을 때만. 스펙 인덱스 |
+| 2 | Confluence 스펙 페이지 | 스펙 본문. 씨앗의 자식 |
+| 3 | Jira 부모 이슈 | 프로젝트 기본 표준 타입(Task, 없으면 Story). 본문은 스펙 페이지 링크 |
+
+**epic은 만들지 않습니다.** epic은 팀이 이미 더 큰 묶음에 쓰는 계획 단위이고, 만들 권한도 흔히 제한됩니다. 스펙 하나는 보통 이슈 하나이고, 티켓들이 그 아래 자식(도구가 지원하면 sub-task)으로 붙습니다.
+
+부모 이슈를 `to-spec`이 만드는 것이 핵심입니다. 그래서 `to-issues`는 한 줄도 안 바뀝니다 — "to-spec이 게시한 이슈가 부모"라는 규칙이 그대로 맞습니다. 이슈 타입은 승인 화면에 띄워 사람이 고칠 수 있게 하고, 연결 도구가 프로젝트 기본 타입을 못 알아내면 추측하지 않고 묻습니다.
+
+설정이 없으면 승인 화면에 `provider: local` 설정과 그 로컬 경로 계획을 함께 보여줍니다. 잘못된 provider, 빠진 원격 target, 사용할 수 없는 연결 도구도 이유를 알린 뒤 같은 로컬 경로를 제안합니다. 기존 설정은 덮어쓰지 않습니다. 원격에 이슈나 페이지를 하나라도 만든 뒤 실패하면 로컬 복사본을 만들지 않고, 되돌리지도 않고, 만들어진 것과 실패를 보고합니다 — 팀이 볼 수 있는 반쪽 스펙이 조용한 롤백보다 낫습니다.
 
 ## 계획 파이프라인
 
@@ -192,7 +215,7 @@ Recommended: per-API-key, with a per-IP fallback for unauthenticated routes.
 If wrong: authed clients behind one shared IP throttle each other.
 ```
 
-스펙과 티켓 생성은 팀에 보이므로 두 스킬 모두 첫 쓰기 전에 승인을 받습니다. `to-spec`은 provider·대상·스펙 제목·라벨을, `to-issues`는 provider·대상·부모 작업·티켓 수·제목·의존 순서를 보여줍니다. GitHub와 GitLab은 연결된 도구를 먼저 쓰고 이미 인증된 `gh`/`glab`를 대안으로 허용합니다. Jira는 연결된 도구를 사용합니다.
+스펙과 티켓 생성은 팀에 보이므로 두 스킬 모두 첫 쓰기 전에 승인을 받습니다. `to-spec`은 만들 객체를 전부 — Jira+Confluence면 씨앗 페이지·스펙 페이지·부모 이슈와 그 타입까지 — 그리고 라벨을 보여줍니다. `to-issues`는 provider·대상·부모 작업·티켓 수·제목·의존 순서를 보여줍니다. GitHub와 GitLab은 연결된 도구를 먼저 쓰고 이미 인증된 `gh`/`glab`를 대안으로 허용합니다. Jira와 Confluence는 연결된 Atlassian 도구를 사용하며, CLI 대안은 없습니다 — 도구가 준비 안 됐으면 사용 불가로 보고 로컬로 물러납니다.
 
 ## 유지보수 원칙
 
