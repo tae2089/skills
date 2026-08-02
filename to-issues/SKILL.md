@@ -1,149 +1,121 @@
 ---
 name: to-issues
-description: Break a written spec into ordered, reviewable work units and record them as issues — `task.md` Plan lines, plus tracker issues when the spec was published. Use after `to-spec` has written the spec, or when the user asks to split work into issues or tickets. Stops at the written units; running them is a separate ask.
+description: Break a plan, spec, or the current conversation into tracer-bullet issues with blocking edges, then publish them through the shared `.scratch/.tracker` configuration or as shared local Markdown tickets. Use only when explicitly invoked.
+disable-model-invocation: true
 ---
 
 # To Issues
 
-Turn one spec into the ordered work units that implement it. Each unit becomes an
-issue, sized so one agent can take it start to finish.
+Break a plan, spec, or conversation into a set of **issues** — tracer-bullet vertical slices, each declaring the issues that **block** it.
 
-The spec already exists — `to-spec` wrote it. Read it; do not restate it.
+## Process
 
-Adapted from Matt Pocock's `to-tickets` skill in `mattpocock/skills`.
+### 1. Gather context
 
-## Step 1 — Read the spec
+Work from whatever is already in the conversation context. If the user passes a reference (a spec path, an issue number or URL) as an argument, fetch it and read its full body and comments.
 
-`_workspace/<task-name>/task.md` plus `implementation.md`. No `task.md` means
-`to-spec` has not run — run it first.
+### 2. Explore the codebase (optional)
 
-A published spec leaves `task.md` holding a link instead of the sections. Follow it
-and read the ticket.
+If you have not already explored the codebase, do so to understand the current state of the code. Ticket titles and descriptions should use the project's domain glossary vocabulary, and respect ADRs in the area you're touching.
 
-Done when: the user stories and the implementation decisions are in front of you.
+Look for opportunities to prefactor the code to make the implementation easier. "Make the change easy, then make the easy change."
 
-## Step 2 — Cut the work into units
+### 3. Draft vertical slices
 
-Each unit is a **vertical slice**: a narrow but complete path through every layer it
-touches — schema, API, UI, tests. Not a horizontal slice of one layer.
+Break the work into **tracer bullet** issues.
 
-- A finished slice can be demoed or verified on its own.
-- A slice fits in one fresh context window.
-- Any prefactoring — "make the change easy, then make the easy change" — is its own
-  unit, and it comes first.
+<vertical-slice-rules>
 
-Size each unit as one reviewable chunk, roughly one pull request. Not one per user
-story; not one per file. Over-splitting floods the board and multiplies handoff cost.
+- Each slice cuts a narrow but COMPLETE path through every layer (schema, API, UI, tests) — vertical, NOT a horizontal slice of one layer
+- A completed slice is demoable or verifiable on its own
+- Each slice is sized to fit in a single fresh context window
+- Any prefactoring should be done first
 
-Bound a unit by behavior, never by a file list. Which files an implementation
-touches is not known until it is written, and a list guessed now either blocks the
-subagent or gets ignored. The objective and the spec's Out of Scope are the bounds.
+</vertical-slice-rules>
 
-Each unit must state:
+Give each ticket its **blocking edges** — the other issues that must complete before it can start. A ticket with no blockers can start immediately.
 
-- **Objective** — the end-to-end behavior this unit makes work, in one sentence,
-  from the user's side. Not a layer-by-layer list. It becomes the unit's title line
-  in the Plan, so keep it short enough to read as one.
-- **Covers** — the user stories this unit satisfies, by number: `US-1, US-3`.
-- **Verification** — the exact command to run, and the expected result. Build it
-  from the spec's Testing Decisions, which name the modules that get tested.
-- **Depends on** — the units that must land first, by their issue reference. Empty
-  for units that can start immediately.
+**Wide refactors are the exception to vertical slicing.** A **wide refactor** is one mechanical change — rename a column, retype a shared symbol — whose **blast radius** fans across the whole codebase, so a single edit breaks thousands of call sites at once and no vertical slice can land green. Don't force it into a tracer bullet; sequence it as **expand–contract**. First expand: add the new form beside the old so nothing breaks. Then migrate the call sites over in batches sized by blast radius (per package, per directory), each batch its own ticket blocked by the expand, keeping CI green batch to batch because the old form still exists. Finally contract: delete the old form once no caller remains, in a ticket blocked by every migrate batch. When even the batches can't stay green alone, keep the sequence but let them share an integration branch that all block a final integrate-and-verify ticket — green is promised only there.
 
-A unit with no verification command is not ready. Nobody watches a subagent work, so
-the command is the only thing that can say "done".
+### 4. Quiz the user
 
-### Wide refactors are the exception to vertical slicing
+Present the proposed breakdown as a numbered list. For each ticket, show:
 
-A wide refactor is one mechanical change — rename a column, retype a shared symbol —
-that breaks thousands of call sites at once. No vertical slice can land green, so do
-not force one. Sequence it **expand–contract** instead:
+- **Title**: short descriptive name
+- **Blocked by**: which other issues (if any) must complete first
+- **What it delivers**: the end-to-end behaviour this ticket makes work
 
-1. **Expand** — add the new form beside the old. Nothing breaks. One unit.
-2. **Migrate** — move call sites over in batches, sized by how far the change
-   reaches: per package, per directory. Each batch is its own unit, and each depends
-   on the expand. The old form still exists, so each batch stays green.
-3. **Contract** — delete the old form once no caller remains. Depends on every
-   migrate batch.
+Ask the user:
 
-When even the batches cannot stay green alone, keep the sequence but give them one
-shared integration branch, and add a final integrate-and-verify unit that depends on
-all of them. Green is promised only there.
+- Does the granularity feel right? (too coarse / too fine)
+- Are the blocking edges correct — does each ticket only depend on issues that genuinely gate it?
+- Should any issues be merged or split further?
 
-### Check the numbering both ways
+Iterate until the user approves the breakdown.
 
-- a user story no unit covers → work you forgot to cut
-- a unit covering no user story → work nobody asked for
+### 5. Select the publication destination
 
-A story with no unit is the more dangerous one: everything passes and the feature is
-incomplete. Report both.
+Read [the tracker configuration](references/tracker-config.md), then read `.scratch/.tracker` when it exists. Never infer a tracker from the git remote.
 
-Check every unit against the spec's Out of Scope before writing it. A unit that
-implements one does not get created — the spec said no. If it genuinely turns out to
-be needed, that is a spec change: go back to `to-spec`.
+- **Credentials in the configuration** → stop without writing anything. Name the unsafe key only; never print its value.
+- **Missing configuration** → select local Markdown. The approval preview must say it will also create `.scratch/.tracker` with `provider: local`.
+- **`provider: local`** → select local Markdown.
+- **Valid `github`, `gitlab`, or `jira` configuration** → use its exact `target` only when the matching tool is available and authenticated.
+- **Malformed configuration, unsupported provider, missing remote target, or unavailable tool** → explain why remote publication stopped, preserve the existing configuration, and select local Markdown.
 
-Done when: every unit has all four fields, every user story is covered, and the
-dependency order is explicit.
+Before selecting local Markdown, verify that `.scratch/.tracker` and `.scratch/<feature-slug>/issues/` can be tracked by Git. If either path is ignored, stop and explain that the team cannot share the tickets until the ignore rule changes.
 
-## Step 3 — Quiz the user
+### 6. Confirm the write
 
-Present the breakdown as a numbered list before creating anything. Per unit: title,
-what it delivers, and what blocks it.
+Show the selected provider and destination, parent issue when one exists, ticket count, titles, and dependency order. If local Markdown is a fallback, show the reason and the `.scratch/<feature-slug>/issues/` path.
 
-Then the numbering check from Step 2 — which stories no unit covers, which units
-cover no story. Empty on both sides is a result: say so, so the user can tell a clean
-check from a skipped one.
+Get the user's approval before the first configuration write, local ticket write, or remote publication. Approval of the breakdown in step 4 does not approve this write. If the user does not approve, stop without writing anything.
 
-Ask:
+### 7. Publish the issues
 
-- Does the granularity feel right — too coarse, too fine?
-- Are the blocking edges right? Does each unit depend only on units that genuinely
-  gate it?
-- Should any units be merged or split further?
+- **Local Markdown** → when the configuration was missing, first write `.scratch/.tracker` with only `provider: local`. Then write one file per ticket under `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01` in dependency order. Each file's "Blocked by" lists the numbers/titles it depends on. Use the per-ticket file template below — one ticket per file, never a combined file.
+- **Remote tracker** → publish one issue per ticket in dependency order so later blocking edges can use real identifiers. Use native parent and blocking relationships when the selected tool supports them; otherwise keep those references in the issue body. Apply `ready-label` only when the configuration contains it; never assume or create a label.
 
-Iterate until the user approves. This is the gate — nothing downstream checks the
-breakdown again.
+If a write or publication fails, stop and report what was created plus the failure. After any remote ticket exists, never create local copies as a fallback.
 
-Done when: the user has approved the list.
+Work the **frontier**: any ticket whose blockers are all done. For a purely linear chain that means top to bottom.
 
-## Step 4 — Write the issues
+<local-ticket-template>
 
-Fill the Plan section of `task.md`, always:
+# <NN> — <Ticket title>
 
-```markdown
-## Plan
-- [ ] Todo — 01 설정 파일 파싱
-      covers: US-1, US-3
-      verify: `go test ./internal/config/...` — 전부 통과
-      needs: —
-- [ ] Todo — 02 시작 시점에 파서 연결
-      covers: US-4
-      verify: `go test ./cmd/server/...` — 전부 통과
-      needs: 01
-```
+**What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective — not a layer-by-layer implementation list.
 
-Number units `01`, `02`, … in dependency order, blockers first, so a subagent can be
-pointed at one by number. `needs: —` means it can start now.
+**Blocked by:** the numbers/titles of the issues that gate this one, or "None — can start immediately".
 
-Headings and field names are fixed; the text in them goes in the user's language.
+- [ ] Acceptance criterion 1
+- [ ] Acceptance criterion 2
 
-A Plan line **is** the issue when the spec was never published. Do not create a file
-per unit — a subagent reads `task.md` and its own line. Never copy the spec into a
-unit — the unit points at the parent, and the parent holds the stories.
+</local-ticket-template>
 
-When the spec was published, also create one issue per unit on that tracker — see
-[references/publishing.md](references/publishing.md). Re-running this skill on a
-spec that already has units amends them; never create a second set.
+<issue-template>
 
-Statuses are `Todo` → `In Progress` → `Done`. Whoever runs the units moves them —
-when they are dispatched, the agent holding the verification output does it. `Done`
-only after that unit's `verify` command passed.
+## Parent
 
-Done when: every unit is in the Plan in dependency order with `Todo` status, and
-mirrored to the tracker if the spec was published.
+A reference to the parent issue on the tracker (if the source was an existing issue, otherwise omit this section).
 
-## Step 5 — Hand off
+## What to build
 
-Report the unit count and which units have no dependencies and can start now. Stop
-there. Running the units is a separate ask, and the project's own rules say how to
-delegate them.
+The end-to-end behaviour this ticket makes work, from the user's perspective — not layer-by-layer implementation.
+
+## Acceptance criteria
+
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+## Blocked by
+
+- A reference to each blocking ticket, or "None — can start immediately".
+
+</issue-template>
+
+In either form, avoid specific file paths or code snippets — they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it and note briefly that it came from a prototype. Trim to the decision-rich parts — not a working demo, just the important bits.
+
+When `ready-label` is configured, add `**Status:** <ready-label>` to local tickets and the matching label to remote tickets. Otherwise omit status and labels.
+
+Done when every approved ticket has a local path or remote identifier, every blocking edge points to a created ticket, and any missing native link or label is reported. Do NOT close or otherwise modify a parent issue.

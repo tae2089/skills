@@ -31,7 +31,7 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 | [`overengineering-review`](overengineering-review/SKILL.md) | 새 추상화가 후속 회귀를 3건 이상 유발하거나, 테스트 통과 후 커밋 전 영속 필드·인터페이스 메서드·라이프사이클 상태·호환성 분기·과한 테스트 매트릭스가 추가됐을 때 불필요한 복잡도를 검토할 때. 단순화가 명시적으로 요청되지 않는 한 read-only |
 | [`planning-grill`](planning-grill/SKILL.md) | 모호한 계획·결정을 실행 전에 한 번에 한 질문씩 캐물어 합의에 도달할 때. 사실은 직접 조사하고 결정만 사용자에게 넘김. 파일은 만들지 않음 |
 | [`ready-code-review`](ready-code-review/SKILL.md) | 사람 또는 AI 리뷰어에게 줄 리뷰 컨텍스트, severity 정책, false-positive 억제 규칙, 리뷰 프롬프트를 준비할 때 |
-| [`to-issues`](to-issues/SKILL.md) | spec을 리뷰 가능한 크기의 작업 단위로 쪼개 기록할 때(`task.md` Plan, 발행했으면 트래커 이슈도) |
+| [`to-issues`](to-issues/SKILL.md) | 사용자가 명시적으로 요청했을 때 로컬 PRD를 승인된 원격 또는 공유 Markdown 티켓으로 만들 때 |
 | [`to-spec`](to-spec/SKILL.md) | 코드·테스트·설정·문서·인프라를 고치기 전에 문제·해법·유저 스토리·설계를 spec으로 남길 때(`_workspace/` 파일, 필요하면 트래커 발행) |
 | [`writing-great-skills`](writing-great-skills/SKILL.md) | `SKILL.md` 작성, 스킬 리뷰, 런타임 포팅, 트리거 문구, 점진적 공개 구조를 다듬을 때 |
 
@@ -111,7 +111,7 @@ Apply these when their trigger conditions are met:
 | `codebase-design` | Designing module boundaries, refactoring, or shaping interfaces. |
 | `planning-grill` | Stress-testing a fuzzy plan, decision, or idea into a shared understanding, one question at a time. |
 | `to-spec` | Writing the spec — problem, solution, user stories, implementation decisions — before editing any project file. Always `_workspace/`; publishing to a tracker is a separate step. |
-| `to-issues` | Breaking a written spec into ordered, reviewable work units recorded as issues. |
+| `to-issues` | Creating approved remote or shared local Markdown tickets from a completed local PRD when the user explicitly asks. |
 | `domain-modeling` | Aligning terminology or doing domain modeling. |
 | `ready-code-review` | Preparing review context, reviewer instructions, prompts, severity calibration, or false-positive suppression before a human or AI review. |
 | `overengineering-review` | Reviewing a change for unnecessary abstractions, duplicated policy, or scope expansion — during implementation after a new abstraction causes 3+ follow-up regressions, or after tests pass and before commit when persisted fields, interface methods, lifecycle states, or compatibility branches were added. |
@@ -135,6 +135,20 @@ Apply these when their trigger conditions are met:
 
 이 저장소 자체의 [AGENTS.md](AGENTS.md)도 살아 있는 예시지만, 스킬 저장소 특화 라우팅이므로 일반 프로젝트에는 위 템플릿이 맞습니다.
 
+### 프로젝트별 트래커 설정
+
+`to-issues`는 팀이 Git으로 공유하는 `.scratch/.tracker`에서 게시 위치를 읽습니다. `.scratch/.tracker`와 `.scratch/*/issues/`는 Git의 ignore 대상이면 안 됩니다. 설정은 한 줄에 `key: value` 하나씩 씁니다.
+
+```text
+provider: github
+target: owner/repository
+ready-label: ready-for-agent
+```
+
+`provider`는 `local`, `github`, `gitlab`, `jira` 중 하나입니다. 원격 provider에는 `target`이 필요합니다. `ready-label`은 선택 항목이며, 없으면 어떤 라벨도 붙이지 않습니다. 토큰·비밀번호·개인 키·webhook URL·인증 정보가 든 연결 문자열은 넣지 않습니다.
+
+설정이 없으면 승인 화면에 `provider: local` 설정과 `.scratch/<feature-slug>/issues/` 티켓 생성 계획을 함께 보여줍니다. 잘못된 provider, 빠진 원격 target, 사용할 수 없는 연결 도구도 이유를 알린 뒤 같은 로컬 경로를 제안합니다. 기존 설정은 덮어쓰지 않습니다. 원격 티켓을 하나라도 만든 뒤 실패하면 로컬 복사본을 만들지 않고 생성된 티켓과 실패를 보고합니다.
+
 ## 계획 파이프라인
 
 모호한 의도에서 실행 준비까지 세 단계입니다. 각 스킬은 한 가지만 하고, 앞 단계 산출물만 읽습니다.
@@ -143,11 +157,11 @@ Apply these when their trigger conditions are met:
 [모호한 의도]
   → planning-grill   대화로 합의 도출 (파일 안 만듦)
   → to-spec          합의를 spec으로 저장 — 문제·해법·유저 스토리·설계
-  → to-issues        spec을 리뷰 단위 작업 유닛으로 쪼갬
+  → (명시적 요청) to-issues   PRD를 원격 또는 공유 Markdown 티켓으로 생성
 [실행]
 ```
 
-각 단계는 독립 트리거를 가지므로 전부 거칠 필요는 없습니다. 계획 대화만 필요하면 `planning-grill`에서 멈추고, 이미 티켓이 있으면 `to-issues`부터 시작합니다.
+`to-spec`은 프로젝트 변경 전에 항상 실행합니다. `to-issues`는 사용자가 트래커 티켓 생성을 명시적으로 요청했을 때만 실행하며, 완전한 로컬 PRD가 없으면 먼저 `to-spec`을 사용합니다.
 
 **실행은 스킬이 아닙니다.** 유닛을 subagent에 넘기는 건 어차피 agent가 하는 일이고, 거기서 기본값이 틀리는 지점만 규칙으로 적어두면 됩니다 — `AGENTS.md`의 `## Delegating To Subagents` 일곱 줄. 항상 컨텍스트에 있으니 검색될 필요가 없고, 그래서 스킬보다 확실하게 걸립니다. 담긴 것: 병렬 subagent마다 worktree 하나, worktree가 복사 못 하는 것(같은 DB·포트·외부 서비스), 파일이 안 겹쳐도 합치면 깨지는 경우, 병합은 안 하고 브랜치만 보고, Out of Scope만 프롬프트에 그대로 복사, 검증 출력 없는 성공 주장 거부, 그리고 혼자 순서대로 다 하는 것도 정상이라는 것.
 
@@ -162,7 +176,7 @@ Apply these when their trigger conditions are met:
 
 템플릿은 mattpocock의 `to-spec`을 따릅니다. 문제와 해법은 사용자 관점으로 쓰고, 만드는 방법은 Implementation Decisions에 둡니다. 설계 노트에는 파일 경로도 코드 조각도 넣지 않습니다 — 주변 산문보다 빨리 낡습니다. 모듈과 인터페이스 이름으로 씁니다.
 
-User Stories가 뒷단계 전체가 가리키는 번호입니다. 목록을 길게, 기능의 모든 면을 덮도록 씁니다. `to-issues`가 작업 단위마다 `covers: US-1, US-3`으로 인용하고 양방향으로 확인합니다 — 어느 유닛도 안 덮는 스토리(빠뜨린 작업)와 어느 스토리도 안 가리키는 유닛(시키지 않은 작업). 스토리가 없는 동작은 아무도 만들지 않습니다.
+User Stories가 하위 티켓이 가리키는 번호입니다. 목록을 길게, 기능의 모든 면을 덮도록 씁니다. `to-issues`가 티켓마다 `Covers: US-1, US-3`으로 인용하고 양방향으로 확인합니다 — 어느 티켓도 안 덮는 스토리와 어느 스토리도 안 가리키는 티켓을 모두 보고합니다.
 
 Verification은 세 항목 고정입니다. 스토리가 스무 개여도 세 항목이고, 내용을 다시 쓰지 않고 번호로 가리킵니다(`US-1`). 각 항목이 다른 실패를 잡습니다. **고치기 전에 실패하는 것을 먼저 확인** — 실패한 적 없는 테스트는 아무것도 검사한다는 증거가 없습니다. 코드를 짠 쪽이 테스트도 짜면 둘이 서로 맞으면서 스펙과 어긋날 수 있습니다. **프로젝트 전체** — 작업 단위의 `verify:`는 자기 범위만 돌기 때문에 둘이 같은 명령이 될 수 없습니다. **실물 한 번 손으로** — 스위트는 초록인데 바이너리가 안 뜨는 경우를 잡습니다. 전체 검증을 대신 돌려주는 스킬은 없습니다. `task.md`의 체크 안 된 항목이 유일한 표시입니다.
 
@@ -181,7 +195,7 @@ Recommended: per-API-key, with a per-IP fallback for unauthenticated routes.
 If wrong: authed clients behind one shared IP throttle each other.
 ```
 
-트래커 발행은 팀에 보이고 되돌리기 번거로우므로, `to-spec`과 `to-issues` 모두 첫 쓰기 전에 무엇을 만들지 알리고 확인을 받습니다.
+티켓 생성은 팀에 보이므로 `to-issues`가 첫 쓰기 전에 provider, 대상, 부모 작업, 티켓 수·제목·의존 순서를 보여주고 승인을 받습니다. GitHub와 GitLab은 연결된 도구를 먼저 쓰고 이미 인증된 `gh`/`glab`를 대안으로 허용합니다. Jira는 연결된 도구를 사용합니다.
 
 ## 유지보수 원칙
 
