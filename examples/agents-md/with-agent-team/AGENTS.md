@@ -10,6 +10,7 @@ Follow the global prompt rules first. This file adds project-specific skill rout
 - When designing module boundaries, refactoring, or shaping interfaces, use `codebase-design`.
 - When aligning terminology or modeling the domain, use `domain-modeling`.
 - When a plan is fuzzy, high-impact, or lacks testable acceptance criteria, use `planning-grill` to reach a shared understanding of scope, acceptance, and failure modes before execution. It writes no files.
+- When the user explicitly asks for an intent, use `to-intent`; it synthesizes what the conversation already settled into `.scratch/<feature-slug>/intent.md` — problem, outcomes, constraints, edge cases, verification — and writes it after approval. It is always a local file; `to-spec` reads it as the spec's source.
 - When the user explicitly asks for a spec, PRD, or design doc, use `to-spec`; it synthesizes what the conversation already settled — problem, solution, user stories, implementation and testing decisions — and publishes one spec to the destination configured in `.scratch/.tracker`. It does not create the work breakdown.
 - When the user explicitly asks for the work breakdown, use `to-issues`; it cuts that spec into tracer-bullet tickets with blocking edges and publishes them to the same destination.
 - When preparing context for human or AI code review, use `ready-code-review`; do not use it to perform the review itself.
@@ -18,7 +19,7 @@ Follow the global prompt rules first. This file adds project-specific skill rout
 
 ## Issue Tracker
 
-- `.scratch/.tracker`, `.scratch/*/spec.md`, and `.scratch/*/issues/` are shared in version control and must not be ignored. The configuration selects one destination for both `to-spec` and `to-issues`.
+- `.scratch/.tracker`, `.scratch/*/intent.md`, `.scratch/*/spec.md`, and `.scratch/*/issues/` are shared in version control and must not be ignored. The configuration selects one destination for both `to-spec` and `to-issues`.
 - Use `provider: local`, `provider: github`, `provider: gitlab`, or `provider: jira`. Remote providers also require `target: <repository-or-project>`.
 - With `provider: jira`, add `spec-target: <site>/wiki/spaces/<SPACE>` to keep the spec in Confluence. `to-spec` then creates a seed index page on first use, the spec page under it, and one Jira parent issue that links the page — at the project's default standard issue type, never an epic. Without the key the spec stays a Jira issue.
 - Add `ready-label: <label>` only when new specs and tickets should receive that label. With no key, neither skill applies a label.

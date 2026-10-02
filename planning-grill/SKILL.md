@@ -24,4 +24,4 @@ Stop asking once the remaining answers would not change scope, acceptance
 criteria, or task boundaries.
 
 Do not act until the user confirms the shared understanding. This skill writes no
-files. When the plan should outlive this conversation, hand off to `to-spec`.
+files. When the plan should outlive this conversation, hand off to `to-intent`.

@@ -31,6 +31,7 @@ AI 코딩 에이전트용 포터블 스킬 모음입니다. 각 스킬은 `SKILL
 | [`overengineering-review`](overengineering-review/SKILL.md) | 새 추상화가 후속 회귀를 3건 이상 유발하거나, 테스트 통과 후 커밋 전 영속 필드·인터페이스 메서드·라이프사이클 상태·호환성 분기·과한 테스트 매트릭스가 추가됐을 때 불필요한 복잡도를 검토할 때. 단순화가 명시적으로 요청되지 않는 한 read-only |
 | [`planning-grill`](planning-grill/SKILL.md) | 모호한 계획·결정을 실행 전에 한 번에 한 질문씩 캐물어 합의에 도달할 때. 사실은 직접 조사하고 결정만 사용자에게 넘김. 파일은 만들지 않음 |
 | [`ready-code-review`](ready-code-review/SKILL.md) | 사람 또는 AI 리뷰어에게 줄 리뷰 컨텍스트, severity 정책, false-positive 억제 규칙, 리뷰 프롬프트를 준비할 때 |
+| [`to-intent`](to-intent/SKILL.md) | 사용자가 명시적으로 요청했을 때 대화에서 합의된 문제·결과·제약·엣지 케이스·검증 방법을 `.scratch/<feature-slug>/intent.md` 하나로 정리할 때. 항상 로컬 파일이고 `to-spec`의 출발점이 됨 |
 | [`to-issues`](to-issues/SKILL.md) | 사용자가 명시적으로 요청했을 때 스펙을 승인된 원격 또는 공유 Markdown 티켓으로 쪼갤 때 |
 | [`to-spec`](to-spec/SKILL.md) | 사용자가 명시적으로 요청했을 때 대화에서 합의된 문제·해법·유저 스토리·설계를 스펙 하나로 정리해 `.scratch/.tracker`가 가리키는 곳에 게시할 때 |
 | [`writing-great-skills`](writing-great-skills/SKILL.md) | `SKILL.md` 작성, 스킬 리뷰, 런타임 포팅, 트리거 문구, 점진적 공개 구조를 다듬을 때 |
@@ -110,6 +111,7 @@ Apply these when their trigger conditions are met:
 | `flow-design` | Pseudocode, logic/flow plans, diagrams, or new logic with branches, side effects, resource lifecycles, or ordering constraints. |
 | `codebase-design` | Designing module boundaries, refactoring, or shaping interfaces. |
 | `planning-grill` | Stress-testing a fuzzy plan, decision, or idea into a shared understanding, one question at a time. |
+| `to-intent` | Turning what the conversation settled into `.scratch/<feature-slug>/intent.md` — problem, outcomes, constraints, edge cases, verification — when the user explicitly asks. `to-spec` reads it as the spec's source. |
 | `to-spec` | Turning what the conversation settled into one spec — problem, solution, user stories, implementation and testing decisions — and publishing it to the destination configured in `.scratch/.tracker`, when the user explicitly asks. It does not create the work breakdown. |
 | `to-issues` | Cutting that spec into approved remote or shared local Markdown tickets when the user explicitly asks. |
 | `domain-modeling` | Aligning terminology or doing domain modeling. |
@@ -137,7 +139,7 @@ Apply these when their trigger conditions are met:
 
 ### 프로젝트별 트래커 설정
 
-`to-spec`과 `to-issues`는 팀이 Git으로 공유하는 `.scratch/.tracker` 한 곳에서 게시 위치를 읽습니다. git remote로 추측하지 않습니다. `.scratch/.tracker`, `.scratch/*/spec.md`, `.scratch/*/issues/`는 Git의 ignore 대상이면 안 됩니다. 설정은 한 줄에 `key: value` 하나씩 씁니다.
+`to-spec`과 `to-issues`는 팀이 Git으로 공유하는 `.scratch/.tracker` 한 곳에서 게시 위치를 읽습니다. git remote로 추측하지 않습니다. `.scratch/.tracker`, `.scratch/*/intent.md`, `.scratch/*/spec.md`, `.scratch/*/issues/`는 Git의 ignore 대상이면 안 됩니다. 설정은 한 줄에 `key: value` 하나씩 씁니다.
 
 ```text
 provider: github
@@ -178,17 +180,18 @@ ready-label: ready-for-agent
 
 ## 계획 파이프라인
 
-모호한 의도에서 실행 준비까지 세 단계입니다. 각 스킬은 한 가지만 하고, 앞 단계 산출물만 읽습니다.
+모호한 의도에서 실행 준비까지 네 단계입니다. 각 스킬은 한 가지만 하고, 앞 단계 산출물만 읽습니다.
 
 ```text
 [모호한 의도]
   → planning-grill   대화로 합의 도출 (파일 안 만듦)
+  → (명시적 요청) to-intent   합의를 intent.md로 정리 (항상 로컬)
   → (명시적 요청) to-spec     합의를 스펙 하나로 정리해 게시
   → (명시적 요청) to-issues   그 스펙을 티켓으로 쪼개 같은 곳에 게시
 [실행]
 ```
 
-`to-spec`과 `to-issues`는 사용자가 명시적으로 부를 때만 실행됩니다 — frontmatter에 `disable-model-invocation: true`가 걸려 있어 모델이 스스로 부르지 못합니다. 팀에 보이는 곳에 쓰는 스킬이라 발동을 사람이 쥐고 있습니다. `planning-grill`은 그 제한이 없어 모델이 먼저 제안할 수 있고, 파일도 만들지 않습니다. 스펙 없이 `to-issues`를 부르면 먼저 `to-spec`을 씁니다.
+`to-intent`, `to-spec`, `to-issues`는 사용자가 명시적으로 부를 때만 실행됩니다 — frontmatter에 `disable-model-invocation: true`가 걸려 있어 모델이 스스로 부르지 못합니다. 팀에 보이는 곳에 쓰는 스킬이라 발동을 사람이 쥐고 있습니다. `planning-grill`은 그 제한이 없어 모델이 먼저 제안할 수 있고, 파일도 만들지 않습니다. 스펙 없이 `to-issues`를 부르면 먼저 `to-spec`을 씁니다.
 
 **실행은 스킬이 아닙니다.** 유닛을 subagent에 넘기는 건 어차피 agent가 하는 일이고, 거기서 기본값이 틀리는 지점만 규칙으로 적어두면 됩니다 — `AGENTS.md`의 `## Delegating To Subagents` 일곱 줄. 항상 컨텍스트에 있으니 검색될 필요가 없고, 그래서 스킬보다 확실하게 걸립니다. 담긴 것: 병렬 subagent마다 worktree 하나, worktree가 복사 못 하는 것(같은 DB·포트·외부 서비스), 파일이 안 겹쳐도 합치면 깨지는 경우, 병합은 안 하고 브랜치만 보고, Out of Scope만 프롬프트에 그대로 복사, 검증 출력 없는 성공 주장 거부, 그리고 혼자 순서대로 다 하는 것도 정상이라는 것.
 
@@ -232,6 +235,6 @@ If wrong: authed clients behind one shared IP throttle each other.
 
 `to-spec`도 같은 저장소의 `to-spec`을 따릅니다. 스펙 템플릿은 그대로 두고 세 곳만 이 저장소에 맞췄습니다 — `/setup-matt-pocock-skills`로 받던 트래커·라벨 어휘를 `.scratch/.tracker`에서 읽고, 게시 전 승인 단계를 넣고, 원격을 쓸 수 없을 때 `.scratch/<feature-slug>/spec.md`로 물러납니다.
 
-Interview → spec 분리는 Q00의 [`ouroboros`](https://github.com/Q00/ouroboros/blob/main/README.ko.md)에서 영향을 받았고, 이 저장소에서는 LLM 점수 대신 `planning-grill` → `to-spec` → `to-issues` 단계 분리로 적용했습니다.
+Interview → spec 분리는 Q00의 [`ouroboros`](https://github.com/Q00/ouroboros/blob/main/README.ko.md)에서 영향을 받았고, 이 저장소에서는 LLM 점수 대신 `planning-grill` → `to-intent` → `to-spec` → `to-issues` 단계 분리로 적용했습니다.
 
 `compound-learning`은 [`tae2089/agent-team`](https://github.com/tae2089/agent-team)의 `recipe-agent-team-compound-learning` 스킬 commit `2354d37`을 agent-team CLI 의존 없이 포터블하게 적응했습니다.

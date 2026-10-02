@@ -14,6 +14,8 @@ Adapted from Matt Pocock's `to-spec` skill in `mattpocock/skills`.
 
 1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching.
 
+   If `.scratch/<feature-slug>/intent.md` exists, read it first — `to-intent` wrote it as this spec's source. Build the Problem Statement from its Problem, never contradict its Constraints, carry its `## Out of scope` into the spec's Out of Scope, and turn its `## Notes for spec` into Implementation Decisions. When the conversation settled something the intent disagrees with, list the conflict in Further Notes instead of resolving it silently.
+
 2. Sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
 
 Check with the user that these seams match their expectations.
