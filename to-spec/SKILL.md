@@ -22,6 +22,8 @@ Check with the user that these seams match their expectations.
 
 3. Write the spec using the template below. The spec is one document — do not split it into a work breakdown here. That is `to-issues`' job.
 
+   Apply the policy skills the project lists under `## Policy Skills` in its project prompt file (`AGENTS.md` or the runtime's equivalent). Use each listed skill that is available. Record under Areas of Concern every policy the spec cannot satisfy, every pair of policies that contradict each other, and every listed skill that is not available. With no `## Policy Skills` heading, apply none and say so in Areas of Concern.
+
 4. Select the publication destination, then get approval before writing anything.
 
 Read [the tracker configuration](../to-issues/references/tracker-config.md), then read `.scratch/.tracker` when it exists.
@@ -33,7 +35,7 @@ Read [the tracker configuration](../to-issues/references/tracker-config.md), the
 - **`provider: jira` with `spec-target`** → the spec becomes a Confluence page and one normal Jira issue links it. Follow "Jira with Confluence" in the tracker configuration.
 - **Malformed configuration, unsupported provider, missing remote target, or unavailable tool** → explain why remote publication stopped, preserve the existing configuration, and publish locally.
 
-Show the provider and every object you will create, so nothing team-visible appears unannounced. For Jira with Confluence that is the seed page when one is missing, the spec page and the page it goes under, and the Jira project plus the issue type — the project's default standard type, never an epic. Otherwise it is the destination and the spec title. Always show the label you will apply, and the reason when local is a fallback.
+Show the provider and every object you will create, so nothing team-visible appears unannounced. For Jira with Confluence that is the seed page when one is missing, the spec page and the page it goes under, and the Jira project plus the issue type — the project's default standard type, never an epic. Otherwise it is the destination and the spec title. Always show the label you will apply, the reason when local is a fallback, and every Areas of Concern item first — they go to the policy owner before engineering sees the spec.
 
 Get the user's approval before the first configuration write or publication — the seam check in step 2 does not approve this write. If the user does not approve, stop without writing anything.
 
@@ -102,6 +104,10 @@ A list of testing decisions that were made. Include:
 ## Out of Scope
 
 A description of the things that are out of scope for this spec.
+
+## Areas of Concern
+
+Each policy the spec cannot satisfy or that contradicts another policy, which policy skill raised it, and who should resolve it. Write `None` when there are none.
 
 ## Further Notes
 
