@@ -25,7 +25,7 @@ Keep `.scratch/.tracker`, the local spec, and local tickets in version control s
 
 | `provider` | `target` | Publication tool |
 | --- | --- | --- |
-| `local` | Omit | Files under `.scratch/<feature-slug>/` — `spec.md` for the spec, `issues/<NN>-<slug>.md` for the tickets |
+| `local` | Omit | Files under `.scratch/<feature-slug>/` — `spec.md` for the spec, `issues/<NN>-<slug>.md` for the tickets. `intent.md` from `to-intent` sits in the same folder whatever the provider |
 | `github` | `owner/repository` | Connected GitHub tool; otherwise an already-authenticated `gh` CLI |
 | `gitlab` | `namespace/project` | Connected GitLab tool; otherwise an already-authenticated `glab` CLI |
 | `jira` | An unambiguous site and project identifier accepted by the connected Jira tool | Connected Jira tool |
