@@ -1,6 +1,5 @@
-# Project Guidance
-
-Follow the global prompt rules first. This file adds project-specific skill routing for a project that uses the `agent-team` CLI (github.com/tae2089/agent-team) as its durable work ledger.
+<!-- skills:begin -->
+<!-- Managed by the setup-sdlc skill. Edits inside this block are replaced on the next run; put project rules outside it. -->
 
 ## Skill Routing
 
@@ -16,15 +15,26 @@ Follow the global prompt rules first. This file adds project-specific skill rout
 - When preparing context for human or AI code review, use `ready-code-review`; do not use it to perform the review itself.
 - After a new abstraction causes 3+ follow-up regressions, or after tests pass and before commit when the change adds persisted fields, interface methods, lifecycle states, or compatibility branches, use `overengineering-review` to check for unnecessary complexity.
 - After a non-trivial task, review cycle, bug fix, or debugging session is verified, use `compound-learning` to capture reusable learnings and maintain `docs/solutions/`.
+- When the user explicitly asks to set up or refresh this routing, the tracker, or plan storage, use `setup-sdlc`.
+
+## Policy Skills
+
+- List the organization's policy skills — brand, security, compliance, UX — under a `## Policy Skills` heading outside this block, one skill name per line. `to-spec` applies each one and records unmet or conflicting policies under Areas of Concern. With no such heading, `to-spec` applies none and says so.
 
 ## Issue Tracker
 
-- `.scratch/.tracker`, `.scratch/*/intent.md`, `.scratch/*/spec.md`, and `.scratch/*/issues/` are shared in version control and must not be ignored. The configuration selects one destination for both `to-spec` and `to-issues`.
+- `.scratch/.tracker`, `.scratch/*/intent.md`, `.scratch/*/spec.md`, `.scratch/*/issues/`, `.scratch/*/plan.md`, and `.scratch/*/plans/` are shared in version control and must not be ignored. The configuration selects one destination for both `to-spec` and `to-issues`.
 - Use `provider: local`, `provider: github`, `provider: gitlab`, or `provider: jira`. Remote providers also require `target: <repository-or-project>`.
 - With `provider: jira`, add `spec-target: <site>/wiki/spaces/<SPACE>` to keep the spec in Confluence. `to-spec` then creates a seed index page on first use, the spec page under it, and one Jira parent issue that links the page — at the project's default standard issue type, never an epic. Without the key the spec stays a Jira issue.
 - Add `ready-label: <label>` only when new specs and tickets should receive that label. With no key, neither skill applies a label.
 - If the file is missing or the configured remote tool is unavailable, both skills preview a fallback to `.scratch/<feature-slug>/` — `spec.md` for the spec, `issues/` for the tickets — and write only after approval.
 - Never put tokens, passwords, private keys, webhook URLs, or credential-bearing connection strings in `.scratch/.tracker`.
+
+## Plans
+
+- Plan each implementation in the host's plan mode when it has one, otherwise in the conversation, from the intent, the spec, and the ticket.
+- Once the plan is approved, save it beside the work it plans: `.scratch/<feature-slug>/issues/<NN>-<slug>.plan.md` for a local ticket, `.scratch/<feature-slug>/plans/<ticket-id>.md` for a remote ticket, `.scratch/<feature-slug>/plan.md` when there is no ticket.
+- When the implementation departs from the plan, update the plan in the same commit.
 
 ## Delegating To Subagents
 
@@ -38,14 +48,4 @@ Applies whenever work units are handed to subagents, in dependency order.
 - A subagent claiming success without the verification output has not finished. Re-dispatch it.
 - Running every unit yourself in dependency order is a valid plan, not a failed delegation.
 
-## agent-team Routing
-
-agent-team bundles its own skills; restrict them as follows so methodology stays single-sourced:
-
-- Use only agent-team's CLI operation skills (the `agent-team-*` prefix: run/task/message/inbox/sync/event commands), and load `agent-team-shared` before any command-specific one — it defines the state directory, global flags, and error handling they all assume. Never use its `recipe-*` and `persona-*` skills — the skills routed above own all methodology, even where an excluded skill looks like a closer match (plan sharpening / `recipe-agent-team-planning-grill` → `planning-grill`; work breakdown → `to-issues`; delegated execution → the Delegating To Subagents rules above; architecture → `codebase-design`; terminology → `domain-modeling`; compound learning / `recipe-agent-team-compound-learning` → `compound-learning`).
-- The work units are the remote or shared local child tickets created by `to-issues`, not a copied list in a local note or the agent-team ledger. Use the `agent-team-*` commands for run/task registration and messaging on top of those tickets; never let them re-decompose the work.
-- Do not route by the word "recipe": agent-team's `recipe-*` skills are excluded above.
-
-## Project Notes
-
-<!-- Add project-specific build/test commands, danger zones, and conventions here. -->
+<!-- skills:end -->
